@@ -75,12 +75,12 @@
   align-items: start;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+/* === Grupo de data (menor) === */
+.date-group input[type="date"] {
+  max-width: 160px;
 }
 
+/* === Descrição ocupa toda a linha === */
 .form-group.full-width {
   grid-column: 1 / -1;
 }
@@ -118,18 +118,50 @@ textarea {
   min-height: 70px;
 }
 
-/* === Campos de tempo e valores lado a lado === */
-.form-row {
+/* === Linha Contrato / Atividade === */
+.form-row-top {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 0.8rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  align-items: end;
 }
 
-/* === Toggle Groups (Local, Faturável etc.) === */
+/* === Linha dos Tempos === */
+.form-row-times {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  align-items: end;
+  margin-top: 0.5rem;
+}
+
+/* === Linha dos Valores === */
+.form-row-values {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  align-items: end;
+  margin-top: 0.5rem;
+}
+
+.form-row-values input {
+  max-width: 120px;
+}
+
+/* === Linha Local / Faturável / Viagem Faturável === */
+.form-row-toggles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.8rem;
+  margin-top: 0.8rem;
+}
+
+/* === Toggle Groups === */
 .local-toggle-group {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
+  margin-top: 0.3rem;
 }
 
 .toggle-option {
@@ -234,16 +266,22 @@ textarea {
 }
 
 /* === Responsividade === */
-@media (max-width: 600px) {
-  .form-grid {
+@media (max-width: 650px) {
+  .form-row-top,
+  .form-row-times,
+  .form-row-values,
+  .form-row-toggles {
     grid-template-columns: 1fr;
   }
-  .form-row {
-    grid-template-columns: 1fr 1fr;
+
+  .form-row-values input {
+    max-width: 100%;
   }
+
   .modal-buttons {
     flex-direction: column;
   }
+
   .btn-primary,
   .btn-secondary {
     width: 100%;
