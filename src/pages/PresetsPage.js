@@ -1,57 +1,30 @@
 import React, { useState, useEffect } from "react";
 import api from "../services/api";
 import TaskModal from "./TaskModel";
-import "./PresetsModal.css";
+import "../components/PresetsModel.css";
 
 const PresetsModal = ({ show, onClose }) => {
   const [presets, setPresets] = useState([]);
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [presetToApply, setPresetToApply] = useState(null);
-    
-  // console.log("SDADSADS")
-  // console.log(localStorage.getItem("user"))
+
   const token = localStorage.getItem("token");
-
-  // 🧩 Obter o username do localStorage.user
-  const getUsernameFromStorage = () => {
-    try {
-      const storedUser = localStorage.getItem("user");
-      console.log("📦 Valor bruto em localStorage.user:", storedUser);
-
-      if (!storedUser) return null;
-      const parsed = JSON.parse(storedUser);
-      console.log("✅ Utilizador parseado:", parsed);
-      return parsed?.username || null;
-    } catch (error) {
-      console.error("❌ Erro ao parsear localStorage.user:", error);
-      return null;
-    }
-  };
-
-  const username = getUsernameFromStorage();
-  console.log("🎯 Username final usado:", username);
 
   // 🔹 Carregar presets do utilizador autenticado
   const fetchPresets = async () => {
-    if (!username) {
-      console.warn("⚠️ Username é null — fetchPresets não será executado.");
-      return;
-    }
-
     try {
-      const res = await api.get(`/presets/${username}`, {
+      const res = await api.get("/presets", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log(`📥 GET /presets/${username}`, res.data);
       setPresets(res.data);
     } catch (err) {
       console.error("❌ Erro ao carregar presets:", err);
     }
   };
 
+  // 🔹 Executar apenas quando o modal abre
   useEffect(() => {
     if (show) {
-      console.log("🟢 Modal aberto — a carregar presets...");
       fetchPresets();
     }
   }, [show]);
@@ -78,19 +51,10 @@ const PresetsModal = ({ show, onClose }) => {
 
   // 🔹 Guardar novo preset
   const handleSavePreset = async (presetData) => {
-    if (!username) {
-      alert("Erro: utilizador não encontrado.");
-      return;
-    }
-
     try {
-      const payload = { ...presetData, username };
-      console.log("📤 A enviar payload para POST /presets:", payload);
-
-      await api.post("/presets", payload, {
+      await api.post("/presets", presetData, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       await fetchPresets();
       setShowTaskModal(false);
     } catch (err) {
@@ -99,7 +63,37 @@ const PresetsModal = ({ show, onClose }) => {
     }
   };
 
+  // 🔹 Alternar estado ativo / não ativo
+  const toggleAtivo = async (preset) => {
+    try {
+      if (preset.ativo) {
+        // desativar
+        await api.patch(`/presets/${preset.id}`, { ativo: false }, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else {
+        const ativos = presets.filter((p) => p.ativo);
+        if (ativos.length >= 4) {
+          alert("Só podes ter no máximo 4 presets ativos.");
+          return;
+        }
+        // ativar
+        await api.patch(`/presets/${preset.id}`, { ativo: true }, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+      await fetchPresets();
+    } catch (err) {
+      console.error("Erro ao atualizar estado do preset:", err);
+      alert("Erro ao alterar estado do preset");
+    }
+  };
+
   if (!show) return null;
+
+  // 🔹 Separar os presets
+  const ativos = presets.filter((p) => p.ativo);
+  const naoAtivos = presets.filter((p) => !p.ativo);
 
   return (
     <div className="modal-overlay">
@@ -110,18 +104,42 @@ const PresetsModal = ({ show, onClose }) => {
           ➕ Criar Novo Preset
         </button>
 
+        {/* --- Presets Ativos --- */}
+        <h3 className="section-title">Presets Ativos (máx. 4)</h3>
         <div className="presets-list">
-          {presets.length === 0 ? (
-            <p>Sem presets guardados.</p>
+          {ativos.length === 0 ? (
+            <p>Sem presets ativos.</p>
           ) : (
-            presets.map((p) => (
-              <div key={p.id} className="preset-card">
+            ativos.map((p) => (
+              <div key={p.id} className="preset-card ativo">
                 <div>
                   <strong>{p.nome || "Preset sem nome"}</strong>
                   <p>{p.descricao || "Sem descrição"}</p>
                 </div>
                 <div className="preset-actions">
                   <button onClick={() => handleApply(p)}>Aplicar</button>
+                  <button onClick={() => toggleAtivo(p)}>Desativar</button>
+                  <button onClick={() => handleDelete(p.id)}>🗑️</button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* --- Presets Não Ativos --- */}
+        <h3 className="section-title">Presets Não Ativos</h3>
+        <div className="presets-list">
+          {naoAtivos.length === 0 ? (
+            <p>Sem presets não ativos.</p>
+          ) : (
+            naoAtivos.map((p) => (
+              <div key={p.id} className="preset-card">
+                <div>
+                  <strong>{p.nome || "Preset sem nome"}</strong>
+                  <p>{p.descricao || "Sem descrição"}</p>
+                </div>
+                <div className="preset-actions">
+                  <button onClick={() => toggleAtivo(p)}>Ativar</button>
                   <button onClick={() => handleDelete(p.id)}>🗑️</button>
                 </div>
               </div>
@@ -136,6 +154,7 @@ const PresetsModal = ({ show, onClose }) => {
         </div>
       </div>
 
+      {/* 🔹 Modal de criação de preset */}
       {showTaskModal && (
         <TaskModal
           show={showTaskModal}

@@ -6,8 +6,17 @@
   box-shadow: 0 2px 10px rgba(0,0,0,0.15);
 }
 
+.section-title {
+  margin-top: 1.2rem;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  color: #444;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 0.2rem;
+}
+
 .presets-list {
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   max-height: 400px;
   overflow-y: auto;
 }
@@ -21,6 +30,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: 0.2s;
+}
+
+.preset-card:hover {
+  background: #f1f1f1;
+}
+
+.preset-card.ativo {
+  border-left: 5px solid #4caf50;
+  background: #f5fff5;
 }
 
 .preset-card strong {
@@ -34,8 +53,15 @@
   border: none;
   cursor: pointer;
   color: #007bff;
+  font-size: 0.85rem;
 }
 
 .preset-actions button:hover {
   text-decoration: underline;
+  color: #0056b3;
+}
+
+.modal-buttons {
+  margin-top: 1rem;
+  text-align: right;
 }
