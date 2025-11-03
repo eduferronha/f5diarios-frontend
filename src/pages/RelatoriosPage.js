@@ -32,7 +32,10 @@ const RelatoriosPage = () => {
   useEffect(() => {
     const carregarDados = async () => {
       try {
-        const response = await api.get("/tasks");
+        const response = await api.get("/tasks/all", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
         setDados(response.data);
         setDadosOriginais(response.data);
       } catch (error) {
