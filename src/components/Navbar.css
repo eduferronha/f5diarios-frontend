@@ -1,0 +1,159 @@
+/* === NAVBAR GERAL === */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff;
+  border-bottom: 1px solid #ddd;
+  padding: 0.8rem 1.5rem;
+  height: 60px;               /* 🔒 Altura fixa */
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+  position: sticky;           /* Mantém no topo */
+  top: 0;
+  z-index: 100;
+}
+
+/* === LOGO E TÍTULO === */
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #0078d7;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.navbar-logo:hover {
+  color: #005fa3;
+}
+
+/* Imagem do logo */
+.navbar-logo-img {
+  height: 100px;
+  width: auto;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+.navbar-logo-img:hover {
+  transform: scale(1.05);
+}
+
+/* === LINKS === */
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-item {
+  position: relative;
+  cursor: pointer;
+  white-space: nowrap;        /* 🔒 Não deixa o texto quebrar */
+  color: #333;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.nav-item:hover {
+  color: #0078d7;
+}
+
+/* === ITEM ATIVO === */
+.nav-item.active {
+  color: #0078d7;
+  font-weight: 600;
+}
+
+.nav-item.active::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #0078d7;
+  border-radius: 2px;
+}
+
+/* === DROPDOWN === */
+.dropdown {
+  position: relative;
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  position: absolute;       
+  top: 100%;                
+  left: 0;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0;
+  z-index: 200;
+  min-width: 160px;         
+  width: max-content;       
+  white-space: nowrap;      
+  animation: fadeIn 0.15s ease-in-out;
+}
+
+.dropdown-menu li {
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.dropdown-menu li:hover {
+  background-color: #f5f5f5;
+}
+
+/* === ANIMAÇÃO SUAVE DO DROPDOWN === */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === RESPONSIVIDADE === */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto;
+    padding: 0.8rem 1rem;
+  }
+
+  .navbar-links {
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  /* Logo menor em ecrãs pequenos */
+  .navbar-logo-img {
+    height: 30px;
+  }
+
+  /* Opcional: esconder o texto “F5 Diários” em ecrãs muito pequenos */
+  @media (max-width: 480px) {
+    .navbar-logo span {
+      display: none;
+    }
+  }
+}

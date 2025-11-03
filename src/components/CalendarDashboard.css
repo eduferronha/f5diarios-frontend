@@ -1,0 +1,119 @@
+/* === Container principal === */
+.calendar-container {
+  width: 100%;
+  max-width: 280px;
+  /* padding: 0.8rem; */
+  font-family: "Poppins", sans-serif;
+  color: #222;
+  background: transparent; /* evita fundo duplo */
+  box-shadow: none;
+}
+
+/* === Cabeçalho com setas e mês === */
+.calendar-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f4f6f8;
+  padding: 0.5rem 0.8rem;
+  border-radius: 10px;
+  margin-bottom: 0.8rem;
+}
+
+.calendar-header-row h2 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #222;
+  text-transform: capitalize;
+  margin: 0;
+}
+
+/* Botões de navegação dos meses */
+.month-btn {
+  background: #0078d7;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  font-size: 1.1rem;
+  line-height: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 120, 215, 0.25);
+}
+
+.month-btn:hover {
+  background: #005fa3;
+  transform: translateY(-1px);
+}
+
+/* === Grelha do calendário === */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.calendar-header {
+  text-align: center;
+  font-weight: 600;
+  background: #f4f4f4;
+  padding: 4px 0;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: #333;
+}
+
+/* === Dias === */
+.calendar-day {
+  aspect-ratio: 1 / 1; /* ✅ Mantém formato quadrado */
+  text-align: center;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.8rem;
+  color: #222;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-day:hover {
+  transform: scale(1.07);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.calendar-day.empty {
+  background: transparent;
+  cursor: default;
+  box-shadow: none;
+}
+
+/* === Legenda === */
+.calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 10px;
+  font-size: 0.7rem;
+  margin-top: 0.8rem;
+  color: #333;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legend-color {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+}

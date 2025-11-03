@@ -1,0 +1,290 @@
+/* === Container principal === */
+.relatorios-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding: 1.5rem 2rem;
+  font-family: "Poppins", sans-serif;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* === Título e botões === */
+.relatorios-container h2 {
+  font-size: 1.5rem;
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+.relatorios-actions {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.relatorios-actions button {
+  background: #0078d7;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.relatorios-actions button:hover {
+  background: #005fa3;
+}
+
+/* === Layout principal === */
+.relatorios-main {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+
+
+/* === Sidebar de filtros === */
+.filtros-container {
+  flex: 0 0 15%;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  padding: 1rem 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  height: fit-content;
+}
+
+.filtros-container h3 {
+  color: #333;
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  border-bottom: 2px solid #0078d7;
+  padding-bottom: 0.3rem;
+}
+
+/* === Campos === */
+.filtros-container label {
+  font-weight: 500;
+  color: #444;
+  font-size: 0.8rem;
+  margin-bottom: 0.1rem;
+}
+
+.filtros-container select {
+  padding: 0.3rem 0.4rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #fafafa;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+  width: 100%;
+  max-width: 160px;
+}
+
+.filtros-container select:focus {
+  border-color: #0078d7;
+  box-shadow: 0 0 0 2px rgba(0, 120, 215, 0.15);
+  outline: none;
+}
+
+/* === Botões === */
+.filtros-container button {
+  margin-top: 0.3rem;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  font-size: 0.8rem;
+  width: fit-content;
+  align-self: flex-start;
+}
+
+.filtros-container button:first-of-type {
+  background-color: #0078d7;
+  color: white;
+}
+
+.filtros-container button:first-of-type:hover {
+  background-color: #005fa3;
+}
+
+.filtros-container button:last-of-type {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.filtros-container button:last-of-type:hover {
+  background-color: #d0d0d0;
+}
+
+
+/* === Linha dos botões de filtro === */
+.filtro-botoes {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+.filtro-botoes button {
+  flex: 1;
+  padding: 0.4rem 0.6rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+}
+
+.filtro-botoes button:first-of-type {
+  background-color: #0078d7;
+  color: white;
+}
+
+.filtro-botoes button:first-of-type:hover {
+  background-color: #005fa3;
+}
+
+.filtro-botoes button:last-of-type {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.filtro-botoes button:last-of-type:hover {
+  background-color: #d0d0d0;
+}
+
+
+/* === Tabela === */
+.relatorios-table {
+  flex: 1;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  padding: 1rem;
+  width: 100%;
+}
+
+.relatorios-table table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* força colunas equilibradas */
+}
+
+/* --- Cabeçalhos --- */
+.relatorios-table th {
+  background-color: #f2f4f6;
+  color: #333;
+  font-weight: 600;
+  padding: 8px;
+  text-align: center;
+  border-bottom: 2px solid #e0e0e0;
+  font-size: 0.82rem;
+  white-space: normal; /* ✅ permite quebra de linha no header */
+  word-wrap: break-word;
+  line-height: 1.2;
+}
+
+/* --- Células (dados) --- */
+.relatorios-table td {
+  border-bottom: 1px solid #e0e0e0;
+  padding: 6px 8px;
+  text-align: center;
+  font-size: 0.8rem;
+  white-space: nowrap; /* ❗ mantém tudo numa só linha */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.relatorios-table tr:hover {
+  background-color: #f9fbff;
+  transition: background 0.15s ease;
+}
+
+/* --- Larguras proporcionais --- */
+.relatorios-table th:nth-child(1),
+.relatorios-table td:nth-child(1) {
+  width: 8%; /* Data */
+}
+.relatorios-table th:nth-child(2),
+.relatorios-table td:nth-child(2) {
+  width: 9%; /* Local */
+}
+.relatorios-table th:nth-child(3),
+.relatorios-table td:nth-child(3) {
+  width: 12%; /* Cliente */
+}
+.relatorios-table th:nth-child(4),
+.relatorios-table td:nth-child(4) {
+  width: 10%; /* Parceiro */
+}
+.relatorios-table th:nth-child(5),
+.relatorios-table td:nth-child(5) {
+  width: 10%; /* Produto */
+}
+.relatorios-table th:nth-child(6),
+.relatorios-table td:nth-child(6) {
+  width: 10%; /* Contrato */
+}
+.relatorios-table th:nth-child(7),
+.relatorios-table td:nth-child(7) {
+  width: 14%; /* Atividade */
+}
+.relatorios-table th:nth-child(8),
+.relatorios-table td:nth-child(8),
+.relatorios-table th:nth-child(9),
+.relatorios-table td:nth-child(9),
+.relatorios-table th:nth-child(10),
+.relatorios-table td:nth-child(10),
+.relatorios-table th:nth-child(11),
+.relatorios-table td:nth-child(11),
+.relatorios-table th:nth-child(12),
+.relatorios-table td:nth-child(12) {
+  width: 7%; /* Campos de tempo, faturável, valor */
+}
+
+
+
+
+/* === Cabeçalho com título e botões à direita === */
+.relatorios-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* === Ajustes visuais === */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === Responsividade === */
+@media (max-width: 900px) {
+  .relatorios-main {
+    flex-direction: column;
+  }
+
+  .filtros-container {
+    flex: none;
+    width: 100%;
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+}

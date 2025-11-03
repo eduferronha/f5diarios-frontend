@@ -1,0 +1,273 @@
+/* === Layout geral === */
+.dashboard-layout {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 2rem;
+  width: 95%;
+  margin: 1.5rem auto 2rem auto;
+  font-family: "Poppins", sans-serif;
+  box-sizing: border-box;
+}
+
+/* === Calendário lateral === */
+.dashboard-calendar {
+  width: 15%;
+  flex-shrink: 0;
+  position: sticky;
+  top: 20px;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  padding: 1rem 1.2rem;
+  height: fit-content;
+  transition: all 0.3s ease;
+}
+
+.dashboard-calendar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+/* === Secção principal === */
+.dashboard-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* === Cabeçalho === */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.2rem;
+  gap: 1rem;
+}
+
+/* === Filtros === */
+.dashboard-filtros {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.dashboard-filtros select {
+  padding: 0.4rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 0.85rem;
+  font-family: "Poppins", sans-serif;
+  color: #333;
+  background: #fff;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.dashboard-filtros select:focus {
+  border-color: #0078d7;
+  box-shadow: 0 0 0 3px rgba(0, 120, 215, 0.15);
+  outline: none;
+}
+
+.dashboard-header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #222;
+  margin: 0;
+}
+
+/* === Botão "Nova Tarefa" === */
+.btn-add {
+  background-color: #0078d7;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.4rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.25s ease-in-out;
+  box-shadow: 0 2px 6px rgba(0, 120, 215, 0.2);
+}
+
+.btn-add:hover {
+  background-color: #005fa3;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 120, 215, 0.3);
+}
+
+/* === Tabela === */
+.table-wrapper {
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  padding: 0.4rem 0.6rem;
+  width: 100%;
+  transition: box-shadow 0.3s ease;
+}
+
+.table-wrapper:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.tasks-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.tasks-table th {
+  background-color: #f4f6f8;
+  color: #333;
+  font-weight: 600;
+  padding: 8px 6px;
+  text-align: center;
+  border-bottom: 2px solid #e0e0e0;
+  font-size: 0.8rem;
+  white-space: normal;
+  line-height: 1.2;
+}
+
+.tasks-table td {
+  padding: 6px 6px;
+  text-align: center;
+  border-bottom: 1px solid #eaeaea;
+  font-size: 0.78rem;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.tasks-table tbody tr {
+  height: 36px; /* Linhas mais compactas */
+}
+
+.tasks-table tbody tr:hover {
+  background-color: #f9fbff;
+  transition: background 0.15s ease-in-out;
+}
+
+/* === Scrollbar elegante === */
+.table-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+.table-wrapper::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
+
+/* === Botões de ação (Editar / Eliminar) === */
+.task-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Botões pequenos e discretos */
+.btn-edit,
+.btn-duplicate,
+.btn-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 5px;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Editar */
+.btn-edit {
+  background-color: #e7f1ff;
+  color: #0d47a1;
+}
+
+.btn-edit:hover {
+  background-color: #d0e3ff;
+  transform: scale(1.03);
+}
+
+/* Eliminar */
+.btn-delete {
+  background-color: #fdecea;
+  color: #b71c1c;
+}
+
+.btn-delete:hover {
+  background-color: #f8d7da;
+  transform: scale(1.03);
+}
+
+.btn-duplicate {
+  background-color: #f8d7da;
+  color: #fff;
+
+  
+}
+
+.btn-duplicate:hover {
+  background-color: #f8d7da;
+}
+
+
+/* Ícones discretos à esquerda */
+/* .btn-edit::before {
+  content: "✏️";
+  font-size: 0.8rem;
+}
+
+.btn-delete::before {
+  content: "🗑️";
+  font-size: 0.8rem;
+} */
+
+/* === Responsividade === */
+@media (max-width: 1200px) {
+  .dashboard-layout {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .dashboard-calendar {
+    width: 100%;
+    max-width: 420px;
+    position: static;
+    margin-bottom: 1.2rem;
+  }
+
+  .dashboard-main {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.8rem;
+  }
+
+  .tasks-table th,
+  .tasks-table td {
+    font-size: 0.78rem;
+    padding: 6px 5px;
+  }
+
+  .btn-add {
+    width: 100%;
+  }
+}
+
+

@@ -1,0 +1,112 @@
+/* === Layout principal === */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #0078d7 0%, #00a2ff 100%);
+  font-family: "Poppins", sans-serif;
+}
+
+/* === Caixa de login === */
+.login-box {
+  background: #272525;
+  padding: 2.5rem 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  width: 380px;
+  text-align: center;
+  animation: fadeIn 0.4s ease;
+  transition: all 0.3s ease;
+}
+
+.login-box:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.18);
+}
+
+/* === Título === */
+.login-box h2 {
+  margin-bottom: 1.8rem;
+  color: #222;
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+/* === Campos de input === */
+.login-box input {
+  width: 100%;
+  padding: 14px 16px;
+  margin-bottom: 1.1rem;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+  background-color: #fafafa;
+  transition: all 0.2s ease-in-out;
+  height: 48px;
+  box-sizing: border-box;
+}
+
+.login-box input:focus {
+  outline: none;
+  border-color: #0078d7;
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(0, 120, 215, 0.15);
+}
+
+/* === Botão === */
+.login-box button {
+  width: 100%;
+  padding: 14px;
+  background: #0078d7;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 10px rgba(0, 120, 215, 0.25);
+  height: 48px;
+}
+
+.login-box button:hover {
+  background: #005fa3;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 15px rgba(0, 120, 215, 0.35);
+}
+
+/* === Mensagem de erro === */
+.error {
+  color: #c62828;
+  font-size: 0.9rem;
+  margin-top: 0.8rem;
+  background: #ffebee;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #ef9a9a;
+  animation: fadeIn 0.3s ease;
+}
+
+/* === Logótipo === */
+.login-logo {
+  width: 300px;
+  height: auto;
+  margin-bottom: 1.8rem;
+  user-select: none;
+  pointer-events: none;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.15));
+}
+
+
+/* === Animação === */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

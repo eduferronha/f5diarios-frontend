@@ -1,0 +1,184 @@
+/* === Container principal === */
+.agenda-container {
+  padding: 1.5rem 2rem;
+  font-family: "Poppins", sans-serif;
+  color: #333;
+}
+
+.agenda-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.agenda-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.agenda-controls label {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.agenda-controls select {
+  padding: 0.35rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+  background-color: #fff;
+  transition: all 0.2s ease;
+}
+
+.agenda-controls select:focus {
+  border-color: #0078d7;
+  box-shadow: 0 0 0 3px rgba(0, 120, 215, 0.15);
+  outline: none;
+}
+
+/* === Tabela moderna === */
+.agenda-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  padding: 0.6rem;
+  scrollbar-width: thin;
+}
+
+.agenda-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 0.9rem;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* === Cabeçalhos === */
+.agenda-table th {
+  background-color: #f3f4f6;
+  color: #374151;
+  font-weight: 600;
+  padding: 10px 6px;
+  border-bottom: 2px solid #e5e7eb;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+/* === Células === */
+.agenda-table td {
+  border: 1px solid #e5e7eb;
+  text-align: center;
+  padding: 0.5rem;
+  min-width: 100px;
+  height: 70px;
+  vertical-align: top;
+  position: relative;
+  background-color: #fff;
+  transition: all 0.2s ease;
+}
+
+/* === Células clicáveis === */
+.agenda-cell {
+  cursor: pointer;
+  transition: background-color 0.25s, transform 0.1s;
+  border-radius: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Hover */
+.agenda-cell:hover {
+  background-color: #e8f2ff !important;
+  transform: scale(1.03);
+  box-shadow: 0 2px 8px rgba(0, 120, 215, 0.15);
+  z-index: 2;
+}
+
+/* === Conteúdo do evento === */
+.event-info {
+  font-size: 0.8rem;
+  color: #1f2937;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0.3rem 0.2rem;
+}
+
+.event-info strong {
+  display: block;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* === Ícone de adicionar === */
+.add-symbol {
+  font-size: 1.3rem;
+  color: #0078d7;
+  font-weight: 600;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+}
+
+.agenda-cell:hover .add-symbol {
+  opacity: 1;
+  color: #005fa3;
+  transform: scale(1.1);
+}
+
+/* === Scrollbar === */
+.agenda-table-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+.agenda-table-wrapper::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+.agenda-table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
+
+/* === Responsividade === */
+@media (max-width: 900px) {
+  .agenda-container {
+    padding: 1rem;
+  }
+
+  .agenda-table th,
+  .agenda-table td {
+    min-width: 80px;
+    height: 60px;
+    font-size: 0.8rem;
+  }
+
+  .event-info {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .agenda-controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .agenda-title {
+    font-size: 1.2rem;
+    text-align: center;
+    width: 100%;
+  }
+
+  .agenda-table-wrapper {
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
+  }
+}

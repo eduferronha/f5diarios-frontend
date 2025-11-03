@@ -1,0 +1,132 @@
+.projetos-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding: 1.5rem 2rem;
+  font-family: "Poppins", sans-serif;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.projetos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.projetos-header h2 {
+  font-size: 1.5rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.projetos-actions button {
+  background: #0078d7;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.projetos-actions button:hover {
+  background: #005fa3;
+}
+
+.projetos-main {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.projetos-table {
+  flex: 1;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  padding: 1rem;
+}
+
+.projetos-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.projetos-table th {
+  background-color: #f2f4f6;
+  color: #333;
+  font-weight: 600;
+  padding: 8px;
+  text-align: center;
+  border-bottom: 2px solid #e0e0e0;
+  font-size: 0.82rem;
+}
+
+.projetos-table td {
+  border-bottom: 1px solid #e0e0e0;
+  padding: 6px 8px;
+  text-align: center;
+  font-size: 0.8rem;
+}
+
+.projetos-table tr:hover {
+  background-color: #f9fbff;
+  transition: background 0.15s ease;
+}
+
+.novo-projeto-container {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
+
+.novo-projeto-container h3 {
+  font-size: 1rem;
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+}
+
+.novo-projeto-form {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.novo-projeto-form label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #444;
+  margin-bottom: 0.2rem;
+}
+
+.novo-projeto-form input,
+.novo-projeto-form select {
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #fafafa;
+  font-size: 0.85rem;
+}
+
+.novo-projeto-form button {
+  background-color: #0078d7;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.novo-projeto-form button:hover {
+  background-color: #005fa3;
+}

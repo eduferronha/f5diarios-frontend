@@ -1,0 +1,41 @@
+.presets-modal {
+  max-width: 700px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+}
+
+.presets-list {
+  margin-top: 1rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.preset-card {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  padding: 0.7rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.preset-card strong {
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.preset-actions button {
+  margin-left: 0.4rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #007bff;
+}
+
+.preset-actions button:hover {
+  text-decoration: underline;
+}
