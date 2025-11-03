@@ -45,8 +45,8 @@ const ProjetosPage = () => {
     const carregarListas = async () => {
       try {
         const [clientesRes, contratosRes] = await Promise.all([
-          api.get("/clients", { headers: { Authorization: `Bearer ${token}` } }),
-          api.get("/contracts", { headers: { Authorization: `Bearer ${token}` } }),
+          api.get("/clients/", { headers: { Authorization: `Bearer ${token}` } }),
+          api.get("/contracts/", { headers: { Authorization: `Bearer ${token}` } }),
         ]);
         setClientes(clientesRes.data);
         setContratos(contratosRes.data);
@@ -94,7 +94,7 @@ const ProjetosPage = () => {
         horas_contratadas: parseFloat(horasContratadas) || 0,
       };
 
-      const res = await api.post("/projects", body, {
+      const res = await api.post("/projects/", body, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

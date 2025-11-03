@@ -34,8 +34,8 @@ export default function Agenda() {
     const fetchData = async () => {
       try {
         const [usersRes, agendaRes] = await Promise.all([
-          api.get("/users", { headers: { Authorization: `Bearer ${token}` } }),
-          api.get("/agenda", { headers: { Authorization: `Bearer ${token}` } }),
+          api.get("/users/", { headers: { Authorization: `Bearer ${token}` } }),
+          api.get("/agenda/", { headers: { Authorization: `Bearer ${token}` } }),
         ]);
         setUsers(usersRes.data);
         setEvents(agendaRes.data);

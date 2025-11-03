@@ -48,10 +48,10 @@ const RelatoriosPage = () => {
       try {
         const [clientesRes, contratosRes, parceirosRes, utilizadoresRes] =
           await Promise.all([
-            api.get("/clients", { headers: { Authorization: `Bearer ${token}` } }),
-            api.get("/contracts", { headers: { Authorization: `Bearer ${token}` } }),
-            api.get("/partners", { headers: { Authorization: `Bearer ${token}` } }),
-            api.get("/users", { headers: { Authorization: `Bearer ${token}` } }),
+            api.get("/clients/", { headers: { Authorization: `Bearer ${token}` } }),
+            api.get("/contracts/", { headers: { Authorization: `Bearer ${token}` } }),
+            api.get("/partners/", { headers: { Authorization: `Bearer ${token}` } }),
+            api.get("/users/", { headers: { Authorization: `Bearer ${token}` } }),
           ]);
 
         setClientes(clientesRes.data);
