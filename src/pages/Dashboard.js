@@ -23,6 +23,12 @@ function Dashboard() {
   const token = localStorage.getItem("token");
   const [presetsAtivos, setPresetsAtivos] = useState([]); // 🔹 novo estado
 
+  const handleAddTaskFromCalendar = (date) => {
+    setPreselectedDate(date); // 👈 guarda o dia selecionado
+    setEditingTask(null); // nova tarefa
+    setShowModal(true); // abre o modal
+  };
+
   const fetchTasks = async () => {
     try {
       setLoading(true);
@@ -121,7 +127,7 @@ function Dashboard() {
   return (
     <div className="dashboard-layout">
       <div className="dashboard-calendar">
-        <CalendarDashboard tasks={tasks} />
+        <CalendarDashboard tasks={tasks} onAddTask={handleAddTaskFromCalendar} />
       </div>
 
       <div className="dashboard-main">
@@ -266,10 +272,11 @@ function Dashboard() {
 
         <TaskModal
           show={showModal}
-          onClose={handleCloseModal}
-          onTaskAdded={fetchTasks}
+          onClose={() => setShowModal(false)}
+          onTaskAdded={() => {}}
           editingTask={editingTask}
-          isDuplicate={isDuplicate}
+          isDuplicate={false}
+          preselectedDate={preselectedDate} 
         />
 
         <PresetsModal
