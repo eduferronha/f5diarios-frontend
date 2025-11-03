@@ -243,6 +243,69 @@ const TaskModal = ({
           )}
 
           <div className="form-group full-width">
+            <label>Data</label>
+
+            {isDuplicate ? (
+              <div
+                className="calendar-hover-container"
+                onMouseEnter={() => setShowCalendar(true)}
+                onMouseLeave={() => setShowCalendar(false)}
+              >
+                <input
+                  type="text"
+                  readOnly
+                  className="calendar-input"
+                  placeholder={
+                    datasDuplicadas.length > 0
+                      ? `${datasDuplicadas.length} dia(s) selecionado(s)`
+                      : "Selecionar datas..."
+                  }
+                />
+
+                {showCalendar && (
+                  <div className="calendar-popup">
+                    <Calendar
+                      key={datasDuplicadas.join(",")} // força re-render
+                      value={null}
+                      onClickDay={toggleData}
+                      tileClassName={({ date }) => {
+                        const dataISO = new Date(
+                          date.getTime() - date.getTimezoneOffset() * 60000
+                        ).toLocaleDateString("en-CA", { timeZone: "Europe/Lisbon" });
+                        return datasDuplicadas.includes(dataISO)
+                          ? "selected-day"
+                          : null;
+                      }}
+                    />
+                    {datasDuplicadas.length > 0 ? (
+                      <div className="selected-dates-list">
+                        <p><strong>Dias selecionados:</strong></p>
+                        <ul>
+                          {datasDuplicadas.map((d) => {
+                            const [ano, mes, dia] = d.split("-");
+                            return (
+                              <li key={d}>{`${dia}/${mes}/${ano}`}</li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    ) : (
+                      <p className="selected-dates-info">Nenhum dia selecionado ainda.</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <input
+                type="date"
+                value={data}
+                onChange={(e) => setData(e.target.value)}
+                required={!isPresetMode}
+              />
+            )}
+          </div>
+
+          <div className="form-group full-width">
             <label>Descrição</label>
             <textarea
               rows="4"
@@ -338,68 +401,7 @@ const TaskModal = ({
             />
           </div> */}
 
-          <div className="form-group full-width">
-  <label>Data</label>
-
-  {isDuplicate ? (
-    <div
-      className="calendar-hover-container"
-      onMouseEnter={() => setShowCalendar(true)}
-      onMouseLeave={() => setShowCalendar(false)}
-    >
-      <input
-        type="text"
-        readOnly
-        className="calendar-input"
-        placeholder={
-          datasDuplicadas.length > 0
-            ? `${datasDuplicadas.length} dia(s) selecionado(s)`
-            : "Selecionar datas..."
-        }
-      />
-
-      {showCalendar && (
-        <div className="calendar-popup">
-          <Calendar
-            key={datasDuplicadas.join(",")} // força re-render
-            value={null}
-            onClickDay={toggleData}
-            tileClassName={({ date }) => {
-              const dataISO = new Date(
-                date.getTime() - date.getTimezoneOffset() * 60000
-              ).toLocaleDateString("en-CA", { timeZone: "Europe/Lisbon" });
-              return datasDuplicadas.includes(dataISO)
-                ? "selected-day"
-                : null;
-            }}
-          />
-          {datasDuplicadas.length > 0 ? (
-            <div className="selected-dates-list">
-              <p><strong>Dias selecionados:</strong></p>
-              <ul>
-                {datasDuplicadas.map((d) => {
-                  const [ano, mes, dia] = d.split("-");
-                  return (
-                    <li key={d}>{`${dia}/${mes}/${ano}`}</li>
-                  );
-                })}
-              </ul>
-            </div>
-          ) : (
-            <p className="selected-dates-info">Nenhum dia selecionado ainda.</p>
-          )}
-        </div>
-      )}
-    </div>
-  ) : (
-    <input
-      type="date"
-      value={data}
-      onChange={(e) => setData(e.target.value)}
-      required={!isPresetMode}
-    />
-  )}
-</div>
+          
 
 
           <div className="form-row">
