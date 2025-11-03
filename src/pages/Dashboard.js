@@ -23,6 +23,7 @@ function Dashboard() {
   const token = localStorage.getItem("token");
   const [presetsAtivos, setPresetsAtivos] = useState([]); // 🔹 novo estado
 
+  const [preselectedDate, setPreselectedDate] = useState(null);
   const handleAddTaskFromCalendar = (date) => {
     setPreselectedDate(date); // 👈 guarda o dia selecionado
     setEditingTask(null); // nova tarefa
