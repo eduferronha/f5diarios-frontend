@@ -44,11 +44,14 @@ const TaskModal = ({
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    if (preselectedDate) {
-      const formatted = preselectedDate.toISOString().split("T")[0];
-      setData(formatted);
-    }
-  }, [preselectedDate]);
+  if (preselectedDate) {
+    const formattedDate = new Date(preselectedDate)
+      .toISOString()
+      .split("T")[0]; // converte para formato yyyy-mm-dd
+    setData(formattedDate);
+  }
+}, [preselectedDate]);
+
 
   // 🔹 Carregar listas
   useEffect(() => {

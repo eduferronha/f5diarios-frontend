@@ -287,6 +287,7 @@ function Dashboard() {
           isDuplicate={isDuplicate}
           isPresetMode={!!presetToApply}
           presetData={presetToApply}
+          preselectedDate={preselectedDate}   // ✅ passa a data clicada
         />
 
 
