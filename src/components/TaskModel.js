@@ -41,7 +41,7 @@ const TaskModal = ({
 
   const [showCalendar, setShowCalendar] = useState(false);
 
-  
+
   const token = localStorage.getItem("token");
 
   // 🔹 Carregar listas
@@ -51,10 +51,10 @@ const TaskModal = ({
       try {
         const [clientesRes, produtosRes, contratosRes, atividadesRes] =
           await Promise.all([
-            api.get("/clients", { headers: { Authorization: `Bearer ${token}` } }),
-            api.get("/products", { headers: { Authorization: `Bearer ${token}` } }),
-            api.get("/contracts", { headers: { Authorization: `Bearer ${token}` } }),
-            api.get("/activities", { headers: { Authorization: `Bearer ${token}` } }),
+            api.get("/clients/", { headers: { Authorization: `Bearer ${token}` } }),
+            api.get("/products/", { headers: { Authorization: `Bearer ${token}` } }),
+            api.get("/contracts/", { headers: { Authorization: `Bearer ${token}` } }),
+            api.get("/activities/", { headers: { Authorization: `Bearer ${token}` } }),
           ]);
         setClientes(clientesRes.data);
         setProdutos(produtosRes.data);
