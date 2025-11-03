@@ -271,19 +271,35 @@ function Dashboard() {
           </div>
         )}
 
-        <TaskModal
+        {/* <TaskModal
           show={showModal}
           onClose={() => setShowModal(false)}
           onTaskAdded={() => {}}
           editingTask={editingTask}
           isDuplicate={false}
           preselectedDate={preselectedDate} 
+        /> */}
+        <TaskModal
+          show={showModal}
+          onClose={handleCloseModal}
+          onTaskAdded={fetchTasks}
+          editingTask={editingTask}
+          isDuplicate={isDuplicate}
+          isPresetMode={!!presetToApply}
+          presetData={presetToApply}
         />
+
 
         <PresetsModal
           show={showPresets}
           onClose={() => setShowPresets(false)}
+          onApplyPreset={(preset) => {
+            setPresetToApply(preset);
+            setShowPresets(false);
+            setShowModal(true);
+          }}
         />
+
       </div>
     </div>
   );

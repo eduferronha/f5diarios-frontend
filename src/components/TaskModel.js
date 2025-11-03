@@ -87,24 +87,20 @@ const TaskModal = ({
 
   // 🔹 Preencher automaticamente ao aplicar preset
   useEffect(() => {
-    if (presetData) {
+    if (isPresetMode && presetData) {
       setDescricao(presetData.descricao || "");
       setCliente(presetData.cliente || "");
       setParceiro(presetData.parceiro || "");
       setProduto(presetData.produto || "");
       setContrato(presetData.contrato || "");
       setAtividade(presetData.atividade || "");
-      setDistanciaViagem(presetData.distancia_viagem ?? 0);
+      setDistanciaViagem(presetData.distancia_viagem || 0);
       setTempoViagem(presetData.tempo_viagem || "00:00");
       setTempoAtividade(presetData.tempo_atividade || "00:00");
       setTempoFaturado(presetData.tempo_faturado || "00:00");
-      setValorEuro(presetData.valor_euro ?? 0);
-      setLocal(presetData.local || "Employee House");
-      setFaturavel(presetData.faturavel || "No");
-      setViagemFaturavel(presetData.viagem_faturavel || "No");
-      setData(""); // 👈 Limpa data para nova tarefa
     }
-  }, [presetData]);
+  }, [isPresetMode, presetData]);
+
 
   if (!show) return null;
 
