@@ -152,14 +152,14 @@ const getDias = () => {
             hora_fim: fim,
             descricao,
           };
-          await api.post("/agenda", newEvent, {
+          await api.post("/agenda/", newEvent, {
             headers: { Authorization: `Bearer ${token}` },
           });
         }
       }
 
       // Recarregar lista
-      const res = await api.get("/agenda", {
+      const res = await api.get("/agenda/", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setEvents(res.data);
@@ -179,7 +179,7 @@ const getDias = () => {
       await api.delete(`/agenda/${editingEvent.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const res = await api.get("/agenda", {
+      const res = await api.get("/agenda/", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setEvents(res.data);
