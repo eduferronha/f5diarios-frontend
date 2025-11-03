@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "./CalendarDashboard.css";
 
-function CalendarDashboard({ tasks = [] }) {
+function CalendarDashboard({ tasks = [], onAddTask }) {
   const [hoursPerDay, setHoursPerDay] = useState({});
-  const [vacationDays, setVacationDays] = useState([]); // 🟨 guardar dias de férias
+  const [vacationDays, setVacationDays] = useState([]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   // === Calcular Páscoa (algoritmo de Meeus/Jones/Butcher) ===
@@ -66,8 +66,7 @@ function CalendarDashboard({ tasks = [] }) {
 
         // 🟨 marcar férias
         const isVacation =
-          task.atividade &&
-          task.atividade.toLowerCase().includes("férias");
+          task.atividade && task.atividade.toLowerCase().includes("férias");
         if (isVacation) {
           vacations.push(day);
         }
@@ -82,7 +81,7 @@ function CalendarDashboard({ tasks = [] }) {
     });
 
     setHoursPerDay({ ...hoursMap });
-    setVacationDays([...new Set(vacations)]); // remove duplicados
+    setVacationDays([...new Set(vacations)]);
   }, [tasks, currentMonth]);
 
   // === Gerar os dias do mês ===
@@ -96,7 +95,10 @@ function CalendarDashboard({ tasks = [] }) {
     return days;
   };
 
-  const monthDays = getDaysInMonth(currentMonth.getFullYear(), currentMonth.getMonth());
+  const monthDays = getDaysInMonth(
+    currentMonth.getFullYear(),
+    currentMonth.getMonth()
+  );
   const firstDayOfWeek = new Date(
     currentMonth.getFullYear(),
     currentMonth.getMonth(),
@@ -108,22 +110,15 @@ function CalendarDashboard({ tasks = [] }) {
     const dayOfWeek = date.getDay();
     const day = date.getDate();
 
-    // 🟨 Dia de férias → amarelo
-    if (vacationDays.includes(day)) return "#ffeb3b";
-
-    // 🟡 Feriado → amarelo claro
+    if (vacationDays.includes(day)) return "#ffeb3b"; // Férias
     const isHoliday = holidays.some(
       (h) =>
         h.getDate() === date.getDate() &&
         h.getMonth() === date.getMonth() &&
         h.getFullYear() === date.getFullYear()
     );
-    if (isHoliday) return "#fff176";
-
-    // 🔴 Fim de semana
-    if (dayOfWeek === 0 || dayOfWeek === 6) return "#ef5350";
-
-    // 🟦 Dias úteis normais → pela carga horária
+    if (isHoliday) return "#fff176"; // Feriado
+    if (dayOfWeek === 0 || dayOfWeek === 6) return "#ef5350"; // Fim de semana
     if (!hours) return "#e0e0e0"; // sem tarefas
     if (hours < 8) return "#b3e5fc";
     if (hours === 8) return "#81c784";
@@ -140,16 +135,24 @@ function CalendarDashboard({ tasks = [] }) {
   return (
     <div className="calendar-container">
       <div className="calendar-header-row">
-        <button onClick={() => changeMonth(-1)} className="month-btn">‹</button>
+        <button onClick={() => changeMonth(-1)} className="month-btn">
+          ‹
+        </button>
         <h2>
-          {`${currentMonth.toLocaleString("pt-PT", { month: "long" })} ${currentMonth.getFullYear()}`}
+          {`${currentMonth.toLocaleString("pt-PT", {
+            month: "long",
+          })} ${currentMonth.getFullYear()}`}
         </h2>
-        <button onClick={() => changeMonth(1)} className="month-btn">›</button>
+        <button onClick={() => changeMonth(1)} className="month-btn">
+          ›
+        </button>
       </div>
 
       <div className="calendar-grid">
         {["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map((d) => (
-          <div key={d} className="calendar-header">{d}</div>
+          <div key={d} className="calendar-header">
+            {d}
+          </div>
         ))}
 
         {Array(firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1)
@@ -171,12 +174,16 @@ function CalendarDashboard({ tasks = [] }) {
               style={{
                 backgroundColor: color,
                 border: isVacation ? "2px solid #fbc02d" : "none",
+                cursor: "pointer",
               }}
               title={
                 isVacation
                   ? `${dayNum}/${currentMonth.getMonth() + 1}: Férias`
-                  : `${dayNum}/${currentMonth.getMonth() + 1}: ${totalHours.toFixed(1)}h`
+                  : `${dayNum}/${currentMonth.getMonth() + 1}: ${totalHours.toFixed(
+                      1
+                    )}h`
               }
+              onClick={() => onAddTask?.(day)} // 👈 abre o TaskModal com o dia
             >
               {dayNum}
             </div>
@@ -186,25 +193,32 @@ function CalendarDashboard({ tasks = [] }) {
 
       <div className="calendar-legend">
         <div className="legend-item">
-          <div className="legend-color" style={{ background: "#ffeb3b" }}></div> Férias
+          <div className="legend-color" style={{ background: "#ffeb3b" }}></div>{" "}
+          Férias
         </div>
         <div className="legend-item">
-          <div className="legend-color" style={{ background: "#fff176" }}></div> Feriado
+          <div className="legend-color" style={{ background: "#fff176" }}></div>{" "}
+          Feriado
         </div>
         <div className="legend-item">
-          <div className="legend-color" style={{ background: "#ef5350" }}></div> Fim de semana
+          <div className="legend-color" style={{ background: "#ef5350" }}></div>{" "}
+          Fim de semana
         </div>
         <div className="legend-item">
-          <div className="legend-color" style={{ background: "#e0e0e0" }}></div> 0h
+          <div className="legend-color" style={{ background: "#e0e0e0" }}></div>{" "}
+          0h
         </div>
         <div className="legend-item">
-          <div className="legend-color" style={{ background: "#b3e5fc" }}></div> &lt; 8h
+          <div className="legend-color" style={{ background: "#b3e5fc" }}></div>{" "}
+          &lt; 8h
         </div>
         <div className="legend-item">
-          <div className="legend-color" style={{ background: "#81c784" }}></div> 8h
+          <div className="legend-color" style={{ background: "#81c784" }}></div>{" "}
+          8h
         </div>
         <div className="legend-item">
-          <div className="legend-color" style={{ background: "#388e3c" }}></div> &gt; 8h
+          <div className="legend-color" style={{ background: "#388e3c" }}></div>{" "}
+          &gt; 8h
         </div>
       </div>
     </div>

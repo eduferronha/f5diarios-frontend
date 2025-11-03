@@ -13,6 +13,7 @@ const TaskModal = ({
   isPresetMode = false,
   onPresetSaved,
   presetData,
+  preselectedDate,
 }) => {
   const [nomePreset, setNomePreset] = useState("");
   const [descricao, setDescricao] = useState("");
@@ -43,6 +44,13 @@ const TaskModal = ({
 
 
   const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    if (preselectedDate) {
+      const formatted = preselectedDate.toISOString().split("T")[0];
+      setData(formatted); 
+    }
+  }, [preselectedDate]);
 
   // 🔹 Carregar listas
   useEffect(() => {
