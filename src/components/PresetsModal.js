@@ -13,7 +13,7 @@ const PresetsModal = ({ show, onClose }) => {
   // 🔹 Carregar presets do utilizador autenticado
   const fetchPresets = async () => {
     try {
-      const res = await api.get("/presets", {
+      const res = await api.get("/presets/", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setPresets(res.data);
@@ -52,7 +52,7 @@ const PresetsModal = ({ show, onClose }) => {
   // 🔹 Guardar novo preset
   const handleSavePreset = async (presetData) => {
     try {
-      await api.post("/presets", presetData, {
+      await api.post("/presets/", presetData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       await fetchPresets();
