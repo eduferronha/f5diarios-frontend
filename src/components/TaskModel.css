@@ -1,70 +1,84 @@
-/* === Overlay e estrutura do modal === */
+/* === Overlay === */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(10, 10, 10, 0.55);
-  backdrop-filter: blur(4px);
+  background: rgba(15, 15, 15, 0.45);
+  backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 999;
+  z-index: 1000;
 }
 
+/* === Modal principal === */
 .modal {
   background: #ffffff;
-  width: 90%;
-  max-width: 640px;
-  max-height: 90vh; /* mais espaço vertical */
-  border-radius: 14px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-  padding: 1.6rem 1.8rem;
-  animation: fadeIn 0.25s ease-in-out;
-  overflow-y: auto; /* scroll interno se necessário */
+  width: 95%;
+  max-width: 700px;
+  max-height: 92vh;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: fadeIn 0.25s ease;
+}
+
+/* === Cabeçalho fixo === */
+.modal h2 {
+  margin: 0;
+  background: #0078d7;
+  color: white;
+  padding: 1rem 1.2rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-align: center;
+  border-radius: 16px 16px 0 0;
+}
+
+/* === Corpo com scroll interno === */
+.modal form {
+  padding: 1rem 1.5rem 1.3rem;
+  overflow-y: auto;
+  flex: 1;
   scrollbar-width: thin;
   scrollbar-color: #ccc transparent;
 }
-
-.modal::-webkit-scrollbar {
+.modal form::-webkit-scrollbar {
   width: 6px;
 }
-.modal::-webkit-scrollbar-thumb {
+.modal form::-webkit-scrollbar-thumb {
   background: #ccc;
-  border-radius: 8px;
+  border-radius: 6px;
 }
 
+/* === Animação === */
 @keyframes fadeIn {
   from {
-    transform: scale(0.97);
     opacity: 0;
+    transform: scale(0.96);
   }
   to {
-    transform: scale(1);
     opacity: 1;
+    transform: scale(1);
   }
-}
-
-/* === Título === */
-.modal h2 {
-  text-align: center;
-  color: #333;
-  font-size: 1.3rem;
-  margin-bottom: 1.2rem;
-  font-weight: 600;
 }
 
 /* === Grid do formulário === */
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 0.8rem 1.2rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem 1rem;
+  align-items: start;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
+  gap: 0.25rem;
 }
 
 .form-group.full-width {
@@ -73,76 +87,64 @@
 
 /* === Labels e Inputs === */
 label {
-  font-weight: 500;
-  color: #444;
-  margin-bottom: 0.3rem;
   font-size: 0.8rem;
+  font-weight: 500;
+  color: #333;
 }
 
 input,
 select,
 textarea {
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
   border-radius: 6px;
-  padding: 0.4rem 0.6rem;
+  padding: 0.35rem 0.6rem;
   font-size: 0.85rem;
-  transition: all 0.2s ease;
   font-family: inherit;
+  transition: all 0.2s ease;
   background: #fafafa;
-}
-
-textarea {
-  resize: vertical;
-  min-height: 60px;
 }
 
 input:focus,
 select:focus,
 textarea:focus {
   border-color: #0078d7;
-  outline: none;
   background: #fff;
-  box-shadow: 0 0 0 2px rgba(0, 120, 215, 0.1);
+  box-shadow: 0 0 0 2px rgba(0, 120, 215, 0.15);
+  outline: none;
 }
 
-/* === Campos de tempo lado a lado === */
+textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+
+/* === Campos de tempo e valores lado a lado === */
 .form-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 0.8rem;
 }
 
-.form-row > div {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-/* === Botões toggle (Local, Faturável, etc.) === */
+/* === Toggle Groups (Local, Faturável etc.) === */
 .local-toggle-group {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
-  margin-top: 0.3rem;
 }
 
 .toggle-option {
-  position: relative;
-  padding: 0.3rem 0.8rem;
-  border-radius: 20px;
   border: 1px solid #ccc;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  background: #f8f8f8;
+  border-radius: 20px;
+  padding: 0.25rem 0.7rem;
   font-size: 0.75rem;
-  user-select: none;
-}
-
-.toggle-option input {
-  display: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #f9f9f9;
+  color: #333;
 }
 
 .toggle-option:hover {
-  background: #efefef;
+  background: #ececec;
 }
 
 .toggle-option.active {
@@ -152,7 +154,51 @@ textarea:focus {
   box-shadow: 0 0 4px rgba(0, 120, 215, 0.3);
 }
 
-/* === Botões do modal === */
+/* === Calendário flutuante === */
+.calendar-hover-container {
+  position: relative;
+}
+
+.calendar-popup {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  z-index: 2000;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem;
+}
+
+.react-calendar {
+  border: none;
+  border-radius: 10px;
+  width: 260px;
+  font-size: 0.8rem;
+  background: #fff;
+}
+
+.react-calendar__tile--active,
+.selected-day {
+  background: #0078d7 !important;
+  color: #fff !important;
+  border-radius: 6px;
+}
+
+/* === Lista de datas selecionadas === */
+.selected-dates-list {
+  margin-top: 0.4rem;
+  font-size: 0.75rem;
+  color: #333;
+}
+.selected-dates-list ul {
+  margin: 0.3rem 0 0;
+  padding-left: 1rem;
+  list-style: disc;
+}
+
+/* === Botões === */
 .modal-buttons {
   display: flex;
   justify-content: center;
@@ -163,7 +209,7 @@ textarea:focus {
 .btn-primary,
 .btn-secondary {
   border: none;
-  padding: 0.5rem 1.1rem;
+  padding: 0.55rem 1.2rem;
   font-size: 0.85rem;
   border-radius: 8px;
   cursor: pointer;
@@ -175,111 +221,31 @@ textarea:focus {
   background: #0078d7;
   color: white;
 }
-
 .btn-primary:hover {
   background: #005fa3;
 }
 
 .btn-secondary {
-  background: #e0e0e0;
+  background: #efefef;
   color: #333;
 }
-
 .btn-secondary:hover {
-  background: #d0d0d0;
+  background: #ddd;
 }
 
 /* === Responsividade === */
 @media (max-width: 600px) {
-  .modal {
-    padding: 1.2rem;
-    max-height: 85vh;
-  }
-
   .form-grid {
     grid-template-columns: 1fr;
   }
-
+  .form-row {
+    grid-template-columns: 1fr 1fr;
+  }
   .modal-buttons {
     flex-direction: column;
   }
-
   .btn-primary,
   .btn-secondary {
     width: 100%;
   }
-}
-
-.duplicate-dates-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-top: 0.4rem;
-}
-
-.duplicate-date-item {
-  background: #e7f1ff;
-  border: 1px solid #0078d7;
-  color: #0078d7;
-  padding: 0.25rem 0.6rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-.remove-date {
-  background: none;
-  border: none;
-  color: #0078d7;
-  font-size: 0.8rem;
-  cursor: pointer;
-  line-height: 1;
-}
-
-/* === Estilo compacto do calendário === */
-.react-calendar {
-  width: 100%;
-  max-width: 320px;         /* 👈 tamanho máximo reduzido */
-  background: #fff;
-  border: none;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  font-size: 0.8rem;        /* 👈 texto ligeiramente menor */
-  margin-top: 0.4rem;
-  align-self: center;
-}
-
-.react-calendar__navigation {
-  height: 32px;
-  margin-bottom: 0.2rem;
-}
-
-.react-calendar__navigation button {
-  min-width: 28px;
-  font-size: 0.75rem;
-  padding: 0;
-}
-
-.react-calendar__month-view__weekdays {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-}
-
-.react-calendar__tile {
-  padding: 0.4rem 0 !important;
-  font-size: 0.8rem;
-}
-
-.react-calendar__tile--active,
-.selected-day {
-  background: #0078d7 !important;
-  color: white !important;
-  border-radius: 6px;
-}
-
-.react-calendar__tile--now {
-  background: #eaf4ff;
-  border-radius: 6px;
 }
