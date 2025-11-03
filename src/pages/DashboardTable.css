@@ -271,3 +271,28 @@
 }
 
 
+.presets-ativos-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0.8rem 0;
+  padding: 0.5rem 0;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+}
+
+.btn-preset {
+  background-color: #6c63ff;
+  color: #fff;
+  border: none;
+  padding: 0.45rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: 0.2s ease;
+  font-weight: 500;
+}
+
+.btn-preset:hover {
+  background-color: #574bdb;
+}

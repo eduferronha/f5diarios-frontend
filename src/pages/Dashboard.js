@@ -10,7 +10,7 @@ function Dashboard() {
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
-  const [isDuplicate, setIsDuplicate] = useState(false); // ✅ novo estado
+  const [isDuplicate, setIsDuplicate] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const today = new Date();
@@ -20,15 +20,8 @@ function Dashboard() {
   const [showPresets, setShowPresets] = useState(false);
   const [presetToApply, setPresetToApply] = useState(null);
 
-  // ✅ Corrigido
-  const storedUser = localStorage.getItem("user");
-  const username = storedUser ? JSON.parse(storedUser).username : null;
-
-  
-  const [datasDuplicadas, setDatasDuplicadas] = useState([]);
-
-
   const token = localStorage.getItem("token");
+  const [presetsAtivos, setPresetsAtivos] = useState([]); // 🔹 novo estado
 
   const fetchTasks = async () => {
     try {
@@ -46,10 +39,31 @@ function Dashboard() {
     }
   };
 
+  // 🔹 Buscar presets ativos
+  const fetchPresetsAtivos = async () => {
+    try {
+      const res = await api.get("/presets/", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const ativos = res.data.filter((p) => p.ativo);
+      setPresetsAtivos(ativos);
+    } catch (err) {
+      console.error("Erro ao carregar presets ativos:", err);
+    }
+  };
+
+  // 🔹 Recarregar tarefas e presets
   useEffect(() => {
     fetchTasks();
+    fetchPresetsAtivos();
   }, []);
 
+  // 🔹 Atualiza presets quando fecha o modal de presets
+  useEffect(() => {
+    if (!showPresets) fetchPresetsAtivos();
+  }, [showPresets]);
+
+  // 🔹 Atualizar lista filtrada por mês/ano
   useEffect(() => {
     const filtradas = tasks.filter((task) => {
       if (!task.data) return false;
@@ -78,18 +92,16 @@ function Dashboard() {
 
   const handleEdit = (task) => {
     setEditingTask(task);
-    setIsDuplicate(false); // ✅ edição normal
+    setIsDuplicate(false);
     setShowModal(true);
   };
 
   const handleDuplicate = (task) => {
-    // ✅ cria cópia mas sem o ID
     const duplicatedTask = { ...task };
     delete duplicatedTask.id;
     delete duplicatedTask._id;
-
     setEditingTask(duplicatedTask);
-    setIsDuplicate(true); // ✅ modo duplicar
+    setIsDuplicate(true);
     setShowModal(true);
   };
 
@@ -97,6 +109,13 @@ function Dashboard() {
     setEditingTask(null);
     setShowModal(false);
     setIsDuplicate(false);
+  };
+
+  // 🔹 Aplicar preset ativo (abre o modal já preenchido)
+  const handleApplyPreset = (preset) => {
+    setPresetToApply(preset);
+    setEditingTask(preset);
+    setShowModal(true);
   };
 
   return (
@@ -144,19 +163,6 @@ function Dashboard() {
 
           <h1>As minhas tarefas</h1>
 
-
-
-          {/* <button
-            className="btn-add"
-            onClick={() => {
-              setEditingTask(null);
-              setIsDuplicate(false);
-              setShowModal(true);
-            }}
-          >
-            + Nova Tarefa
-          </button> */}
-
           <div className="dashboard-buttons">
             <button
               className="btn-secondary"
@@ -176,8 +182,22 @@ function Dashboard() {
               + Nova Tarefa
             </button>
           </div>
-
         </div>
+
+        {/* 🔹 Botões dos presets ativos */}
+        {presetsAtivos.length > 0 && (
+          <div className="presets-ativos-bar">
+            {presetsAtivos.map((preset) => (
+              <button
+                key={preset.id}
+                className="btn-preset"
+                onClick={() => handleApplyPreset(preset)}
+              >
+                ⚡ {preset.nome || "Preset sem nome"}
+              </button>
+            ))}
+          </div>
+        )}
 
         {loading ? (
           <p className="loading">A carregar tarefas...</p>
@@ -249,7 +269,7 @@ function Dashboard() {
           onClose={handleCloseModal}
           onTaskAdded={fetchTasks}
           editingTask={editingTask}
-          isDuplicate={isDuplicate} // ✅ novo prop
+          isDuplicate={isDuplicate}
         />
 
         <PresetsModal
