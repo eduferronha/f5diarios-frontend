@@ -7,7 +7,6 @@ const PresetsModal = ({ show, onClose }) => {
   const [presets, setPresets] = useState([]);
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [presetToApply, setPresetToApply] = useState(null);
-
   const token = localStorage.getItem("token");
 
   // 🔹 Carregar presets do utilizador autenticado
@@ -24,9 +23,7 @@ const PresetsModal = ({ show, onClose }) => {
 
   // 🔹 Executar apenas quando o modal abre
   useEffect(() => {
-    if (show) {
-      fetchPresets();
-    }
+    if (show) fetchPresets();
   }, [show]);
 
   // 🔹 Eliminar preset
@@ -63,7 +60,34 @@ const PresetsModal = ({ show, onClose }) => {
     }
   };
 
+  // 🔹 Alternar ativo/inativo (com limite de 4 ativos)
+  const toggleAtivo = async (preset) => {
+    try {
+      if (preset.ativo) {
+        await api.patch(`/presets/${preset.id}`, { ativo: false }, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else {
+        const ativos = presets.filter((p) => p.ativo);
+        if (ativos.length >= 4) {
+          alert("Só podes ter no máximo 4 presets ativos.");
+          return;
+        }
+        await api.patch(`/presets/${preset.id}`, { ativo: true }, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+      await fetchPresets();
+    } catch (err) {
+      console.error("Erro ao atualizar estado do preset:", err);
+      alert("Erro ao alterar estado do preset");
+    }
+  };
+
   if (!show) return null;
+
+  const ativos = presets.filter((p) => p.ativo);
+  const naoAtivos = presets.filter((p) => !p.ativo);
 
   return (
     <div className="modal-overlay">
@@ -74,18 +98,42 @@ const PresetsModal = ({ show, onClose }) => {
           ➕ Criar Novo Preset
         </button>
 
+        {/* 🟩 Presets Ativos */}
+        <h3 className="section-title">Presets Ativos (máx. 4)</h3>
         <div className="presets-list">
-          {presets.length === 0 ? (
-            <p>Sem presets guardados.</p>
+          {ativos.length === 0 ? (
+            <p>Sem presets ativos.</p>
           ) : (
-            presets.map((p) => (
-              <div key={p.id} className="preset-card">
+            ativos.map((p) => (
+              <div key={p.id} className="preset-card ativo">
                 <div>
                   <strong>{p.nome || "Preset sem nome"}</strong>
                   <p>{p.descricao || "Sem descrição"}</p>
                 </div>
                 <div className="preset-actions">
                   <button onClick={() => handleApply(p)}>Aplicar</button>
+                  <button onClick={() => toggleAtivo(p)}>Desativar</button>
+                  <button onClick={() => handleDelete(p.id)}>🗑️</button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* 🟥 Presets Não Ativos */}
+        <h3 className="section-title">Presets Não Ativos</h3>
+        <div className="presets-list">
+          {naoAtivos.length === 0 ? (
+            <p>Sem presets não ativos.</p>
+          ) : (
+            naoAtivos.map((p) => (
+              <div key={p.id} className="preset-card">
+                <div>
+                  <strong>{p.nome || "Preset sem nome"}</strong>
+                  <p>{p.descricao || "Sem descrição"}</p>
+                </div>
+                <div className="preset-actions">
+                  <button onClick={() => toggleAtivo(p)}>Ativar</button>
                   <button onClick={() => handleDelete(p.id)}>🗑️</button>
                 </div>
               </div>
