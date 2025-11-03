@@ -26,7 +26,7 @@ function AdminPage() {
   const fetchData = async () => {
     try {
       setData([]);
-      const res = await api.get(`/${selectedEntity}`);
+      const res = await api.get(`/${selectedEntity}/`);
       setData(res.data);
     } catch (err) {
       console.error(`Erro ao carregar ${selectedEntity}:`, err);
@@ -41,7 +41,7 @@ function AdminPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post(`/${selectedEntity}`, formData);
+      await api.post(`/${selectedEntity}/`, formData);
       setFormData({});
       setShowModal(false); // 👈 fecha modal após criar
       fetchData();
