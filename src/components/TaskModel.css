@@ -17,12 +17,12 @@
   background: #ffffff;
   width: 90%;
   max-width: 640px;
-  max-height: 90vh; /* mais espaço vertical */
+  max-height: 90vh;
   border-radius: 14px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
   padding: 1.6rem 1.8rem;
   animation: fadeIn 0.25s ease-in-out;
-  overflow-y: auto; /* scroll interno se necessário */
+  overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: #ccc transparent;
 }
@@ -30,6 +30,7 @@
 .modal::-webkit-scrollbar {
   width: 6px;
 }
+
 .modal::-webkit-scrollbar-thumb {
   background: #ccc;
   border-radius: 8px;
@@ -200,6 +201,10 @@ textarea:focus {
     grid-template-columns: 1fr;
   }
 
+  .form-row {
+    flex-direction: column;
+  }
+
   .modal-buttons {
     flex-direction: column;
   }
@@ -210,6 +215,7 @@ textarea:focus {
   }
 }
 
+/* === Lista de datas duplicadas === */
 .duplicate-dates-list {
   display: flex;
   flex-wrap: wrap;
@@ -241,12 +247,12 @@ textarea:focus {
 /* === Estilo compacto do calendário === */
 .react-calendar {
   width: 100%;
-  max-width: 320px;         /* 👈 tamanho máximo reduzido */
+  max-width: 320px;
   background: #fff;
   border: none;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  font-size: 0.8rem;        /* 👈 texto ligeiramente menor */
+  font-size: 0.8rem;
   margin-top: 0.4rem;
   align-self: center;
 }

@@ -39,16 +39,14 @@ const TaskModal = ({
   const [contratosFiltrados, setContratosFiltrados] = useState([]);
 
   const [datasDuplicadas, setDatasDuplicadas] = useState([]);
-
   const [showCalendar, setShowCalendar] = useState(false);
-
 
   const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (preselectedDate) {
       const formatted = preselectedDate.toISOString().split("T")[0];
-      setData(formatted); 
+      setData(formatted);
     }
   }, [preselectedDate]);
 
@@ -242,7 +240,70 @@ const TaskModal = ({
             </div>
           )}
 
-          
+          <div className="form-group full-width">
+            <label>Data</label>
+            {isDuplicate ? (
+              <div
+                className="calendar-hover-container"
+                onMouseEnter={() => setShowCalendar(true)}
+                onMouseLeave={() => setShowCalendar(false)}
+              >
+                <input
+                  type="text"
+                  readOnly
+                  className="calendar-input"
+                  placeholder={
+                    datasDuplicadas.length > 0
+                      ? `${datasDuplicadas.length} dia(s) selecionado(s)`
+                      : "Selecionar datas..."
+                  }
+                />
+                {showCalendar && (
+                  <div className="calendar-popup">
+                    <Calendar
+                      key={datasDuplicadas.join(",")}
+                      value={null}
+                      onClickDay={toggleData}
+                      tileClassName={({ date }) => {
+                        const dataISO = new Date(
+                          date.getTime() - date.getTimezoneOffset() * 60000
+                        ).toLocaleDateString("en-CA", {
+                          timeZone: "Europe/Lisbon",
+                        });
+                        return datasDuplicadas.includes(dataISO)
+                          ? "selected-day"
+                          : null;
+                      }}
+                    />
+                    {datasDuplicadas.length > 0 ? (
+                      <div className="selected-dates-list">
+                        <p>
+                          <strong>Dias selecionados:</strong>
+                        </p>
+                        <ul>
+                          {datasDuplicadas.map((d) => {
+                            const [ano, mes, dia] = d.split("-");
+                            return <li key={d}>{`${dia}/${mes}/${ano}`}</li>;
+                          })}
+                        </ul>
+                      </div>
+                    ) : (
+                      <p className="selected-dates-info">
+                        Nenhum dia selecionado ainda.
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <input
+                type="date"
+                value={data}
+                onChange={(e) => setData(e.target.value)}
+                required={!isPresetMode}
+              />
+            )}
+          </div>
 
           <div className="form-group full-width">
             <label>Descrição</label>
@@ -303,7 +364,11 @@ const TaskModal = ({
               list="contratos-list"
               value={contrato}
               onChange={(e) => setContrato(e.target.value)}
-              placeholder={cliente ? "Escreve ou seleciona..." : "Escolhe primeiro o cliente"}
+              placeholder={
+                cliente
+                  ? "Escreve ou seleciona..."
+                  : "Escolhe primeiro o cliente"
+              }
               disabled={!cliente}
               required={!isPresetMode}
             />
@@ -329,19 +394,6 @@ const TaskModal = ({
               ))}
             </datalist>
           </div>
-
-          {/* <div className="form-group">
-            <label>Data</label>
-            <input
-              type="date"
-              value={data}
-              onChange={(e) => setData(e.target.value)}
-              required={!isPresetMode}
-            />
-          </div> */}
-
-          
-
 
           <div className="form-row">
             <div>
@@ -399,7 +451,9 @@ const TaskModal = ({
               {["Customer Site", "Office", "Employee House"].map((option) => (
                 <label
                   key={option}
-                  className={`toggle-option ${local === option ? "active" : ""}`}
+                  className={`toggle-option ${
+                    local === option ? "active" : ""
+                  }`}
                 >
                   <input
                     type="radio"
@@ -420,7 +474,9 @@ const TaskModal = ({
               {["Yes", "No", "For analysis"].map((option) => (
                 <label
                   key={option}
-                  className={`toggle-option ${faturavel === option ? "active" : ""}`}
+                  className={`toggle-option ${
+                    faturavel === option ? "active" : ""
+                  }`}
                 >
                   <input
                     type="radio"
@@ -441,7 +497,9 @@ const TaskModal = ({
               {["Yes", "No", "For analysis"].map((option) => (
                 <label
                   key={option}
-                  className={`toggle-option ${viagemFaturavel === option ? "active" : ""}`}
+                  className={`toggle-option ${
+                    viagemFaturavel === option ? "active" : ""
+                  }`}
                 >
                   <input
                     type="radio"
