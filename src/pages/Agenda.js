@@ -254,12 +254,18 @@ const isWeekend = (dateString) => {
         <table className="agenda-table">
           <thead>
             <tr>
-              <th>Data</th>
+              <th rowSpan="2" className="th-data">Data</th>
               {users.map((u) => (
-                <th key={u.id}>{u.nome}</th>
+                <th key={u.id} rowSpan="2" className="th-user">
+                  {u.nome}
+                </th>
               ))}
             </tr>
+            <tr>
+              {/* Esta segunda linha serve apenas para estruturar o cabeçalho com 2 linhas */}
+            </tr>
           </thead>
+
           <tbody>
             {diasLista.map((data) => {
               const hoje = new Date().toISOString().split("T")[0];

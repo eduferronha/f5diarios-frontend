@@ -213,3 +213,30 @@
     transform: rotate(360deg);
   }
 }
+
+.agenda-table thead {
+  background-color: #f3f3f3;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.agenda-table thead th {
+  border: 1px solid #ccc;
+  text-align: center;
+  vertical-align: middle;
+  padding: 8px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.th-data {
+  width: 110px;
+}
+
+.th-user {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 140px;
+}
