@@ -108,6 +108,29 @@ const TaskModal = ({
   }, [isPresetMode, presetData]);
 
 
+  // 🔹 Preencher automaticamente ao editar uma tarefa
+  useEffect(() => {
+    if (editingTask && !isDuplicate) {
+      setDescricao(editingTask.descricao || "");
+      setCliente(editingTask.cliente || "");
+      setParceiro(editingTask.parceiro || "");
+      setProduto(editingTask.produto || "");
+      setContrato(editingTask.contrato || "");
+      setAtividade(editingTask.atividade || "");
+      setData(editingTask.data ? editingTask.data.split("T")[0] : "");
+      setDistanciaViagem(editingTask.distancia_viagem || 0);
+      setTempoViagem(editingTask.tempo_viagem || "00:00");
+      setTempoAtividade(editingTask.tempo_atividade || "00:00");
+      setTempoFaturado(editingTask.tempo_faturado || "00:00");
+      setValorEuro(editingTask.valor_euro || 0);
+      setLocal(editingTask.local || "Employee House");
+      setFaturavel(editingTask.faturavel || "No");
+      setViagemFaturavel(editingTask.viagem_faturavel || "No");
+    }
+  }, [editingTask, isDuplicate]);
+
+
+
   if (!show) return null;
 
   // 🔹 Guardar tarefa ou preset
@@ -238,7 +261,7 @@ const TaskModal = ({
           >
         <h2>{titulo}</h2>
 
-        <form onSubmit={handleSubmit} className="form-grid">
+        <form id="form-task" onSubmit={handleSubmit} className="form-grid">
           {isPresetMode && !presetData && (
             <div className="form-group full-width">
               <label>Nome do Preset</label>
