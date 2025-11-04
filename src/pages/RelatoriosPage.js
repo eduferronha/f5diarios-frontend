@@ -30,21 +30,25 @@ const RelatoriosPage = () => {
 
   // 🟦 Carregar tarefas
   useEffect(() => {
-  const carregarDados = async () => {
-    try {
-      const response = await api.get("/tasks/all", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+    const carregarDados = async () => {
+      try {
+        setLoading(true); // 🌀 mostra spinner
+        const response = await api.get("/tasks/all", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-      console.log("📦 Dados recebidos das tasks:", response.data[0]); // 👈 ADICIONA ISTO
-      setDados(response.data);
-      setDadosOriginais(response.data);
-    } catch (error) {
-      console.error("Erro ao carregar dados:", error);
-    }
-  };
-  carregarDados();
-}, []);
+        console.log("📦 Dados recebidos das tasks:", response.data[0]);
+        setDados(response.data);
+        setDadosOriginais(response.data);
+      } catch (error) {
+        console.error("Erro ao carregar dados:", error);
+      } finally {
+        setLoading(false); // ✅ esconde spinner, mesmo que dê erro
+      }
+    };
+    carregarDados();
+  }, [token]);
+
 
 
   // 🟦 Carregar listas (clientes, contratos, parceiros, utilizadores)
