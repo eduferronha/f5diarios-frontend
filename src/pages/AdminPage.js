@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../services/api";
 import "./AdminPage.css";
+import { Edit3, Save, Trash2 } from "lucide-react";
 
 function AdminPage() {
   const [selectedEntity, setSelectedEntity] = useState("users");
@@ -306,12 +307,19 @@ const renderForm = () => {
                   ))}
                   <td className="actions">
                     {editId === (item.id || item._id) ? (
-                      <button className="save" onClick={handleSaveEdit}>
-                        💾
-                      </button>
+                      // <button className="save" onClick={handleSaveEdit}>
+                      //   💾
+                      // </button>
+                      <button
+                          className="btn-icon"
+                          onClick={handleSaveEdit}
+                          title="Guardar Resgisto"
+                        >
+                          <Edit3 size={18} color="#237c9b" />
+                        </button>
                     ) : (
                       <>
-                        <button className="edit" onClick={() => handleEdit(item)}>
+                        {/* <button className="edit" onClick={() => handleEdit(item)}>
                           ✏️
                         </button>
                         <button
@@ -319,8 +327,23 @@ const renderForm = () => {
                           onClick={() => handleDelete(item.id || item._id)}
                         >
                           🗑️
+                        </button> */}
+                        <button
+                          className="btn-icon"
+                          onClick={() => handleEdit(item)}
+                          title="Editar registo"
+                        >
+                          <Edit3 size={18} color="#237c9b" />
+                        </button>
+                        <button
+                          className="btn-icon"
+                          onClick={() => handleDelete(item.id || item._id)}
+                          title="Eliminar registo"
+                        >
+                          <Trash2 size={18} color="#237c9b" />
                         </button>
                       </>
+
                     )}
                   </td>
                 </tr>
