@@ -175,7 +175,7 @@ function Dashboard() {
               className="btn-presets-db"
               onClick={() => setShowPresets(true)}
             >
-              ⚙️ Presets
+              Presets
             </button>
 
             <button
