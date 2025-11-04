@@ -6,7 +6,7 @@
   gap: 2rem;
   width: 95%;
   margin: 1.5rem auto 2rem auto;
-  font-family: "Muli", sans-serif;
+  font-family: 'Poppins', sans-serif;
   box-sizing: border-box;
 }
 
@@ -58,7 +58,7 @@
   border-radius: 8px;
   border: 1px solid #ccc;
   font-size: 0.85rem;
-  font-family: "Muli", sans-serif;
+  font-family: 'Poppins', sans-serif;
   color: #333;
   background: #fff;
   transition: all 0.2s ease;

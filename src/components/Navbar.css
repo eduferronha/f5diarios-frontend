@@ -8,7 +8,7 @@
   padding: 0.8rem 1.5rem;
   height: 60px;               /* 🔒 Altura fixa */
   box-sizing: border-box;
-  font-family: "Muli", sans-serif;
+  font-family: 'Poppins', sans-serif;
   position: sticky;           /* Mantém no topo */
   top: 0;
   z-index: 100;
