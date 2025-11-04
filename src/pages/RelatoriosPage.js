@@ -30,21 +30,22 @@ const RelatoriosPage = () => {
 
   // 🟦 Carregar tarefas
   useEffect(() => {
-    const carregarDados = async () => {
-      try {
-        const response = await api.get("/tasks/all", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+  const carregarDados = async () => {
+    try {
+      const response = await api.get("/tasks/all", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-        console.log("📦 Dados recebidos das tasks:", response.data[0]); // 👈 ADICIONA ISTO
-        setDados(response.data);
-        setDadosOriginais(response.data);
-      } catch (error) {
-        console.error("Erro ao carregar dados:", error);
-      }
-    };
-    carregarDados();
-  }, []);
+      console.log("📦 Dados recebidos das tasks:", response.data[0]); // 👈 ADICIONA ISTO
+      setDados(response.data);
+      setDadosOriginais(response.data);
+    } catch (error) {
+      console.error("Erro ao carregar dados:", error);
+    }
+  };
+  carregarDados();
+}, []);
+
 
   // 🟦 Carregar listas (clientes, contratos, parceiros, utilizadores)
   useEffect(() => {
@@ -131,37 +132,37 @@ const RelatoriosPage = () => {
 
   // 🟩 Exportar Excel
   const exportarExcel = () => {
-    const colunas = [
-      "Data",
-      "Utilizador",
-      "Local",
-      "Cliente",
-      "Parceiro",
-      "Produto",
-      "Contrato",
-      "Atividade",
-      "Tempo Atividade",
-      "Tempo Faturado",
-      "Faturável",
-      "Viagem Faturável",
-      "Valor (€)",
-    ];
+  const colunas = [
+    "Data",
+    "Utilizador",
+    "Local",
+    "Cliente",
+    "Parceiro",
+    "Produto",
+    "Contrato",
+    "Atividade",
+    "Tempo Atividade",
+    "Tempo Faturado",
+    "Faturável",
+    "Viagem Faturável",
+    "Valor (€)",
+  ];
 
-    const linhas = dados.map((d) => ({
-      Data: d.data || "",
-      Utilizador: d.username || "",
-      Local: d.local || "",
-      Cliente: d.cliente || "",
-      Parceiro: d.parceiro || "",
-      Produto: d.produto || "",
-      Contrato: d.contrato || "",
-      Atividade: d.atividade || "",
-      "Tempo Atividade": d.tempo_atividade || "00:00",
-      "Tempo Faturado": d.tempo_faturado || "00:00",
-      Faturável: d.faturavel || "",
-      "Viagem Faturável": d.viagem_faturavel || "",
-      "Valor (€)": Number(d.valor_euro) || 0,
-    }));
+  const linhas = dados.map((d) => ({
+    Data: d.data || "",
+    Utilizador: d.username || "",
+    Local: d.local || "",
+    Cliente: d.cliente || "",
+    Parceiro: d.parceiro || "",
+    Produto: d.produto || "",
+    Contrato: d.contrato || "",
+    Atividade: d.atividade || "",
+    "Tempo Atividade": d.tempo_atividade || "00:00",
+    "Tempo Faturado": d.tempo_faturado || "00:00",
+    Faturável: d.faturavel || "",
+    "Viagem Faturável": d.viagem_faturavel || "",
+    "Valor (€)": Number(d.valor_euro) || 0,
+  }));
 
     const somarTempos = (tempos) => {
       let totalMinutos = 0;
@@ -282,6 +283,7 @@ const RelatoriosPage = () => {
         d.valor_euro ? Number(d.valor_euro).toFixed(2) : "0.00",
       ]);
 
+
       if (linhas.length === 0) {
         alert("Não há dados para exportar.");
         return;
@@ -383,66 +385,62 @@ const RelatoriosPage = () => {
             <option>Agosto</option>
           </select>
 
-          {/* 🔍 Filtros pesquisáveis */}
           <label>Faturar</label>
-          <input list="faturar-list" value={faturar} onChange={(e) => setFaturar(e.target.value)} />
-          <datalist id="faturar-list">
-            <option value="--Todos--" />
-            <option value="Sim" />
-            <option value="Não" />
-          </datalist>
+          <select value={faturar} onChange={(e) => setFaturar(e.target.value)}>
+            <option>--Todos--</option>
+            <option>Sim</option>
+            <option>Não</option>
+          </select>
 
           <label>Faturar Deslocações</label>
-          <input
-            list="faturarDesloc-list"
+          <select
             value={faturarDesloc}
             onChange={(e) => setFaturarDesloc(e.target.value)}
-          />
-          <datalist id="faturarDesloc-list">
-            <option value="--Todos--" />
-            <option value="Sim" />
-            <option value="Não" />
-          </datalist>
+          >
+            <option>--Todos--</option>
+            <option>Sim</option>
+            <option>Não</option>
+          </select>
 
           <label>Utilizador</label>
-          <input
-            list="utilizadores-list"
-            value={utilizador}
-            onChange={(e) => setUtilizador(e.target.value)}
-          />
-          <datalist id="utilizadores-list">
-            <option value="---Todos---" />
+          <select value={utilizador} onChange={(e) => setUtilizador(e.target.value)}>
+            <option>---Todos---</option>
             {utilizadores.map((u) => (
-              <option key={u.id} value={u.nome} />
+              <option key={u.id} value={u.nome}>
+                {u.nome}
+              </option>
             ))}
-          </datalist>
+          </select>
 
           <label>Cliente</label>
-          <input list="clientes-list" value={cliente} onChange={(e) => setCliente(e.target.value)} />
-          <datalist id="clientes-list">
-            <option value="---Todos---" />
+          <select value={cliente} onChange={(e) => setCliente(e.target.value)}>
+            <option>---Todos---</option>
             {clientes.map((c) => (
-              <option key={c.id} value={c.nome} />
+              <option key={c.id} value={c.nome}>
+                {c.nome}
+              </option>
             ))}
-          </datalist>
+          </select>
 
           <label>Parceiro</label>
-          <input list="parceiros-list" value={parceiro} onChange={(e) => setParceiro(e.target.value)} />
-          <datalist id="parceiros-list">
-            <option value="---Todos---" />
+          <select value={parceiro} onChange={(e) => setParceiro(e.target.value)}>
+            <option>---Todos---</option>
             {parceiros.map((p) => (
-              <option key={p.id} value={p.parceiro} />
+              <option key={p.id} value={p.parceiro}>
+                {p.parceiro}
+              </option>
             ))}
-          </datalist>
+          </select>
 
           <label>Contrato</label>
-          <input list="contratos-list" value={contrato} onChange={(e) => setContrato(e.target.value)} />
-          <datalist id="contratos-list">
-            <option value="---Todos---" />
+          <select value={contrato} onChange={(e) => setContrato(e.target.value)}>
+            <option>---Todos---</option>
             {contratosFiltrados.map((c) => (
-              <option key={c.id} value={c.contrato} />
+              <option key={c.id} value={c.contrato}>
+                {c.contrato}
+              </option>
             ))}
-          </datalist>
+          </select>
 
           <div className="filtro-botoes">
             <button onClick={aplicarFiltros}>Filtrar</button>
