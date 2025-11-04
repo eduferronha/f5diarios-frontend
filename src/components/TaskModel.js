@@ -551,7 +551,10 @@ const TaskModal = ({
           </div> */}
 
 
-          <div className="modal-buttons">
+          
+        </form>
+
+        <div className="modal-buttons">
             <button type="submit" className="btn-primary">
               {textoBotao}
             </button>
@@ -559,7 +562,6 @@ const TaskModal = ({
               Cancelar
             </button>
           </div>
-        </form>
       </div>
     </div>
   );
