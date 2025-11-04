@@ -432,6 +432,77 @@ const TaskModal = ({
             </div>
           </div>
 
+          
+
+
+          <div className="form-row-toggle">
+  <div className="form-group">
+    <label>Local</label>
+    <div className="local-toggle-group">
+      {["Customer Site", "Office", "Employee House"].map((option) => (
+        <label
+          key={option}
+          className={`toggle-option ${local === option ? "active" : ""}`}
+        >
+          <input
+            type="radio"
+            name="local"
+            value={option}
+            checked={local === option}
+            onChange={() => setLocal(option)}
+          />
+          {option}
+        </label>
+      ))}
+    </div>
+  </div>
+
+  <div className="form-group">
+    <label>Faturável</label>
+    <div className="local-toggle-group">
+      {["Yes", "No", "For analysis"].map((option) => (
+        <label
+          key={option}
+          className={`toggle-option ${faturavel === option ? "active" : ""}`}
+        >
+          <input
+            type="radio"
+            name="faturavel"
+            value={option}
+            checked={faturavel === option}
+            onChange={() => setFaturavel(option)}
+          />
+          {option}
+        </label>
+      ))}
+    </div>
+  </div>
+
+  <div className="form-group">
+    <label>Viagem Faturável</label>
+    <div className="local-toggle-group">
+      {["Yes", "No", "For analysis"].map((option) => (
+        <label
+          key={option}
+          className={`toggle-option ${
+            viagemFaturavel === option ? "active" : ""
+          }`}
+        >
+          <input
+            type="radio"
+            name="viagem_faturavel"
+            value={option}
+            checked={viagemFaturavel === option}
+            onChange={() => setViagemFaturavel(option)}
+          />
+          {option}
+        </label>
+      ))}
+    </div>
+  </div>
+</div>
+
+
           <div className="form-row compact-inputs">
             <div>
               <label>Distância Viagem (km)</label>
@@ -450,76 +521,6 @@ const TaskModal = ({
                 value={valorEuro}
                 onChange={(e) => setValorEuro(e.target.value)}
               />
-            </div>
-          </div>
-
-
-          <div className="form-group">
-            <label>Local</label>
-            <div className="local-toggle-group">
-              {["Customer Site", "Office", "Employee House"].map((option) => (
-                <label
-                  key={option}
-                  className={`toggle-option ${
-                    local === option ? "active" : ""
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="local"
-                    value={option}
-                    checked={local === option}
-                    onChange={() => setLocal(option)}
-                  />
-                  {option}
-                </label>
-              ))}
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label>Faturável</label>
-            <div className="local-toggle-group">
-              {["Yes", "No", "For analysis"].map((option) => (
-                <label
-                  key={option}
-                  className={`toggle-option ${
-                    faturavel === option ? "active" : ""
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="faturavel"
-                    value={option}
-                    checked={faturavel === option}
-                    onChange={() => setFaturavel(option)}
-                  />
-                  {option}
-                </label>
-              ))}
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label>Viagem Faturável</label>
-            <div className="local-toggle-group">
-              {["Yes", "No", "For analysis"].map((option) => (
-                <label
-                  key={option}
-                  className={`toggle-option ${
-                    viagemFaturavel === option ? "active" : ""
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="viagem_faturavel"
-                    value={option}
-                    checked={viagemFaturavel === option}
-                    onChange={() => setViagemFaturavel(option)}
-                  />
-                  {option}
-                </label>
-              ))}
             </div>
           </div>
 
