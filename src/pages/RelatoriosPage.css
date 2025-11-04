@@ -375,6 +375,11 @@ body {
   margin-bottom: 10px;
 }
 
+.cell-edit {
+  text-align: center;
+  width: 40px;
+}
+
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }

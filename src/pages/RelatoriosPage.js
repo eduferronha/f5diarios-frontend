@@ -475,8 +475,8 @@ const RelatoriosPage = () => {
           <table>
             <thead>
               <tr>
+                <th style={{ width: "40px" }}></th> 
                 <th>Data</th>
-                <th>Utilizador</th>
                 <th>Local</th>
                 <th>Cliente</th>
                 <th>Parceiro</th>
@@ -490,11 +490,20 @@ const RelatoriosPage = () => {
                 <th>Valor (€)</th>
               </tr>
             </thead>
+
             <tbody>
               {dados.map((d, i) => (
                 <tr key={i}>
+                  <td className="cell-edit">
+                    <button
+                      className="btn-icon"
+                      title="Editar tarefa"
+                      onClick={() => console.log("Editar", d)}
+                    >
+                      <Edit3 size={16} color="white" />
+                    </button>
+                  </td>
                   <td>{d.data}</td>
-                  <td>{d.username}</td>
                   <td>{d.local}</td>
                   <td>{d.cliente}</td>
                   <td>{d.parceiro}</td>
