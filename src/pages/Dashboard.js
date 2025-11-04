@@ -249,21 +249,21 @@ function Dashboard() {
                         onClick={() => handleEdit(task)}
                         title="Editar tarefa"
                       >
-                        <Edit3 size={18} color="white" />
+                        <Edit3 size={18} color="#237c9b" />
                       </button>
                       <button
                         className="btn-icon"
                         onClick={() => handleDuplicate(task)}
                         title="Duplicar tarefa"
                       >
-                        <Copy size={18} color="white" />
+                        <Copy size={18} color="#237c9b" />
                       </button>
                       <button
                         className="btn-icon"
                         onClick={() => handleDelete(task.id)}
                         title="Eliminar tarefa"
                       >
-                        <Trash2 size={18} color="white" />
+                        <Trash2 size={18} color="#237c9b" />
                       </button>
                     </td>
 
