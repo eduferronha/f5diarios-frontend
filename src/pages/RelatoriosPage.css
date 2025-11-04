@@ -69,6 +69,26 @@ body {
   
 }
 
+/* === Inputs pesquisáveis === */
+.filtros-container input[list] {
+  padding: 0.3rem 0.4rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #fafafa;
+  font-size: 0.6rem;
+  transition: all 0.2s ease;
+  width: 100%;
+  max-width: 160px;
+}
+
+.filtros-container input[list]:focus {
+  border-color: #0078d7;
+  box-shadow: 0 0 0 2px rgba(0, 120, 215, 0.15);
+  outline: none;
+  background-color: #fff;
+}
+
+
 .filtros-container h3 {
   color: #333;
   font-size: 0.9rem;

@@ -30,24 +30,22 @@ const RelatoriosPage = () => {
 
   // 🟦 Carregar tarefas
   useEffect(() => {
-  const carregarDados = async () => {
-    try {
-      const response = await api.get("/tasks/all", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+    const carregarDados = async () => {
+      try {
+        const response = await api.get("/tasks/all", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log("📦 Dados recebidos das tasks:", response.data[0]);
+        setDados(response.data);
+        setDadosOriginais(response.data);
+      } catch (error) {
+        console.error("Erro ao carregar dados:", error);
+      }
+    };
+    carregarDados();
+  }, []);
 
-      console.log("📦 Dados recebidos das tasks:", response.data[0]); // 👈 ADICIONA ISTO
-      setDados(response.data);
-      setDadosOriginais(response.data);
-    } catch (error) {
-      console.error("Erro ao carregar dados:", error);
-    }
-  };
-  carregarDados();
-}, []);
-
-
-  // 🟦 Carregar listas (clientes, contratos, parceiros, utilizadores)
+  // 🟦 Carregar listas
   useEffect(() => {
     const carregarListas = async () => {
       try {
@@ -87,82 +85,57 @@ const RelatoriosPage = () => {
   const aplicarFiltros = () => {
     let filtrados = [...dadosOriginais];
 
-    if (cliente !== "---Todos---") {
-      filtrados = filtrados.filter((d) => d.cliente === cliente);
-    }
+    if (cliente !== "---Todos---") filtrados = filtrados.filter((d) => d.cliente === cliente);
+    if (contrato !== "---Todos---") filtrados = filtrados.filter((d) => d.contrato === contrato);
+    if (parceiro !== "---Todos---") filtrados = filtrados.filter((d) => d.parceiro === parceiro);
+    if (utilizador !== "---Todos---") filtrados = filtrados.filter((d) => d.username === utilizador);
 
-    if (contrato !== "---Todos---") {
-      filtrados = filtrados.filter((d) => d.contrato === contrato);
-    }
-
-    if (parceiro !== "---Todos---") {
-      filtrados = filtrados.filter((d) => d.parceiro === parceiro);
-    }
-
-    if (utilizador !== "---Todos---") {
-      filtrados = filtrados.filter((d) => d.username === utilizador);
-    }
-
-    if (faturar !== "--Todos--") {
+    if (faturar !== "--Todos--")
       filtrados = filtrados.filter(
         (d) => String(d.faturavel).toLowerCase() === faturar.toLowerCase()
       );
-    }
 
-    if (faturarDesloc !== "--Todos--") {
+    if (faturarDesloc !== "--Todos--")
       filtrados = filtrados.filter(
-        (d) =>
-          String(d.viagem_faturavel).toLowerCase() ===
-          faturarDesloc.toLowerCase()
+        (d) => String(d.viagem_faturavel).toLowerCase() === faturarDesloc.toLowerCase()
       );
-    }
-
-    console.log("Filtros aplicados:", {
-      cliente,
-      contrato,
-      parceiro,
-      utilizador,
-      faturar,
-      faturarDesloc,
-    });
-    console.log("Total filtrado:", filtrados.length);
 
     setDados(filtrados);
   };
 
   // 🟩 Exportar Excel
   const exportarExcel = () => {
-  const colunas = [
-    "Data",
-    "Utilizador",
-    "Local",
-    "Cliente",
-    "Parceiro",
-    "Produto",
-    "Contrato",
-    "Atividade",
-    "Tempo Atividade",
-    "Tempo Faturado",
-    "Faturável",
-    "Viagem Faturável",
-    "Valor (€)",
-  ];
+    const colunas = [
+      "Data",
+      "Utilizador",
+      "Local",
+      "Cliente",
+      "Parceiro",
+      "Produto",
+      "Contrato",
+      "Atividade",
+      "Tempo Atividade",
+      "Tempo Faturado",
+      "Faturável",
+      "Viagem Faturável",
+      "Valor (€)",
+    ];
 
-  const linhas = dados.map((d) => ({
-    Data: d.data || "",
-    Utilizador: d.username || "",
-    Local: d.local || "",
-    Cliente: d.cliente || "",
-    Parceiro: d.parceiro || "",
-    Produto: d.produto || "",
-    Contrato: d.contrato || "",
-    Atividade: d.atividade || "",
-    "Tempo Atividade": d.tempo_atividade || "00:00",
-    "Tempo Faturado": d.tempo_faturado || "00:00",
-    Faturável: d.faturavel || "",
-    "Viagem Faturável": d.viagem_faturavel || "",
-    "Valor (€)": Number(d.valor_euro) || 0,
-  }));
+    const linhas = dados.map((d) => ({
+      Data: d.data || "",
+      Utilizador: d.username || "",
+      Local: d.local || "",
+      Cliente: d.cliente || "",
+      Parceiro: d.parceiro || "",
+      Produto: d.produto || "",
+      Contrato: d.contrato || "",
+      Atividade: d.atividade || "",
+      "Tempo Atividade": d.tempo_atividade || "00:00",
+      "Tempo Faturado": d.tempo_faturado || "00:00",
+      Faturável: d.faturavel || "",
+      "Viagem Faturável": d.viagem_faturavel || "",
+      "Valor (€)": Number(d.valor_euro) || 0,
+    }));
 
     const somarTempos = (tempos) => {
       let totalMinutos = 0;
@@ -200,44 +173,6 @@ const RelatoriosPage = () => {
     });
 
     const ws = XLSX.utils.json_to_sheet(linhas, { header: colunas });
-
-    ws["!cols"] = [
-      { wch: 12 },
-      { wch: 15 },
-      { wch: 20 },
-      { wch: 15 },
-      { wch: 15 },
-      { wch: 18 },
-      { wch: 25 },
-      { wch: 15 },
-      { wch: 15 },
-      { wch: 12 },
-      { wch: 15 },
-      { wch: 15 },
-    ];
-
-    const range = XLSX.utils.decode_range(ws["!ref"]);
-    for (let C = range.s.c; C <= range.e.c; ++C) {
-      const cellAddress = XLSX.utils.encode_cell({ r: 0, c: C });
-      if (!ws[cellAddress]) continue;
-      ws[cellAddress].s = {
-        font: { bold: true, color: { rgb: "FFFFFF" } },
-        fill: { fgColor: { rgb: "0078D7" } },
-        alignment: { horizontal: "center", vertical: "center" },
-      };
-    }
-
-    const totalRowIndex = linhas.length;
-    for (let C = 0; C < colunas.length; C++) {
-      const cellAddress = XLSX.utils.encode_cell({ r: totalRowIndex, c: C });
-      if (!ws[cellAddress]) continue;
-      ws[cellAddress].s = {
-        font: { bold: true },
-        fill: { fgColor: { rgb: "E8EAF6" } },
-        alignment: { horizontal: "right" },
-      };
-    }
-
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Relatórios");
     XLSX.writeFile(wb, "Relatorio_Atividades.xlsx");
@@ -245,105 +180,43 @@ const RelatoriosPage = () => {
 
   // 🟥 Exportar PDF
   const exportarPDF = () => {
-    try {
-      const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "A4" });
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(14);
-      doc.text("Relatório de Atividades", 40, 40);
+    const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "A4" });
+    doc.text("Relatório de Atividades", 40, 40);
 
-      const colunas = [
-        "Data",
-        "Utilizador",
-        "Local",
-        "Cliente",
-        "Parceiro",
-        "Produto",
-        "Contrato",
-        "Atividade",
-        "Faturável",
-        "Viagem Faturável",
-        "Tempo Atividade",
-        "Tempo Faturado",
-        "Valor (€)",
-      ];
+    const colunas = [
+      "Data",
+      "Utilizador",
+      "Local",
+      "Cliente",
+      "Parceiro",
+      "Produto",
+      "Contrato",
+      "Atividade",
+      "Faturável",
+      "Viagem Faturável",
+      "Tempo Atividade",
+      "Tempo Faturado",
+      "Valor (€)",
+    ];
 
-      const linhas = dados.map((d) => [
-        d.data || "",
-        d.username || "",
-        d.local || "",
-        d.cliente || "",
-        d.parceiro || "",
-        d.produto || "",
-        d.contrato || "",
-        d.atividade || "",
-        d.faturavel || "",
-        d.viagem_faturavel || "",
-        d.tempo_atividade || "00:00",
-        d.tempo_faturado || "00:00",
-        d.valor_euro ? Number(d.valor_euro).toFixed(2) : "0.00",
-      ]);
+    const linhas = dados.map((d) => [
+      d.data || "",
+      d.username || "",
+      d.local || "",
+      d.cliente || "",
+      d.parceiro || "",
+      d.produto || "",
+      d.contrato || "",
+      d.atividade || "",
+      d.faturavel || "",
+      d.viagem_faturavel || "",
+      d.tempo_atividade || "00:00",
+      d.tempo_faturado || "00:00",
+      d.valor_euro ? Number(d.valor_euro).toFixed(2) : "0.00",
+    ]);
 
-
-      if (linhas.length === 0) {
-        alert("Não há dados para exportar.");
-        return;
-      }
-
-      const somarTempos = (tempos) => {
-        let totalMinutos = 0;
-        tempos.forEach((t) => {
-          if (typeof t === "string" && t.includes(":")) {
-            const [h, m] = t.split(":").map(Number);
-            totalMinutos += h * 60 + m;
-          }
-        });
-        const horas = Math.floor(totalMinutos / 60);
-        const minutos = totalMinutos % 60;
-        return `${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}`;
-      };
-
-      const totalTempoAtividade = somarTempos(dados.map((d) => d.tempo_atividade));
-      const totalTempoFaturado = somarTempos(dados.map((d) => d.tempo_faturado));
-      const totalValor = dados.reduce((acc, d) => acc + (Number(d.valor_euro) || 0), 0);
-
-      const totalRow = [
-        "", "", "", "", "", "", "", "", "TOTAL",
-        totalTempoAtividade, totalTempoFaturado, totalValor.toFixed(2),
-      ];
-
-      linhas.push(totalRow);
-
-      autoTable(doc, {
-        head: [colunas],
-        body: linhas,
-        startY: 60,
-        theme: "striped",
-        styles: {
-          fontSize: 8,
-          cellPadding: 4,
-          halign: "center",
-          valign: "middle",
-        },
-        headStyles: {
-          fillColor: [0, 120, 215],
-          textColor: 255,
-          fontStyle: "bold",
-        },
-        alternateRowStyles: { fillColor: [245, 247, 250] },
-        didDrawCell: (data) => {
-          const isTotalRow = data.row.index === linhas.length - 1;
-          if (isTotalRow) {
-            data.cell.styles.fillColor = [232, 234, 246];
-            data.cell.styles.fontStyle = "bold";
-          }
-        },
-      });
-
-      doc.save("Relatorio_Atividades.pdf");
-    } catch (error) {
-      console.error("Erro ao exportar PDF:", error);
-      alert("Erro ao gerar o PDF. Verifica a consola para detalhes.");
-    }
+    autoTable(doc, { head: [colunas], body: linhas, startY: 60 });
+    doc.save("Relatorio_Atividades.pdf");
   };
 
   return (
@@ -386,61 +259,64 @@ const RelatoriosPage = () => {
           </select>
 
           <label>Faturar</label>
-          <select value={faturar} onChange={(e) => setFaturar(e.target.value)}>
-            <option>--Todos--</option>
-            <option>Sim</option>
-            <option>Não</option>
-          </select>
+          <input list="faturar-list" value={faturar} onChange={(e) => setFaturar(e.target.value)} />
+          <datalist id="faturar-list">
+            <option value="--Todos--" />
+            <option value="Sim" />
+            <option value="Não" />
+          </datalist>
 
           <label>Faturar Deslocações</label>
-          <select
+          <input
+            list="faturarDesloc-list"
             value={faturarDesloc}
             onChange={(e) => setFaturarDesloc(e.target.value)}
-          >
-            <option>--Todos--</option>
-            <option>Sim</option>
-            <option>Não</option>
-          </select>
+          />
+          <datalist id="faturarDesloc-list">
+            <option value="--Todos--" />
+            <option value="Sim" />
+            <option value="Não" />
+          </datalist>
 
           <label>Utilizador</label>
-          <select value={utilizador} onChange={(e) => setUtilizador(e.target.value)}>
-            <option>---Todos---</option>
+          <input
+            list="utilizadores-list"
+            value={utilizador}
+            onChange={(e) => setUtilizador(e.target.value)}
+          />
+          <datalist id="utilizadores-list">
+            <option value="---Todos---" />
             {utilizadores.map((u) => (
-              <option key={u.id} value={u.nome}>
-                {u.nome}
-              </option>
+              <option key={u.id} value={u.nome} />
             ))}
-          </select>
+          </datalist>
 
           <label>Cliente</label>
-          <select value={cliente} onChange={(e) => setCliente(e.target.value)}>
-            <option>---Todos---</option>
+          <input list="clientes-list" value={cliente} onChange={(e) => setCliente(e.target.value)} />
+          <datalist id="clientes-list">
+            <option value="---Todos---" />
             {clientes.map((c) => (
-              <option key={c.id} value={c.nome}>
-                {c.nome}
-              </option>
+              <option key={c.id} value={c.nome} />
             ))}
-          </select>
+          </datalist>
 
           <label>Parceiro</label>
-          <select value={parceiro} onChange={(e) => setParceiro(e.target.value)}>
-            <option>---Todos---</option>
+          <input list="parceiros-list" value={parceiro} onChange={(e) => setParceiro(e.target.value)} />
+          <datalist id="parceiros-list">
+            <option value="---Todos---" />
             {parceiros.map((p) => (
-              <option key={p.id} value={p.parceiro}>
-                {p.parceiro}
-              </option>
+              <option key={p.id} value={p.parceiro} />
             ))}
-          </select>
+          </datalist>
 
           <label>Contrato</label>
-          <select value={contrato} onChange={(e) => setContrato(e.target.value)}>
-            <option>---Todos---</option>
+          <input list="contratos-list" value={contrato} onChange={(e) => setContrato(e.target.value)} />
+          <datalist id="contratos-list">
+            <option value="---Todos---" />
             {contratosFiltrados.map((c) => (
-              <option key={c.id} value={c.contrato}>
-                {c.contrato}
-              </option>
+              <option key={c.id} value={c.contrato} />
             ))}
-          </select>
+          </datalist>
 
           <div className="filtro-botoes">
             <button onClick={aplicarFiltros}>Filtrar</button>
@@ -455,7 +331,7 @@ const RelatoriosPage = () => {
                 setFaturarDesloc("--Todos--");
               }}
             >
-              Limpar Filtros
+              Limpar
             </button>
           </div>
         </div>
@@ -500,7 +376,6 @@ const RelatoriosPage = () => {
             </tbody>
           </table>
         </div>
-
       </div>
     </div>
   );
