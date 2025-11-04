@@ -99,49 +99,7 @@ export default function Atividade() {
   return (
     <div className="atividade-main">
       {/* === Sidebar de Filtros === */}
-      <div className="filtros-container">
-        <h3>Filtros</h3>
 
-        <label>Mês</label>
-        <select
-          value={mesSelecionado}
-          onChange={(e) => setMesSelecionado(Number(e.target.value))}
-        >
-          {meses.map((m, i) => (
-            <option key={i + 1} value={i + 1}>
-              {m}
-            </option>
-          ))}
-        </select>
-
-        <label>Utilizador</label>
-        <select value={filtroUser} onChange={(e) => setFiltroUser(e.target.value)}>
-          <option value="todos">--- Todos ---</option>
-          {listaUsers.map((u) => (
-            <option key={u} value={u}>
-              {u}
-            </option>
-          ))}
-        </select>
-
-        <label>Cliente</label>
-        <select
-          value={filtroCliente}
-          onChange={(e) => setFiltroCliente(e.target.value)}
-        >
-          <option value="todos">--- Todos ---</option>
-          {listaClientes.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
-
-        <div className="filtro-botoes">
-          <button onClick={aplicarFiltros}>Filtrar</button>
-          <button onClick={limparFiltros}>Limpar</button>
-        </div>
-      </div>
 
       {/* === Conteúdo principal === */}
       {loading ? (
@@ -150,6 +108,50 @@ export default function Atividade() {
           <p>A carregar atividades...</p>
         </div>
       ) : (
+        <>
+              <div className="filtros-container">
+                <h3>Filtros</h3>
+
+                <label>Mês</label>
+                <select
+                  value={mesSelecionado}
+                  onChange={(e) => setMesSelecionado(Number(e.target.value))}
+                >
+                  {meses.map((m, i) => (
+                    <option key={i + 1} value={i + 1}>
+                      {m}
+                    </option>
+                  ))}
+                </select>
+
+                <label>Utilizador</label>
+                <select value={filtroUser} onChange={(e) => setFiltroUser(e.target.value)}>
+                  <option value="todos">--- Todos ---</option>
+                  {listaUsers.map((u) => (
+                    <option key={u} value={u}>
+                      {u}
+                    </option>
+                  ))}
+                </select>
+
+                <label>Cliente</label>
+                <select
+                  value={filtroCliente}
+                  onChange={(e) => setFiltroCliente(e.target.value)}
+                >
+                  <option value="todos">--- Todos ---</option>
+                  {listaClientes.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+
+                <div className="filtro-botoes">
+                  <button onClick={aplicarFiltros}>Filtrar</button>
+                  <button onClick={limparFiltros}>Limpar</button>
+                </div>
+              </div>
         <div className="atividade-container">
           <h2>Relatório de Atividade Mensal</h2>
 
@@ -229,6 +231,7 @@ export default function Atividade() {
             ))
           )}
         </div>
+        </>
       )}
     </div>
   );
