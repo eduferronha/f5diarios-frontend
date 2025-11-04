@@ -279,128 +279,72 @@ const renderForm = () => {
 
       {/* --- Tabela --- */}
      <div className="data-table-container">
-  {data.length > 0 ? (
-    <table className="data-table">
-      <thead>
-        <tr>
-          <th style={{ width: "60px" }}></th> {/* 🔹 coluna sem nome */}
-          {getHeaders().map((header) => (
-            <th key={header}>{header.toUpperCase()}</th>
-          ))}
-        </tr>
-      </thead>
+      {data.length > 0 ? (
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th style={{ width: "60px" }}></th> {/* 🔹 nova primeira coluna, sem nome */}
+              {getHeaders().map((header) => (
+                <th key={header}>{header.toUpperCase()}</th>
+              ))}
+            </tr>
+          </thead>
 
-      <tbody>
-        {data.map((item) => (
-          <tr key={item.id || item._id}>
-            <td className="task-actions">
-              <button
-                className="btn-icon"
-                onClick={() => handleEdit(item)} // 👈 abre modal de edição
-                title="Editar registo"
-              >
-                <Edit3 size={18} color="#237c9b" />
-              </button>
+          <tbody>
+            {data.map((item) => (
+              <tr key={item.id || item._id}>
+                {/* 🔹 Coluna de ações no início */}
+                <td className="task-actions">
+                  {editId === (item.id || item._id) ? (
+                    <button
+                      className="btn-icon"
+                      onClick={handleSaveEdit}
+                      title="Guardar Registo"
+                    >
+                      <Save size={18} color="#237c9b" />
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        className="btn-icon"
+                        onClick={() => handleEdit(item)}
+                        title="Editar registo"
+                      >
+                        <Edit3 size={18} color="#237c9b" />
+                      </button>
+                      <button
+                        className="btn-icon"
+                        onClick={() => handleDelete(item.id || item._id)}
+                        title="Eliminar registo"
+                      >
+                        <Trash2 size={18} color="#237c9b" />
+                      </button>
+                    </>
+                  )}
+                </td>
 
-              <button
-                className="btn-icon"
-                onClick={() => handleDelete(item.id || item._id)}
-                title="Eliminar registo"
-              >
-                <Trash2 size={18} color="#237c9b" />
-              </button>
-            </td>
-
-            {getHeaders().map((key) => (
-              <td key={key}>{String(item[key] || "")}</td>
+                {/* 🔹 Restante conteúdo da linha */}
+                {getHeaders().map((key) => (
+                  <td key={key}>
+                    {editId === (item.id || item._id) ? (
+                      <input
+                        name={key}
+                        value={editData[key] || ""}
+                        onChange={handleEditChange}
+                      />
+                    ) : (
+                      String(item[key] || "")
+                    )}
+                  </td>
+                ))}
+              </tr>
             ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  ) : (
-    <p className="no-data">Nenhum registo encontrado.</p>
-  )}
-</div>
-
-{/* 🔹 Modal de Criação */}
-{showModal && (
-  <div className="modal-overlay-admin">
-    <div className="modal-admin">
-      <h3>
-        Criar {entities.find((e) => e.key === selectedEntity).label.slice(0, -1)}
-      </h3>
-
-      <form onSubmit={handleSubmit} className="modal-form">
-        {renderForm()}
-
-        <div className="modal-buttons">
-          <button
-            type="button"
-            className="btn-secondary"
-            onClick={() => setShowModal(false)}
-          >
-            Cancelar
-          </button>
-          <button type="submit" className="btn-primary">
-            Guardar
-          </button>
-        </div>
-      </form>
+          </tbody>
+        </table>
+      ) : (
+        <p className="no-data">Nenhum registo encontrado.</p>
+      )}
     </div>
-  </div>
-)}
-
-{/* 🔹 Modal de Edição (NOVO) */}
-{editId && (
-  <div className="modal-overlay-admin">
-    <div className="modal-admin">
-      <h3>Editar Registo</h3>
-
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleSaveEdit();
-        }}
-        className="modal-form"
-      >
-        {Object.keys(editData).map(
-          (key) =>
-            key !== "_id" &&
-            key !== "id" &&
-            key !== "__v" &&
-            key !== "password" && (
-              <div key={key} className="form-group">
-                <label>{key}</label>
-                <input
-                  name={key}
-                  value={editData[key] || ""}
-                  onChange={handleEditChange}
-                />
-              </div>
-            )
-        )}
-
-        <div className="modal-buttons">
-          <button
-            type="button"
-            className="btn-secondary"
-            onClick={() => {
-              setEditId(null);
-              setEditData({});
-            }}
-          >
-            Cancelar
-          </button>
-          <button type="submit" className="btn-primary">
-            Guardar Alterações
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-)}
-
 
     </div>
   );
