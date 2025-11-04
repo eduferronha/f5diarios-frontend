@@ -254,15 +254,10 @@ const isWeekend = (dateString) => {
         <table className="agenda-table">
           <thead>
             <tr>
-              <th rowSpan="2" className="th-data">Data</th>
+              <th>Data</th>
               {users.map((u) => (
-                <th key={u.id} rowSpan="2" className="th-user">
-                  {u.nome}
-                </th>
+                <th key={u.id}>{u.nome}</th>
               ))}
-            </tr>
-            <tr>
-              {/* Esta segunda linha serve apenas para estruturar o cabeçalho com 2 linhas */}
             </tr>
           </thead>
 

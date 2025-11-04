@@ -225,10 +225,15 @@
   border: 1px solid #ccc;
   text-align: center;
   vertical-align: middle;
-  padding: 8px;
+  padding: 6px 8px;
   font-weight: 600;
   font-size: 14px;
+  word-wrap: break-word;     
+  white-space: normal;      
+  line-height: 1.2;          
+  max-width: 120px;         
 }
+
 
 .th-data {
   width: 110px;
