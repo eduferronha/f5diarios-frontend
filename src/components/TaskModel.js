@@ -129,6 +129,28 @@ const TaskModal = ({
     }
   }, [editingTask, isDuplicate]);
 
+  // 🔹 Limpar campos quando abrir para Nova Tarefa
+  useEffect(() => {
+    if (show && !editingTask && !isPresetMode && !presetData) {
+      setNomePreset("");
+      setDescricao("");
+      setCliente("");
+      setParceiro("");
+      setProduto("");
+      setContrato("");
+      setAtividade("");
+      setData(preselectedDate ? new Date(preselectedDate).toISOString().split("T")[0] : "");
+      setDistanciaViagem(0);
+      setTempoViagem("00:00");
+      setTempoAtividade("00:00");
+      setTempoFaturado("00:00");
+      setValorEuro(0);
+      setLocal("Employee House");
+      setFaturavel("No");
+      setViagemFaturavel("No");
+      setDatasDuplicadas([]);
+    }
+  }, [show, editingTask, isPresetMode, presetData, preselectedDate]);
 
 
   if (!show) return null;
