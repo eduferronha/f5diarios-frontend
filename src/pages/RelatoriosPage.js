@@ -502,7 +502,7 @@ const RelatoriosPage = () => {
                       title="Editar tarefa"
                       onClick={() => console.log("Editar", d)}
                     >
-                      <Edit3 size={16} color="white" />
+                      <Edit3 size={16} color="#237c9b" />
                     </button>
                   </td>
                   <td>{d.data}</td>
