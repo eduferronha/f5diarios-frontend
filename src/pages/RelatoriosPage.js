@@ -100,7 +100,7 @@ const RelatoriosPage = () => {
     }
 
     if (utilizador !== "---Todos---") {
-      filtrados = filtrados.filter((d) => d.utilizador === utilizador);
+      filtrados = filtrados.filter((d) => d.username === utilizador);
     }
 
     if (faturar !== "--Todos--") {
@@ -150,7 +150,7 @@ const RelatoriosPage = () => {
 
   const linhas = dados.map((d) => ({
     Data: d.data || "",
-    Utilizador: d.utilizador || "",
+    Utilizador: d.username || "",
     Local: d.local || "",
     Cliente: d.cliente || "",
     Parceiro: d.parceiro || "",
@@ -269,7 +269,7 @@ const RelatoriosPage = () => {
 
       const linhas = dados.map((d) => [
         d.data || "",
-        d.utilizador || "",
+        d.username || "",
         d.local || "",
         d.cliente || "",
         d.parceiro || "",
@@ -483,7 +483,7 @@ const RelatoriosPage = () => {
               {dados.map((d, i) => (
                 <tr key={i}>
                   <td>{d.data}</td>
-                  <td>{d.utilizador}</td>
+                  <td>{d.username}</td>
                   <td>{d.local}</td>
                   <td>{d.cliente}</td>
                   <td>{d.parceiro}</td>
