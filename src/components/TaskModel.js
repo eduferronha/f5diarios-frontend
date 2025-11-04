@@ -36,6 +36,7 @@ const TaskModal = ({
   const [produtos, setProdutos] = useState([]);
   const [contratos, setContratos] = useState([]);
   const [atividades, setAtividades] = useState([]);
+  const [parceiros, setParceiros] = useState([]);
   const [contratosFiltrados, setContratosFiltrados] = useState([]);
 
   const [datasDuplicadas, setDatasDuplicadas] = useState([]);
@@ -58,17 +59,19 @@ const TaskModal = ({
     if (!show) return;
     const fetchData = async () => {
       try {
-        const [clientesRes, produtosRes, contratosRes, atividadesRes] =
+        const [clientesRes, produtosRes, contratosRes, atividadesRes, parceirosRes] =
           await Promise.all([
             api.get("/clients/", { headers: { Authorization: `Bearer ${token}` } }),
             api.get("/products/", { headers: { Authorization: `Bearer ${token}` } }),
             api.get("/contracts/", { headers: { Authorization: `Bearer ${token}` } }),
             api.get("/activities/", { headers: { Authorization: `Bearer ${token}` } }),
+            api.get("/partners/", { headers: { Authorization: `Bearer ${token}` } }),
           ]);
         setClientes(clientesRes.data);
         setProdutos(produtosRes.data);
         setContratos(contratosRes.data);
         setAtividades(atividadesRes.data);
+        setParceiros(parceirosRes.data);
       } catch (error) {
         console.error("Erro ao carregar listas:", error);
       }

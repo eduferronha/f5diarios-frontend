@@ -36,7 +36,7 @@ body {
 }
 
 .navbar-logo:hover {
-  color: #005fa3;
+  color: #237c9b;
 }
 
 /* Imagem do logo */
@@ -71,7 +71,7 @@ body {
 }
 
 .nav-item:hover {
-  color: #0078d7;
+  color: #237c9b;
 }
 
 /* === ITEM ATIVO === */
@@ -87,7 +87,7 @@ body {
   left: 0;
   right: 0;
   height: 2px;
-  background: #0078d7;
+  background: #237c9b;
   border-radius: 2px;
 }
 
