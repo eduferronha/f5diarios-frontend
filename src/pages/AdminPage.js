@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import api from "../services/api";
 import "./AdminPage.css";
-import { Edit3, Save, Trash2 } from "lucide-react";
+import { Edit3, Save, Trash2, X } from "lucide-react";
+
 
 function AdminPage() {
   const [selectedEntity, setSelectedEntity] = useState("users");
@@ -34,6 +35,12 @@ function AdminPage() {
       setData([]);
     }
   };
+
+  const handleCancelEdit = () => {
+    setEditId(null);
+    setEditData({});
+  };
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -296,13 +303,22 @@ const renderForm = () => {
                 {/* 🔹 Coluna de ações no início */}
                 <td className="task-actions">
                   {editId === (item.id || item._id) ? (
-                    <button
-                      className="btn-icon"
-                      onClick={handleSaveEdit}
-                      title="Guardar Registo"
-                    >
-                      <Save size={18} color="#237c9b" />
-                    </button>
+                    <>
+                      <button
+                        className="btn-icon"
+                        onClick={handleSaveEdit}
+                        title="Guardar Registo"
+                      >
+                        <Save size={18} color="#237c9b" />
+                      </button>
+                      <button
+                        className="btn-icon"
+                        onClick={handleCancelEdit}
+                        title="Cancelar Edição"
+                      >
+                        <X size={18} color="#d9534f" />
+                      </button>
+                    </>
                   ) : (
                     <>
                       <button
