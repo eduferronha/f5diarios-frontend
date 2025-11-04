@@ -307,24 +307,25 @@ textarea:focus {
 }
 
 
-/* === Linha geral dos 3 toggles + inputs à direita === */
+/* === Linha com os 3 grupos de toggles alinhados === */
 .form-row-align {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: flex-start;
-  gap: 1.5rem;
-  margin-top: 1rem;
+  gap: 1.2rem;
+  margin-top: 1.4rem;
+  width: 100%;
 }
 
-/* === Grupos dos toggles alinhados no topo === */
 .form-row-toggle {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  gap: 1rem;
-  flex: 2;
+  gap: 1.5rem;
+  width: 100%;
 }
 
+/* === Cada grupo de toggles (com label em cima e botões abaixo) === */
 .form-row-toggle .form-group {
   flex: 1;
   text-align: center;
@@ -333,47 +334,67 @@ textarea:focus {
 .form-row-toggle .form-group label {
   display: block;
   font-weight: 600;
-  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  color: #333;
 }
 
-/* === Coluna dos inputs (Distância e Valor) === */
-.form-column-right {
+/* === Botões dentro de cada grupo === */
+.equal-toggles {
   display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  flex: 1;
-  align-items: stretch;
-}
-
-.form-column-right input {
-  width: 100%;
-  max-width: 130px;
-  text-align: center;
-  margin: 0 auto;
-}
-
-/* === Centraliza as opções === */
-.local-toggle-group {
   justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-/* === Responsivo === */
-@media (max-width: 750px) {
-  .form-row-align {
-    flex-direction: column;
-    align-items: center;
-  }
+.equal-toggles .toggle-option {
+  flex: 1;
+  min-width: 90px;
+  text-align: center;
+  padding: 0.5rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+  border: 1px solid #ccc;
+  background: #f8f8f8;
+}
 
+.equal-toggles .toggle-option.active {
+  background: #0078d7;
+  color: white;
+  border-color: #0078d7;
+  box-shadow: 0 0 6px rgba(0, 120, 215, 0.3);
+}
+
+.equal-toggles .toggle-option:hover {
+  background: #efefef;
+}
+
+/* === Responsividade === */
+@media (max-width: 750px) {
   .form-row-toggle {
     flex-direction: column;
-  }
-
-  .form-column-right {
     align-items: center;
+    gap: 1rem;
   }
 
-  .form-column-right input {
-    max-width: 100%;
+  .equal-toggles {
+    flex-wrap: wrap;
+    justify-content: center;
   }
+
+  .equal-toggles .toggle-option {
+    min-width: 100px;
+  }
+}
+
+/* === Botões Guardar / Cancelar na última linha === */
+.modal-buttons {
+  grid-column: 1 / -1; /* ocupa toda a largura */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
 }
 
