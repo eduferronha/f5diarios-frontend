@@ -287,7 +287,7 @@
   margin-top: 1.2rem;
 }
 
-.btn-primary,
+/* .btn-primary,
 .btn-secondary {
   border: none;
   padding: 0.5rem 1.1rem;
@@ -314,7 +314,7 @@
 
 .btn-secondary:hover {
   background: #d0d0d0;
-}
+} */
 
 /* === Responsividade === */
 @media (max-width: 600px) {
