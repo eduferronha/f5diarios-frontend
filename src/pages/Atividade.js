@@ -13,12 +13,15 @@ export default function Atividade() {
   const [listaUsers, setListaUsers] = useState([]);
   const [listaClientes, setListaClientes] = useState([]);
 
+  const [loading, setLoading] = useState(true); // 🌀 estado do spinner
+
   useEffect(() => {
     fetchAtividades();
   }, [mesSelecionado]);
 
   const fetchAtividades = async () => {
     try {
+      setLoading(true); // 🌀 mostra spinner
       const token = localStorage.getItem("token");
       const res = await api.get(`/tasks/atividade?mes=${mesSelecionado}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -37,6 +40,8 @@ export default function Atividade() {
       construirPivot(dados);
     } catch (err) {
       console.error("Erro ao carregar atividades:", err);
+    } finally {
+      setLoading(false); // ✅ esconde spinner
     }
   };
 
@@ -138,86 +143,93 @@ export default function Atividade() {
         </div>
       </div>
 
-      {/* === Conteúdo principal (tabelas) === */}
-      <div className="atividade-container">
-        <h2>Relatório de Atividade Mensal</h2>
+      {/* === Conteúdo principal === */}
+      {loading ? (
+        <div className="spinner-container">
+          <div className="spinner"></div>
+          <p>A carregar atividades...</p>
+        </div>
+      ) : (
+        <div className="atividade-container">
+          <h2>Relatório de Atividade Mensal</h2>
 
-        {Object.keys(atividadesPorUser).length === 0 ? (
-          <p className="sem-dados">Sem dados para este mês</p>
-        ) : (
-          Object.entries(atividadesPorUser).map(([user, pivotData]) => (
-            <div key={user} className="atividade-tabela-user">
-              <table className="atividade-table">
-                <thead>
-                  <tr>
-                    <th colSpan={diasNoMes + 2} style={{ backgroundColor: "#e9f2ff" }}>
-                      {user}
-                    </th>
-                  </tr>
-                  <tr>
-                    <th></th>
-                    {Array.from({ length: diasNoMes }, (_, i) => {
-                      const dia = i + 1;
-                      const data = new Date(2025, mesSelecionado - 1, dia);
-                      const diaSemana = data.getDay();
-                      const nomesDias = ["D", "2ª", "3ª", "4ª", "5ª", "6ª", "S"];
-                      const label = nomesDias[diaSemana];
-                      const isFimSemana = diaSemana === 0 || diaSemana === 6;
+          {Object.keys(atividadesPorUser).length === 0 ? (
+            <p className="sem-dados">Sem dados para este mês</p>
+          ) : (
+            Object.entries(atividadesPorUser).map(([user, pivotData]) => (
+              <div key={user} className="atividade-tabela-user">
+                <table className="atividade-table">
+                  <thead>
+                    <tr>
+                      <th colSpan={diasNoMes + 2} style={{ backgroundColor: "#e9f2ff" }}>
+                        {user}
+                      </th>
+                    </tr>
+                    <tr>
+                      <th></th>
+                      {Array.from({ length: diasNoMes }, (_, i) => {
+                        const dia = i + 1;
+                        const data = new Date(2025, mesSelecionado - 1, dia);
+                        const diaSemana = data.getDay();
+                        const nomesDias = ["D", "2ª", "3ª", "4ª", "5ª", "6ª", "S"];
+                        const label = nomesDias[diaSemana];
+                        const isFimSemana = diaSemana === 0 || diaSemana === 6;
+                        return (
+                          <th key={`semana-${dia}`} className={isFimSemana ? "fim-semana" : ""}>
+                            {label}
+                          </th>
+                        );
+                      })}
+                      <th></th>
+                    </tr>
+                    <tr>
+                      <th>Cliente</th>
+                      {Array.from({ length: diasNoMes }, (_, i) => {
+                        const dia = i + 1;
+                        const data = new Date(2025, mesSelecionado - 1, dia);
+                        const diaSemana = data.getDay();
+                        const isFimSemana = diaSemana === 0 || diaSemana === 6;
+                        return (
+                          <th key={dia} className={isFimSemana ? "fim-semana" : ""}>
+                            {dia}
+                          </th>
+                        );
+                      })}
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.keys(pivotData).map((cliente) => {
+                      let totalCliente = 0;
                       return (
-                        <th key={`semana-${dia}`} className={isFimSemana ? "fim-semana" : ""}>
-                          {label}
-                        </th>
+                        <tr key={cliente}>
+                          <td>{cliente}</td>
+                          {Array.from({ length: diasNoMes }, (_, i) => {
+                            const dia = i + 1;
+                            const data = new Date(2025, mesSelecionado - 1, dia);
+                            const diaSemana = data.getDay();
+                            const isFimSemana = diaSemana === 0 || diaSemana === 6;
+                            const horas = pivotData[cliente][dia] || 0;
+                            totalCliente += horas;
+                            return (
+                              <td key={dia} className={isFimSemana ? "fim-semana" : ""}>
+                                {horas > 0 ? horas.toFixed(1) : ""}
+                              </td>
+                            );
+                          })}
+                          <td className="total-coluna">
+                            <strong>{totalCliente > 0 ? totalCliente.toFixed(1) : ""}</strong>
+                          </td>
+                        </tr>
                       );
                     })}
-                    <th></th>
-                  </tr>
-                  <tr>
-                    <th>Cliente</th>
-                    {Array.from({ length: diasNoMes }, (_, i) => {
-                      const dia = i + 1;
-                      const data = new Date(2025, mesSelecionado - 1, dia);
-                      const diaSemana = data.getDay();
-                      const isFimSemana = diaSemana === 0 || diaSemana === 6;
-                      return (
-                        <th key={dia} className={isFimSemana ? "fim-semana" : ""}>
-                          {dia}
-                        </th>
-                      );
-                    })}
-                    <th>Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Object.keys(pivotData).map((cliente) => {
-                    let totalCliente = 0;
-                    return (
-                      <tr key={cliente}>
-                        <td>{cliente}</td>
-                        {Array.from({ length: diasNoMes }, (_, i) => {
-                          const dia = i + 1;
-                          const data = new Date(2025, mesSelecionado - 1, dia);
-                          const diaSemana = data.getDay();
-                          const isFimSemana = diaSemana === 0 || diaSemana === 6;
-                          const horas = pivotData[cliente][dia] || 0;
-                          totalCliente += horas;
-                          return (
-                            <td key={dia} className={isFimSemana ? "fim-semana" : ""}>
-                              {horas > 0 ? horas.toFixed(1) : ""}
-                            </td>
-                          );
-                        })}
-                        <td className="total-coluna">
-                          <strong>{totalCliente > 0 ? totalCliente.toFixed(1) : ""}</strong>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          ))
-        )}
-      </div>
+                  </tbody>
+                </table>
+              </div>
+            ))
+          )}
+        </div>
+      )}
     </div>
   );
 }
