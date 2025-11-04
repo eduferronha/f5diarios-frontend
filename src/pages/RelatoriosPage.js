@@ -4,6 +4,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import api from "../services/api";
 import "./RelatoriosPage.css";
+import TaskModal from "../components/TaskModel";
 import { Edit3 } from "lucide-react";
 
 
@@ -30,7 +31,22 @@ const RelatoriosPage = () => {
   const [contratos, setContratos] = useState([]);
   const [contratosFiltrados, setContratosFiltrados] = useState([]);
 
-  // 🟦 Carregar tarefas
+  const [showModal, setShowModal] = useState(false);
+  const [editingTask, setEditingTask] = useState(null);
+  const [isDuplicate, setIsDuplicate] = useState(false);
+
+  const handleEdit = (task) => {
+    setEditingTask(task);
+    setIsDuplicate(false);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setEditingTask(null);
+    setShowModal(false);
+    setIsDuplicate(false);
+  };
+
   useEffect(() => {
     const carregarDados = async () => {
       try {
@@ -500,7 +516,7 @@ const RelatoriosPage = () => {
                     <button
                       className="btn-icon"
                       title="Editar tarefa"
-                      onClick={() => console.log("Editar", d)}
+                      onClick={() => handleEdit(d)}
                     >
                       <Edit3 size={16} color="#237c9b" />
                     </button>
@@ -524,6 +540,23 @@ const RelatoriosPage = () => {
         </div>
       </div>
         )}
+
+        <TaskModal
+          show={showModal}
+          onClose={handleCloseModal}
+          onTaskAdded={() => {
+            setShowModal(false);
+            setEditingTask(null);
+            setIsDuplicate(false);
+            api
+              .get("/tasks/all", { headers: { Authorization: `Bearer ${token}` } })
+              .then((res) => setDados(res.data))
+              .catch((err) => console.error("Erro ao recarregar tarefas:", err));
+          }}
+          editingTask={editingTask}
+          isDuplicate={isDuplicate}
+        />
+
 
     </div>
   );
