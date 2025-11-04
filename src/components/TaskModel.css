@@ -154,12 +154,35 @@ textarea:focus {
 }
 
 /* === Botões do modal === */
-.modal-buttons {
+/* .modal-buttons {
   display: flex;
   justify-content: center;
   gap: 0.8rem;
   margin-top: 1.2rem;
+} */
+
+/* === Linha separada para os botões === */
+.modal-buttons-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  grid-column: 1 / -1; /* ocupa toda a largura se estiver dentro da grid */
 }
+
+/* Botões responsivos */
+@media (max-width: 600px) {
+  .modal-buttons-row {
+    flex-direction: column;
+  }
+
+  .modal-buttons-row .btn-primary,
+  .modal-buttons-row .btn-secondary {
+    width: 100%;
+  }
+}
+
 
 .btn-primary,
 .btn-secondary {
@@ -205,9 +228,9 @@ textarea:focus {
     flex-direction: column;
   }
 
-  .modal-buttons {
+  /* .modal-buttons {
     flex-direction: column;
-  }
+  } */
 
   .btn-primary,
   .btn-secondary {
