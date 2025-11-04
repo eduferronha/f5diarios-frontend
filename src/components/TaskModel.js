@@ -223,9 +223,19 @@ const TaskModal = ({
         : "Guardar Alterações"
       : "Guardar";
 
-  return (
-    <div className="modal-overlay">
-      <div className="modal">
+      return (
+        <div
+          className="modal-overlay"
+          onClick={(e) => {
+            if (e.target.classList.contains("modal-overlay")) {
+              onClose();
+            }
+          }}
+        >
+          <div
+            className="modal"
+            onClick={(e) => e.stopPropagation()} // 🔹 Impede que o clique dentro feche o modal
+          >
         <h2>{titulo}</h2>
 
         <form onSubmit={handleSubmit} className="form-grid">
