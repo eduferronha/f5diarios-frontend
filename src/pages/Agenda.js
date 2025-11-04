@@ -14,6 +14,7 @@ export default function Agenda() {
   const [fim, setFim] = useState("18:00");
   const [dias, setDias] = useState(15);
   const [editingEvent, setEditingEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const token = localStorage.getItem("token");
 
@@ -33,6 +34,7 @@ export default function Agenda() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true); // 🌀 ativa o spinner
         const [usersRes, agendaRes] = await Promise.all([
           api.get("/users/", { headers: { Authorization: `Bearer ${token}` } }),
           api.get("/agenda/", { headers: { Authorization: `Bearer ${token}` } }),
@@ -41,10 +43,13 @@ export default function Agenda() {
         setEvents(agendaRes.data);
       } catch (err) {
         console.error("Erro ao carregar dados:", err);
+      } finally {
+        setLoading(false); // ✅ desativa o spinner
       }
     };
     fetchData();
   }, []);
+
 
   // === Gerar lista de dias ===
   // === Gerar lista de dias da semana atual ===
@@ -238,6 +243,12 @@ const isWeekend = (dateString) => {
         </select>
       </div>
 
+      {loading ? (
+        <div className="spinner-container">
+          <div className="spinner"></div>
+          <p>A carregar agenda...</p>
+        </div>
+      ) : (
       <div className="agenda-table-wrapper">
         <table className="agenda-table">
           <thead>
@@ -249,68 +260,69 @@ const isWeekend = (dateString) => {
             </tr>
           </thead>
           <tbody>
-  {diasLista.map((data) => {
-    const hoje = new Date().toISOString().split("T")[0];
-    const isToday = data === hoje; // 👈 verifica se é o dia atual
+            {diasLista.map((data) => {
+              const hoje = new Date().toISOString().split("T")[0];
+              const isToday = data === hoje; // 👈 verifica se é o dia atual
 
-    return (
-      <tr key={data}>
-        <td
-          className="agenda-date"
-          style={{
-            backgroundColor: isToday ? "#f3e5f5" : "transparent", // 👈 roxo muito clarinho
-            fontWeight: isToday ? "bold" : "normal", // opcional — realça o texto
-          }}
-        >
-          {new Date(data).toLocaleDateString("pt-PT")}
-        </td>
+              return (
+                <tr key={data}>
+                  <td
+                    className="agenda-date"
+                    style={{
+                      backgroundColor: isToday ? "#f3e5f5" : "transparent", // 👈 roxo muito clarinho
+                      fontWeight: isToday ? "bold" : "normal", // opcional — realça o texto
+                    }}
+                  >
+                    {new Date(data).toLocaleDateString("pt-PT")}
+                  </td>
 
-        {users.map((u) => {
-          const evento = getEvent(data, u.username);
+                  {users.map((u) => {
+                    const evento = getEvent(data, u.username);
 
-          // Determinar cor de fundo das células
-          let bgColor = "transparent";
+                    // Determinar cor de fundo das células
+                    let bgColor = "transparent";
 
-          if (isWeekend(data) || isHoliday(data)) {
-            bgColor = "#d6d6d6";
-          } else if (evento) {
-            if (evento.descricao?.toLowerCase().includes("férias")) {
-              bgColor = "#fff59d";
-            } else {
-              bgColor = "#c8e6c9";
-            }
-          }
+                    if (isWeekend(data) || isHoliday(data)) {
+                      bgColor = "#d6d6d6";
+                    } else if (evento) {
+                      if (evento.descricao?.toLowerCase().includes("férias")) {
+                        bgColor = "#fff59d";
+                      } else {
+                        bgColor = "#c8e6c9";
+                      }
+                    }
 
-          return (
-            <td
-              key={u.id}
-              className="agenda-cell"
-              style={{ backgroundColor: bgColor }}
-              onClick={() => handleCellClick(data, u.username)}
-              title={
-                evento
-                  ? `${evento.descricao} (${evento.hora_inicio} - ${evento.hora_fim})`
-                  : ""
-              }
-            >
-              {evento && (
-                <div className="event-info">
-                  <strong>{evento.descricao}</strong>
-                  <div>
-                    {evento.hora_inicio} - {evento.hora_fim}
-                  </div>
-                </div>
-              )}
-            </td>
-          );
-        })}
-      </tr>
-    );
-  })}
-</tbody>
+                    return (
+                      <td
+                        key={u.id}
+                        className="agenda-cell"
+                        style={{ backgroundColor: bgColor }}
+                        onClick={() => handleCellClick(data, u.username)}
+                        title={
+                          evento
+                            ? `${evento.descricao} (${evento.hora_inicio} - ${evento.hora_fim})`
+                            : ""
+                        }
+                      >
+                        {evento && (
+                          <div className="event-info">
+                            <strong>{evento.descricao}</strong>
+                            <div>
+                              {evento.hora_inicio} - {evento.hora_fim}
+                            </div>
+                          </div>
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
 
         </table>
       </div>
+      )}
 
       {/* Modal */}
       {showModal && (

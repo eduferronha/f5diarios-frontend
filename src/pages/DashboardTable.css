@@ -94,7 +94,7 @@
 
 .btn-add:hover {
   background-color: #005fa3;
-  transform: translateY(-1px);
+  /* transform: translateY(-1px); */
   box-shadow: 0 3px 8px rgba(0, 120, 215, 0.3);
 }
 
