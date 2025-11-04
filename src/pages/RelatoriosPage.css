@@ -40,6 +40,8 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 0.9rem;
+  font-family: "Poppins", sans-serif;
+
 }
 
 .relatorios-actions button:hover {
@@ -135,6 +137,8 @@ body {
   font-size: 0.6rem;
   width: fit-content;
   align-self: flex-start;
+  font-family: "Poppins", sans-serif;
+
 }
 
 .filtros-container button:first-of-type {
@@ -173,6 +177,7 @@ body {
   font-size: 0.6rem;
   transition: all 0.2s ease;
   background-color: #237c9b;
+  
 }
 
 .filtro-botoes button:first-of-type {

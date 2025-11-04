@@ -207,10 +207,10 @@ const ProjetosPage = () => {
     <div className="projetos-container">
       <div className="projetos-header">
         <h2>Projetos</h2>
-        <div className="projetos-actions">
+        {/* <div className="projetos-actions">
           <button onClick={exportarExcel}>Exportar Excel</button>
           <button onClick={exportarPDF}>Exportar PDF</button>
-        </div>
+        </div> */}
       </div>
 
       {/* 🟢 Formulário de criação */}

@@ -21,7 +21,7 @@
 }
 
 .projetos-actions button {
-  background: #0078d7;
+  background: #237c9b;
   color: white;
   border: none;
   padding: 0.5rem 1rem;
@@ -30,6 +30,8 @@
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 0.9rem;
+  font-family: "Poppins", sans-serif;
+
 }
 
 .projetos-actions button:hover {

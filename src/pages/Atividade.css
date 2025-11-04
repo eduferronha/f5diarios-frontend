@@ -73,6 +73,8 @@
   font-weight: 500;
   font-size: 0.8rem;
   transition: all 0.2s ease;
+  font-family: "Poppins", sans-serif;
+
 }
 
 .filtro-botoes button:first-of-type {
