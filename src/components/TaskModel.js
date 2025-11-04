@@ -348,7 +348,7 @@ const TaskModal = ({
             <label>Parceiro</label>
             <input
               list="parceiros-list"
-              value={cliente}
+              value={parceiro}
               onChange={(e) => setParceiro(e.target.value)}
               placeholder="Escreve ou seleciona..."
               required={!isPresetMode}
@@ -560,11 +560,7 @@ const TaskModal = ({
             </div>
           </div> */}
 
-
-          
-        </form>
-
-        <div className="modal-buttons">
+          <div className="modal-buttons">
             <button type="submit" className="btn-primary">
               {textoBotao}
             </button>
@@ -572,6 +568,10 @@ const TaskModal = ({
               Cancelar
             </button>
           </div>
+          
+        </form>
+
+        
       </div>
     </div>
   );
