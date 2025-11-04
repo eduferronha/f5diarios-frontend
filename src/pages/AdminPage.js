@@ -278,82 +278,74 @@ const renderForm = () => {
       )}
 
       {/* --- Tabela --- */}
-      <div className="data-table-container">
-        {data.length > 0 ? (
-          <table className="data-table">
-            <thead>
-              <tr>
-                {getHeaders().map((header) => (
-                  <th key={header}>{header.toUpperCase()}</th>
-                ))}
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((item) => (
-                <tr key={item.id || item._id}>
-                  {getHeaders().map((key) => (
-                    <td key={key}>
-                      {editId === (item.id || item._id) ? (
-                        <input
-                          name={key}
-                          value={editData[key] || ""}
-                          onChange={handleEditChange}
-                        />
-                      ) : (
-                        String(item[key] || "")
-                      )}
-                    </td>
-                  ))}
-                  <td className="task-actions">
-                    {editId === (item.id || item._id) ? (
-                      // <button className="save" onClick={handleSaveEdit}>
-                      //   💾
-                      // </button>
-                      <button
-                          className="btn-icon"
-                          onClick={handleSaveEdit}
-                          title="Guardar Resgisto"
-                        >
-                          <Save size={18} color="#237c9b" />
-                        </button>
-                    ) : (
-                      <>
-                        {/* <button className="edit" onClick={() => handleEdit(item)}>
-                          ✏️
-                        </button>
-                        <button
-                          className="delete"
-                          onClick={() => handleDelete(item.id || item._id)}
-                        >
-                          🗑️
-                        </button> */}
-                        <button
-                          className="btn-icon"
-                          onClick={() => handleEdit(item)}
-                          title="Editar registo"
-                        >
-                          <Edit3 size={18} color="#237c9b" />
-                        </button>
-                        <button
-                          className="btn-icon"
-                          onClick={() => handleDelete(item.id || item._id)}
-                          title="Eliminar registo"
-                        >
-                          <Trash2 size={18} color="#237c9b" />
-                        </button>
-                      </>
+     <div className="data-table-container">
+      {data.length > 0 ? (
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th style={{ width: "60px" }}></th> {/* 🔹 nova primeira coluna, sem nome */}
+              {getHeaders().map((header) => (
+                <th key={header}>{header.toUpperCase()}</th>
+              ))}
+            </tr>
+          </thead>
 
+          <tbody>
+            {data.map((item) => (
+              <tr key={item.id || item._id}>
+                {/* 🔹 Coluna de ações no início */}
+                <td className="task-actions">
+                  {editId === (item.id || item._id) ? (
+                    <button
+                      className="btn-icon"
+                      onClick={handleSaveEdit}
+                      title="Guardar Registo"
+                    >
+                      <Save size={18} color="#237c9b" />
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        className="btn-icon"
+                        onClick={() => handleEdit(item)}
+                        title="Editar registo"
+                      >
+                        <Edit3 size={18} color="#237c9b" />
+                      </button>
+                      <button
+                        className="btn-icon"
+                        onClick={() => handleDelete(item.id || item._id)}
+                        title="Eliminar registo"
+                      >
+                        <Trash2 size={18} color="#237c9b" />
+                      </button>
+                    </>
+                  )}
+                </td>
+
+                {/* 🔹 Restante conteúdo da linha */}
+                {getHeaders().map((key) => (
+                  <td key={key}>
+                    {editId === (item.id || item._id) ? (
+                      <input
+                        name={key}
+                        value={editData[key] || ""}
+                        onChange={handleEditChange}
+                      />
+                    ) : (
+                      String(item[key] || "")
                     )}
                   </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p className="no-data">Nenhum registo encontrado.</p>
-        )}
-      </div>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p className="no-data">Nenhum registo encontrado.</p>
+      )}
+    </div>
+
     </div>
   );
 }
