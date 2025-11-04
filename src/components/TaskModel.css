@@ -307,13 +307,22 @@ textarea:focus {
 }
 
 
-/* === Linha com 3 grupos de toggles === */
-.form-row-toggle {
+/* === Linha geral dos 3 toggles + inputs à direita === */
+.form-row-align {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 1.5rem;
   margin-top: 1rem;
+}
+
+/* === Grupos dos toggles alinhados no topo === */
+.form-row-toggle {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 1rem;
+  flex: 2;
 }
 
 .form-row-toggle .form-group {
@@ -327,19 +336,44 @@ textarea:focus {
   margin-bottom: 0.4rem;
 }
 
-/* Centraliza as opções sob o título */
-.form-row-toggle .local-toggle-group {
+/* === Coluna dos inputs (Distância e Valor) === */
+.form-column-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  flex: 1;
+  align-items: stretch;
+}
+
+.form-column-right input {
+  width: 100%;
+  max-width: 130px;
+  text-align: center;
+  margin: 0 auto;
+}
+
+/* === Centraliza as opções === */
+.local-toggle-group {
   justify-content: center;
 }
 
-/* Tornar responsivo */
-@media (max-width: 700px) {
-  .form-row-toggle {
+/* === Responsivo === */
+@media (max-width: 750px) {
+  .form-row-align {
     flex-direction: column;
     align-items: center;
   }
 
-  .form-row-toggle .form-group {
-    width: 100%;
+  .form-row-toggle {
+    flex-direction: column;
+  }
+
+  .form-column-right {
+    align-items: center;
+  }
+
+  .form-column-right input {
+    max-width: 100%;
   }
 }
+
