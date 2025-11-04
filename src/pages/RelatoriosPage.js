@@ -355,6 +355,12 @@ const RelatoriosPage = () => {
         </div>
       </div>
 
+      {loading ? (
+        <div className="spinner-container">
+          <div className="spinner"></div>
+          <p>A carregar relatórios...</p>
+        </div>
+         ) : (
       <div className="relatorios-main">
         <div className="filtros-container">
           <h3>Pesquisar</h3>
@@ -455,17 +461,12 @@ const RelatoriosPage = () => {
                 setFaturarDesloc("--Todos--");
               }}
             >
-              Limpar Filtros
+              Limpar
             </button>
           </div>
         </div>
         
-        {loading ? (
-        <div className="spinner-container">
-          <div className="spinner"></div>
-          <p>A carregar relatórios...</p>
-        </div>
-         ) : (
+        
         <div className="relatorios-table">
           <table>
             <thead>
@@ -506,8 +507,9 @@ const RelatoriosPage = () => {
             </tbody>
           </table>
         </div>
-        )}
       </div>
+        )}
+
     </div>
   );
 };
