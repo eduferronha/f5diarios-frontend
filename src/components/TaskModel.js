@@ -337,11 +337,17 @@ const TaskModal = ({
           <div className="form-group">
             <label>Parceiro</label>
             <input
-              type="text"
-              value={parceiro}
+              list="parceiros-list"
+              value={cliente}
               onChange={(e) => setParceiro(e.target.value)}
-              placeholder="Nome do parceiro..."
+              placeholder="Escreve ou seleciona..."
+              required={!isPresetMode}
             />
+            <datalist id="parceiros-list">
+              {parceiros.map((c) => (
+                <option key={c.id} value={c.nome} />
+              ))}
+            </datalist>
           </div>
 
           <div className="form-group">
