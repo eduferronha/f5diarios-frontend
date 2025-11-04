@@ -49,10 +49,10 @@
 }
 
 .entity-selector button.active {
-  background: #237c9b;
+  background: #2a96bd;
   color: #fff;
   font-weight: 500;
-  border-color: #237c9b;
+  border-color: #2a96bd;
 }
 
 /* === Botão para abrir modal === */
