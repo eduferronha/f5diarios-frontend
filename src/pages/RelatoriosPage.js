@@ -35,7 +35,8 @@ const RelatoriosPage = () => {
         const response = await api.get("/tasks/all", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log("📦 Dados recebidos das tasks:", response.data[0]);
+
+        console.log("📦 Dados recebidos das tasks:", response.data[0]); // 👈 ADICIONA ISTO
         setDados(response.data);
         setDadosOriginais(response.data);
       } catch (error) {
@@ -45,7 +46,7 @@ const RelatoriosPage = () => {
     carregarDados();
   }, []);
 
-  // 🟦 Carregar listas
+  // 🟦 Carregar listas (clientes, contratos, parceiros, utilizadores)
   useEffect(() => {
     const carregarListas = async () => {
       try {
@@ -85,20 +86,45 @@ const RelatoriosPage = () => {
   const aplicarFiltros = () => {
     let filtrados = [...dadosOriginais];
 
-    if (cliente !== "---Todos---") filtrados = filtrados.filter((d) => d.cliente === cliente);
-    if (contrato !== "---Todos---") filtrados = filtrados.filter((d) => d.contrato === contrato);
-    if (parceiro !== "---Todos---") filtrados = filtrados.filter((d) => d.parceiro === parceiro);
-    if (utilizador !== "---Todos---") filtrados = filtrados.filter((d) => d.username === utilizador);
+    if (cliente !== "---Todos---") {
+      filtrados = filtrados.filter((d) => d.cliente === cliente);
+    }
 
-    if (faturar !== "--Todos--")
+    if (contrato !== "---Todos---") {
+      filtrados = filtrados.filter((d) => d.contrato === contrato);
+    }
+
+    if (parceiro !== "---Todos---") {
+      filtrados = filtrados.filter((d) => d.parceiro === parceiro);
+    }
+
+    if (utilizador !== "---Todos---") {
+      filtrados = filtrados.filter((d) => d.username === utilizador);
+    }
+
+    if (faturar !== "--Todos--") {
       filtrados = filtrados.filter(
         (d) => String(d.faturavel).toLowerCase() === faturar.toLowerCase()
       );
+    }
 
-    if (faturarDesloc !== "--Todos--")
+    if (faturarDesloc !== "--Todos--") {
       filtrados = filtrados.filter(
-        (d) => String(d.viagem_faturavel).toLowerCase() === faturarDesloc.toLowerCase()
+        (d) =>
+          String(d.viagem_faturavel).toLowerCase() ===
+          faturarDesloc.toLowerCase()
       );
+    }
+
+    console.log("Filtros aplicados:", {
+      cliente,
+      contrato,
+      parceiro,
+      utilizador,
+      faturar,
+      faturarDesloc,
+    });
+    console.log("Total filtrado:", filtrados.length);
 
     setDados(filtrados);
   };
@@ -173,6 +199,44 @@ const RelatoriosPage = () => {
     });
 
     const ws = XLSX.utils.json_to_sheet(linhas, { header: colunas });
+
+    ws["!cols"] = [
+      { wch: 12 },
+      { wch: 15 },
+      { wch: 20 },
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 18 },
+      { wch: 25 },
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 12 },
+      { wch: 15 },
+      { wch: 15 },
+    ];
+
+    const range = XLSX.utils.decode_range(ws["!ref"]);
+    for (let C = range.s.c; C <= range.e.c; ++C) {
+      const cellAddress = XLSX.utils.encode_cell({ r: 0, c: C });
+      if (!ws[cellAddress]) continue;
+      ws[cellAddress].s = {
+        font: { bold: true, color: { rgb: "FFFFFF" } },
+        fill: { fgColor: { rgb: "0078D7" } },
+        alignment: { horizontal: "center", vertical: "center" },
+      };
+    }
+
+    const totalRowIndex = linhas.length;
+    for (let C = 0; C < colunas.length; C++) {
+      const cellAddress = XLSX.utils.encode_cell({ r: totalRowIndex, c: C });
+      if (!ws[cellAddress]) continue;
+      ws[cellAddress].s = {
+        font: { bold: true },
+        fill: { fgColor: { rgb: "E8EAF6" } },
+        alignment: { horizontal: "right" },
+      };
+    }
+
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Relatórios");
     XLSX.writeFile(wb, "Relatorio_Atividades.xlsx");
@@ -180,43 +244,104 @@ const RelatoriosPage = () => {
 
   // 🟥 Exportar PDF
   const exportarPDF = () => {
-    const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "A4" });
-    doc.text("Relatório de Atividades", 40, 40);
+    try {
+      const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "A4" });
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(14);
+      doc.text("Relatório de Atividades", 40, 40);
 
-    const colunas = [
-      "Data",
-      "Utilizador",
-      "Local",
-      "Cliente",
-      "Parceiro",
-      "Produto",
-      "Contrato",
-      "Atividade",
-      "Faturável",
-      "Viagem Faturável",
-      "Tempo Atividade",
-      "Tempo Faturado",
-      "Valor (€)",
-    ];
+      const colunas = [
+        "Data",
+        "Utilizador",
+        "Local",
+        "Cliente",
+        "Parceiro",
+        "Produto",
+        "Contrato",
+        "Atividade",
+        "Faturável",
+        "Viagem Faturável",
+        "Tempo Atividade",
+        "Tempo Faturado",
+        "Valor (€)",
+      ];
 
-    const linhas = dados.map((d) => [
-      d.data || "",
-      d.username || "",
-      d.local || "",
-      d.cliente || "",
-      d.parceiro || "",
-      d.produto || "",
-      d.contrato || "",
-      d.atividade || "",
-      d.faturavel || "",
-      d.viagem_faturavel || "",
-      d.tempo_atividade || "00:00",
-      d.tempo_faturado || "00:00",
-      d.valor_euro ? Number(d.valor_euro).toFixed(2) : "0.00",
-    ]);
+      const linhas = dados.map((d) => [
+        d.data || "",
+        d.username || "",
+        d.local || "",
+        d.cliente || "",
+        d.parceiro || "",
+        d.produto || "",
+        d.contrato || "",
+        d.atividade || "",
+        d.faturavel || "",
+        d.viagem_faturavel || "",
+        d.tempo_atividade || "00:00",
+        d.tempo_faturado || "00:00",
+        d.valor_euro ? Number(d.valor_euro).toFixed(2) : "0.00",
+      ]);
 
-    autoTable(doc, { head: [colunas], body: linhas, startY: 60 });
-    doc.save("Relatorio_Atividades.pdf");
+      if (linhas.length === 0) {
+        alert("Não há dados para exportar.");
+        return;
+      }
+
+      const somarTempos = (tempos) => {
+        let totalMinutos = 0;
+        tempos.forEach((t) => {
+          if (typeof t === "string" && t.includes(":")) {
+            const [h, m] = t.split(":").map(Number);
+            totalMinutos += h * 60 + m;
+          }
+        });
+        const horas = Math.floor(totalMinutos / 60);
+        const minutos = totalMinutos % 60;
+        return `${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}`;
+      };
+
+      const totalTempoAtividade = somarTempos(dados.map((d) => d.tempo_atividade));
+      const totalTempoFaturado = somarTempos(dados.map((d) => d.tempo_faturado));
+      const totalValor = dados.reduce((acc, d) => acc + (Number(d.valor_euro) || 0), 0);
+
+      const totalRow = [
+        "", "", "", "", "", "", "", "", "TOTAL",
+        totalTempoAtividade, totalTempoFaturado, totalValor.toFixed(2),
+      ];
+
+      linhas.push(totalRow);
+
+      autoTable(doc, {
+        head: [colunas],
+        body: linhas,
+        startY: 60,
+        theme: "striped",
+        styles: {
+          fontSize: 8,
+          cellPadding: 4,
+          halign: "center",
+          valign: "middle",
+        },
+        headStyles: {
+          fillColor: [0, 120, 215],
+          textColor: 255,
+          fontStyle: "bold",
+        },
+        alternateRowStyles: { fillColor: [245, 247, 250] },
+        didDrawCell: (data) => {
+          const isTotalRow = data.row.index === linhas.length - 1;
+          if (isTotalRow) {
+            data.cell.styles.fillColor = [232, 234, 246];
+            data.cell.styles.fontStyle = "bold";
+          }
+        },
+      });
+
+      doc.save("Relatorio_Atividades.pdf");
+    } catch (error) {
+      console.error("Erro ao exportar PDF:", error);
+      alert("Erro ao gerar o PDF. Verifica a consola para detalhes.");
+    }
   };
 
   return (
@@ -258,6 +383,7 @@ const RelatoriosPage = () => {
             <option>Agosto</option>
           </select>
 
+          {/* 🔍 Filtros pesquisáveis */}
           <label>Faturar</label>
           <input list="faturar-list" value={faturar} onChange={(e) => setFaturar(e.target.value)} />
           <datalist id="faturar-list">
@@ -331,7 +457,7 @@ const RelatoriosPage = () => {
                 setFaturarDesloc("--Todos--");
               }}
             >
-              Limpar
+              Limpar Filtros
             </button>
           </div>
         </div>
@@ -376,6 +502,7 @@ const RelatoriosPage = () => {
             </tbody>
           </table>
         </div>
+
       </div>
     </div>
   );
