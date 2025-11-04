@@ -436,100 +436,100 @@ const TaskModal = ({
 
 
           <div className="form-row-align">
-  {/* === Três grupos: Local / Faturável / Viagem Faturável === */}
-  <div className="form-row-toggle">
-    <div className="form-group">
-      <label>Local</label>
-      <div className="local-toggle-group">
-        {["Customer Site", "Office", "Employee House"].map((option) => (
-          <label
-            key={option}
-            className={`toggle-option ${local === option ? "active" : ""}`}
-          >
-            <input
-              type="radio"
-              name="local"
-              value={option}
-              checked={local === option}
-              onChange={() => setLocal(option)}
-            />
-            {option}
-          </label>
-        ))}
-      </div>
-    </div>
+            {/* === Três grupos: Local / Faturável / Viagem Faturável === */}
+            <div className="form-row-toggle">
+              <div className="form-group">
+                <label>Local</label>
+                <div className="local-toggle-group">
+                  {["Customer Site", "Office", "Employee House"].map((option) => (
+                    <label
+                      key={option}
+                      className={`toggle-option ${local === option ? "active" : ""}`}
+                    >
+                      <input
+                        type="radio"
+                        name="local"
+                        value={option}
+                        checked={local === option}
+                        onChange={() => setLocal(option)}
+                      />
+                      {option}
+                    </label>
+                  ))}
+                </div>
+              </div>
 
-    <div className="form-group">
-      <label>Faturável</label>
-      <div className="local-toggle-group">
-        {["Yes", "No", "For analysis"].map((option) => (
-          <label
-            key={option}
-            className={`toggle-option ${faturavel === option ? "active" : ""}`}
-          >
-            <input
-              type="radio"
-              name="faturavel"
-              value={option}
-              checked={faturavel === option}
-              onChange={() => setFaturavel(option)}
-            />
-            {option}
-          </label>
-        ))}
-      </div>
-    </div>
+              <div className="form-group">
+                <label>Faturável</label>
+                <div className="local-toggle-group">
+                  {["Yes", "No", "For analysis"].map((option) => (
+                    <label
+                      key={option}
+                      className={`toggle-option ${faturavel === option ? "active" : ""}`}
+                    >
+                      <input
+                        type="radio"
+                        name="faturavel"
+                        value={option}
+                        checked={faturavel === option}
+                        onChange={() => setFaturavel(option)}
+                      />
+                      {option}
+                    </label>
+                  ))}
+                </div>
+              </div>
 
-    <div className="form-group">
-      <label>Viagem Faturável</label>
-      <div className="local-toggle-group">
-        {["Yes", "No", "For analysis"].map((option) => (
-          <label
-            key={option}
-            className={`toggle-option ${
-              viagemFaturavel === option ? "active" : ""
-            }`}
-          >
-            <input
-              type="radio"
-              name="viagem_faturavel"
-              value={option}
-              checked={viagemFaturavel === option}
-              onChange={() => setViagemFaturavel(option)}
-            />
-            {option}
-          </label>
-        ))}
-      </div>
-    </div>
-  </div>
+              <div className="form-group">
+                <label>Viagem Faturável</label>
+                <div className="local-toggle-group">
+                  {["Yes", "No", "For analysis"].map((option) => (
+                    <label
+                      key={option}
+                      className={`toggle-option ${
+                        viagemFaturavel === option ? "active" : ""
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="viagem_faturavel"
+                        value={option}
+                        checked={viagemFaturavel === option}
+                        onChange={() => setViagemFaturavel(option)}
+                      />
+                      {option}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
 
-  {/* === Inputs: Distância e Valor === */}
-  <div className="form-column-right">
-    <div>
-      <label>Distância Viagem (km)</label>
-      <input
-        type="number"
-        min="0"
-        value={distanciaViagem}
-        onChange={(e) => setDistanciaViagem(e.target.value)}
-      />
-    </div>
-    <div>
-      <label>Valor (€)</label>
-      <input
-        type="number"
-        min="0"
-        value={valorEuro}
-        onChange={(e) => setValorEuro(e.target.value)}
-      />
-    </div>
-  </div>
-</div>
+            {/* === Inputs: Distância e Valor === */}
+            <div className="form-column-right">
+              <div>
+                <label>Distância Viagem (km)</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={distanciaViagem}
+                  onChange={(e) => setDistanciaViagem(e.target.value)}
+                />
+              </div>
+              <div>
+                <label>Valor (€)</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={valorEuro}
+                  onChange={(e) => setValorEuro(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
 
 
 
-          <div className="form-column-right">
+          {/* <div className="form-column-right">
             <div>
               <label>Distância Viagem (km)</label>
               <input
@@ -548,7 +548,7 @@ const TaskModal = ({
                 onChange={(e) => setValorEuro(e.target.value)}
               />
             </div>
-          </div>
+          </div> */}
 
 
           <div className="modal-buttons">
