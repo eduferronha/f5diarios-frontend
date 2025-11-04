@@ -4,6 +4,8 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import api from "../services/api";
 import "./RelatoriosPage.css";
+import { Edit3 } from "lucide-react";
+
 
 const RelatoriosPage = () => {
   const token = localStorage.getItem("token");
