@@ -6,7 +6,7 @@
   gap: 2rem;
   width: 95%;
   margin: 1.5rem auto 2rem auto;
-  font-family: "Poppins", sans-serif;
+  font-family: "Muli", sans-serif;
   box-sizing: border-box;
 }
 
@@ -25,7 +25,7 @@
 }
 
 .dashboard-calendar:hover {
-  transform: translateY(-2px);
+  /* transform: translateY(-2px); */
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
 }
 
@@ -58,7 +58,7 @@
   border-radius: 8px;
   border: 1px solid #ccc;
   font-size: 0.85rem;
-  font-family: "Poppins", sans-serif;
+  font-family: "Muli", sans-serif;
   color: #333;
   background: #fff;
   transition: all 0.2s ease;
