@@ -74,7 +74,7 @@
 .dashboard-header h1 {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #222;
+  color: #237c9b;
   margin: 0;
 }
 
@@ -281,18 +281,26 @@
   border-bottom: 1px solid #ddd;
 }
 
+.btn-add,
 .btn-preset {
-  background-color: #6c63ff;
-  color: #fff;
   border: none;
-  padding: 0.45rem 0.9rem;
-  border-radius: 6px;
+  padding: 0.5rem 1.1rem;
   font-size: 0.85rem;
+  border-radius: 8px;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: all 0.2s ease;
   font-weight: 500;
+  color: #fff;
+}
+
+
+/* Roxo - Presets */
+.btn-preset {
+  background: #7b1fa2;
+  box-shadow: 0 2px 6px rgba(123, 31, 162, 0.25);
 }
 
 .btn-preset:hover {
-  background-color: #574bdb;
+  background: #6a1b9a;
+  transform: translateY(-1px);
 }

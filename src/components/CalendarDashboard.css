@@ -70,7 +70,7 @@
 
 /* === Dias === */
 .calendar-day {
-  aspect-ratio: 1 / 1; /* ✅ Mantém formato quadrado */
+  aspect-ratio: 1 / 1; 
   text-align: center;
   border-radius: 8px;
   font-weight: 500;
@@ -83,10 +83,10 @@
   justify-content: center;
 }
 
-.calendar-day:hover {
+/* .calendar-day:hover {
   transform: scale(1.07);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
+} */
 
 .calendar-day.empty {
   background: transparent;
