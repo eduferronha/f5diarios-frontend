@@ -62,7 +62,7 @@ function AdminPage() {
 
   const handleSaveEdit = async () => {
     try {
-      await api.put(`/${selectedEntity}/${editId}`, editData);
+      await api.patch(`/${selectedEntity}/${editId}`, editData);
       setEditId(null);
       setEditData({});
       fetchData();
