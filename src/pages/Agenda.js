@@ -18,6 +18,7 @@ export default function Agenda() {
 
   const token = localStorage.getItem("token");
 
+
   // const loggedUser = (() => {
   //   try {
   //     const stored = localStorage.getItem("user");

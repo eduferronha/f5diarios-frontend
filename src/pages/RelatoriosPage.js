@@ -7,7 +7,7 @@ import "./RelatoriosPage.css";
 
 const RelatoriosPage = () => {
   const token = localStorage.getItem("token");
-
+  const [loading, setLoading] = useState(true);
   const [dados, setDados] = useState([]);
   const [dadosOriginais, setDadosOriginais] = useState([]);
 
@@ -459,7 +459,13 @@ const RelatoriosPage = () => {
             </button>
           </div>
         </div>
-
+        
+        {loading ? (
+        <div className="spinner-container">
+          <div className="spinner"></div>
+          <p>A carregar relatórios...</p>
+        </div>
+         ) : (
         <div className="relatorios-table">
           <table>
             <thead>
@@ -500,7 +506,7 @@ const RelatoriosPage = () => {
             </tbody>
           </table>
         </div>
-
+        )}
       </div>
     </div>
   );
