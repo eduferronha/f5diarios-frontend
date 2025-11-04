@@ -130,35 +130,37 @@ const RelatoriosPage = () => {
 
   // 🟩 Exportar Excel
   const exportarExcel = () => {
-    const colunas = [
-      "Data",
-      "Local",
-      "Cliente",
-      "Parceiro",
-      "Produto",
-      "Contrato",
-      "Atividade",
-      "Tempo Atividade",
-      "Tempo Faturado",
-      "Faturável",
-      "Viagem Faturável",
-      "Valor (€)",
-    ];
+  const colunas = [
+    "Data",
+    "Utilizador",
+    "Local",
+    "Cliente",
+    "Parceiro",
+    "Produto",
+    "Contrato",
+    "Atividade",
+    "Tempo Atividade",
+    "Tempo Faturado",
+    "Faturável",
+    "Viagem Faturável",
+    "Valor (€)",
+  ];
 
-    const linhas = dados.map((d) => ({
-      Data: d.data || "",
-      Local: d.local || "",
-      Cliente: d.cliente || "",
-      Parceiro: d.parceiro || "",
-      Produto: d.produto || "",
-      Contrato: d.contrato || "",
-      Atividade: d.atividade || "",
-      "Tempo Atividade": d.tempo_atividade || "00:00",
-      "Tempo Faturado": d.tempo_faturado || "00:00",
-      "Faturável": d.faturavel || "",
-      "Viagem Faturável": d.viagem_faturavel || "",
-      "Valor (€)": Number(d.valor_euro) || 0,
-    }));
+  const linhas = dados.map((d) => ({
+    Data: d.data || "",
+    Utilizador: d.utilizador || "",
+    Local: d.local || "",
+    Cliente: d.cliente || "",
+    Parceiro: d.parceiro || "",
+    Produto: d.produto || "",
+    Contrato: d.contrato || "",
+    Atividade: d.atividade || "",
+    "Tempo Atividade": d.tempo_atividade || "00:00",
+    "Tempo Faturado": d.tempo_faturado || "00:00",
+    Faturável: d.faturavel || "",
+    "Viagem Faturável": d.viagem_faturavel || "",
+    "Valor (€)": Number(d.valor_euro) || 0,
+  }));
 
     const somarTempos = (tempos) => {
       let totalMinutos = 0;
@@ -249,6 +251,7 @@ const RelatoriosPage = () => {
 
       const colunas = [
         "Data",
+        "Utilizador",
         "Local",
         "Cliente",
         "Parceiro",
@@ -264,6 +267,7 @@ const RelatoriosPage = () => {
 
       const linhas = dados.map((d) => [
         d.data || "",
+        d.utilizador || "",
         d.local || "",
         d.cliente || "",
         d.parceiro || "",
@@ -276,6 +280,7 @@ const RelatoriosPage = () => {
         d.tempo_faturado || "00:00",
         d.valor_euro ? Number(d.valor_euro).toFixed(2) : "0.00",
       ]);
+
 
       if (linhas.length === 0) {
         alert("Não há dados para exportar.");
@@ -458,6 +463,7 @@ const RelatoriosPage = () => {
             <thead>
               <tr>
                 <th>Data</th>
+                <th>Utilizador</th>
                 <th>Local</th>
                 <th>Cliente</th>
                 <th>Parceiro</th>
@@ -475,6 +481,7 @@ const RelatoriosPage = () => {
               {dados.map((d, i) => (
                 <tr key={i}>
                   <td>{d.data}</td>
+                  <td>{d.utilizador}</td>
                   <td>{d.local}</td>
                   <td>{d.cliente}</td>
                   <td>{d.parceiro}</td>
@@ -491,6 +498,7 @@ const RelatoriosPage = () => {
             </tbody>
           </table>
         </div>
+
       </div>
     </div>
   );
