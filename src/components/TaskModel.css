@@ -289,3 +289,15 @@ textarea:focus {
   background: #eaf4ff;
   border-radius: 6px;
 }
+
+
+/* === Inputs compactos === */
+.compact-inputs input {
+  width: 100px;
+}
+
+@media (max-width: 600px) {
+  .compact-inputs input {
+    width: 100%;
+  }
+}

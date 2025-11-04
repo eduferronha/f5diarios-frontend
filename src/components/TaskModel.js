@@ -432,7 +432,7 @@ const TaskModal = ({
             </div>
           </div>
 
-          <div className="form-row">
+          <div className="form-row compact-inputs">
             <div>
               <label>Distância Viagem (km)</label>
               <input
@@ -452,6 +452,7 @@ const TaskModal = ({
               />
             </div>
           </div>
+
 
           <div className="form-group">
             <label>Local</label>
