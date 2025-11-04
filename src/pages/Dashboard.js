@@ -4,6 +4,8 @@ import TaskModal from "../components/TaskModel";
 import CalendarDashboard from "../components/CalendarDashboard";
 import PresetsModal from "../components/PresetsModal";
 import "./DashboardTable.css";
+import { Edit3, Copy, Trash2 } from "lucide-react";
+
 
 function Dashboard() {
   const [tasks, setTasks] = useState([]);
@@ -215,16 +217,16 @@ function Dashboard() {
             <table className="tasks-table">
               <thead>
                 <tr>
-                  <th>Day</th>
+                  <th>Dia</th>
                   <th>Local</th>
-                  <th>Customer</th>
-                  <th>Partner</th>
-                  <th>Product</th>
-                  <th>Activity</th>
-                  <th>Duration</th>
-                  <th>Bill</th>
-                  <th>Bill Travel</th>
-                  <th>Value (€)</th>
+                  <th>Cliente</th>
+                  <th>Parceiro</th>
+                  <th>Produto</th>
+                  <th>Atividade</th>
+                  <th>Tempo Atividade</th>
+                  <th>Tempo Faturado</th>
+                  <th>Viagem Faturável</th>
+                  <th>Valor (€)</th>
                   <th>Ações</th>
                 </tr>
               </thead>
@@ -243,27 +245,28 @@ function Dashboard() {
                     <td>{task.valor_euro?.toFixed(0) || 0}</td>
                     <td className="task-actions">
                       <button
-                        className="btn-edit"
+                        className="btn-icon"
                         onClick={() => handleEdit(task)}
                         title="Editar tarefa"
                       >
-                        ✏️
+                        <Edit3 size={18} color="white" />
                       </button>
                       <button
-                        className="btn-duplicate"
+                        className="btn-icon"
                         onClick={() => handleDuplicate(task)}
                         title="Duplicar tarefa"
                       >
-                        ⧉
+                        <Copy size={18} color="white" />
                       </button>
                       <button
-                        className="btn-delete"
+                        className="btn-icon"
                         onClick={() => handleDelete(task.id)}
                         title="Eliminar tarefa"
                       >
-                        🗑️
+                        <Trash2 size={18} color="white" />
                       </button>
                     </td>
+
                   </tr>
                 ))}
               </tbody>
