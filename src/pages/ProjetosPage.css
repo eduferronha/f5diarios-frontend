@@ -119,7 +119,7 @@
 }
 
 .novo-projeto-form button {
-  background-color: #0078d7;
+  background-color: #237c9b;
   color: white;
   border: none;
   border-radius: 6px;
@@ -127,6 +127,8 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-family: 'Poppins', sans-serif;
+
 }
 
 .novo-projeto-form button:hover {
