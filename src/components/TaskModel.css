@@ -292,12 +292,16 @@ textarea:focus {
 
 
 /* === Inputs compactos === */
-.compact-inputs input {
-  width: 100px;
+.compact-inputs {
+  justify-content: center;
+  gap: 1rem;
 }
 
-@media (max-width: 600px) {
-  .compact-inputs input {
-    width: 100%;
-  }
+.compact-inputs > div {
+  flex: 0 0 auto;
+}
+
+.compact-inputs input {
+  width: 90px;
+  text-align: center;
 }
