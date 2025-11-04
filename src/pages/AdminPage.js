@@ -305,7 +305,7 @@ const renderForm = () => {
                       )}
                     </td>
                   ))}
-                  <td className="actions">
+                  <td className="task-actions">
                     {editId === (item.id || item._id) ? (
                       // <button className="save" onClick={handleSaveEdit}>
                       //   💾
@@ -315,7 +315,7 @@ const renderForm = () => {
                           onClick={handleSaveEdit}
                           title="Guardar Resgisto"
                         >
-                          <Edit3 size={18} color="#237c9b" />
+                          <Save size={18} color="#237c9b" />
                         </button>
                     ) : (
                       <>
