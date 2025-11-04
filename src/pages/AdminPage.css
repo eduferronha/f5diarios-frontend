@@ -28,7 +28,7 @@
 }
 
 .entity-selector button {
-  background: #fff;
+  /* background: #fff; */
   border: 1px solid #d0d5dd;
   border-radius: 8px;
   padding: 0.5rem 1rem;
@@ -38,6 +38,8 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   background-color: #237c9b;
   font-family: "Poppins", sans-serif;
+  color: white;
+
 
 }
 
