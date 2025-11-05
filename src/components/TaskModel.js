@@ -157,6 +157,18 @@ const TaskModal = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // 🔸 Verificação de campos obrigatórios
+    if (!cliente || !produto || !contrato || !atividade || !tempoAtividade || !tempoFaturado || !faturavel) {
+      alert("Preenche todos os campos obrigatórios: Cliente, Produto, Contrato, Atividade, Tempo Atividade, Tempo Faturado e Faturável.");
+      return;
+    }
+
+    // 🔸 Bloqueia submissão se tempos forem "00:00"
+    if (tempoAtividade === "00:00" || tempoFaturado === "00:00") {
+      alert("O Tempo de Atividade e o Tempo Faturado não podem ser 00:00. Por favor, introduz valores válidos.");
+      return;
+    }
+
     const baseTaskData = {
       descricao,
       cliente,
