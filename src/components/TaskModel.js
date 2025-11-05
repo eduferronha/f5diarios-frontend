@@ -419,7 +419,8 @@ const TaskModal = ({
               placeholder="Seleciona um cliente..."
               isClearable
               isSearchable
-              required
+              required={!isPresetMode}
+
             />
           </div>
 
@@ -446,7 +447,8 @@ const TaskModal = ({
               placeholder="Seleciona um produto..."
               isClearable
               isSearchable
-              required
+              required={!isPresetMode}
+
             />
           </div>
 
@@ -461,7 +463,8 @@ const TaskModal = ({
               isDisabled={!cliente}
               isClearable
               isSearchable
-              required
+              required={!isPresetMode}
+
             />
           </div>
 
@@ -475,7 +478,8 @@ const TaskModal = ({
               placeholder="Seleciona uma atividade..."
               isClearable
               isSearchable
-              required
+              required={!isPresetMode}
+
             />
           </div>
 
@@ -495,7 +499,8 @@ const TaskModal = ({
                 type="time"
                 value={tempoFaturado}
                 onChange={(e) => setTempoFaturado(e.target.value)}
-                required 
+                required={!isPresetMode}
+ 
               />
             </div>
             <div>
@@ -525,7 +530,8 @@ const TaskModal = ({
                         value={option}
                         checked={local === option}
                         onChange={() => setLocal(option)}
-                        required 
+                        required={!isPresetMode}
+ 
                       />
                       {option}
                     </label>
@@ -547,7 +553,8 @@ const TaskModal = ({
                         value={option}
                         checked={faturavel === option}
                         onChange={() => setFaturavel(option)}
-                        required 
+                        required={!isPresetMode}
+ 
                       />
                       {option}
                     </label>
