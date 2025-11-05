@@ -44,13 +44,15 @@
 /* === Tabela moderna === */
 .agenda-table-wrapper {
   width: 100%;
+  max-height: 75vh; /* 👈 limit height so scrolling happens inside the table */
+  overflow-y: auto; /* 👈 enable vertical scroll */
   overflow-x: auto;
   background: #ffffff;
   border-radius: 14px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
   padding: 0.6rem;
-  scrollbar-width: thin;
 }
+
 
 .agenda-table {
   width: 100%;
@@ -63,15 +65,17 @@
 
 /* === Cabeçalhos === */
 .agenda-table th {
-  background-color: #f3f4f6;
-  color: #374151;
+  border: 1px solid #ccc;
+  text-align: center;
+  vertical-align: middle;
+  padding: 6px 8px;
   font-weight: 600;
-  padding: 10px 6px;
-  border-bottom: 2px solid #e5e7eb;
-  font-size: 0.7rem;
-  white-space: nowrap;
+  font-size: 14px;
+  word-wrap: break-word;
+  white-space: normal;
+  line-height: 1.2;
+  max-width: 120px;
 }
-
 /* === Células === */
 .agenda-table td {
   border: 1px solid #e5e7eb;
@@ -253,11 +257,12 @@
 }
 
 .agenda-table thead {
-  background-color: #f3f3f3;
   position: sticky;
   top: 0;
-  z-index: 2;
+  background-color: #f3f4f6; /* 👈 ensure background hides rows under it */
+  z-index: 5;
 }
+
 
 .agenda-table thead th {
   border: 1px solid #ccc;
