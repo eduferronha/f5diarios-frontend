@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import * as XLSX from "xlsx-js-style";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import Select from "react-select";
 import api from "../services/api";
 import "./RelatoriosPage.css";
 import TaskModal from "../components/TaskModel";
 import { Edit3 } from "lucide-react";
+import Select from "react-select";
 
 const RelatoriosPage = () => {
   const token = localStorage.getItem("token");
@@ -14,16 +14,16 @@ const RelatoriosPage = () => {
   const [dados, setDados] = useState([]);
   const [dadosOriginais, setDadosOriginais] = useState([]);
 
-  const [anoInicio, setAnoInicio] = useState({ value: "2025", label: "2025" });
-  const [mesInicio, setMesInicio] = useState({ value: "Outubro", label: "Outubro" });
-  const [anoFim, setAnoFim] = useState({ value: "2025", label: "2025" });
-  const [mesFim, setMesFim] = useState({ value: "Outubro", label: "Outubro" });
-  const [faturar, setFaturar] = useState({ value: "--Todos--", label: "--Todos--" });
-  const [faturarDesloc, setFaturarDesloc] = useState({ value: "--Todos--", label: "--Todos--" });
-  const [cliente, setCliente] = useState({ value: "---Todos---", label: "---Todos---" });
-  const [utilizador, setUtilizador] = useState({ value: "---Todos---", label: "---Todos---" });
-  const [parceiro, setParceiro] = useState({ value: "---Todos---", label: "---Todos---" });
-  const [contrato, setContrato] = useState({ value: "---Todos---", label: "---Todos---" });
+  const [anoInicio, setAnoInicio] = useState("2025");
+  const [mesInicio, setMesInicio] = useState("Outubro");
+  const [anoFim, setAnoFim] = useState("2025");
+  const [mesFim, setMesFim] = useState("Outubro");
+  const [faturar, setFaturar] = useState("--Todos--");
+  const [faturarDesloc, setFaturarDesloc] = useState("--Todos--");
+  const [cliente, setCliente] = useState("---Todos---");
+  const [utilizador, setUtilizador] = useState("---Todos---");
+  const [parceiro, setParceiro] = useState("---Todos---");
+  const [contrato, setContrato] = useState("---Todos---");
 
   const [clientes, setClientes] = useState([]);
   const [utilizadores, setUtilizadores] = useState([]);
@@ -34,9 +34,37 @@ const RelatoriosPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [isDuplicate, setIsDuplicate] = useState(false);
-
-  // ✅ Estado para cor do botão Filtrar
   const [filtroAtivo, setFiltroAtivo] = useState(false);
+
+  // ✅ Estilo igual ao TaskModal
+  const customSelectStyles = {
+    control: (provided, state) => ({
+      ...provided,
+      backgroundColor: "#fafafa",
+      border: state.isFocused ? "1px solid #237c9b" : "1px solid #ccc",
+      boxShadow: state.isFocused ? "0 0 0 2px rgba(35,124,155,0.2)" : "none",
+      borderRadius: 6,
+      minHeight: 32,
+      fontSize: "0.75rem",
+      transition: "all 0.2s ease",
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isSelected
+        ? "#237c9b"
+        : state.isFocused
+        ? "#e3f2fd"
+        : "white",
+      color: state.isSelected ? "white" : "#333",
+      fontSize: "0.75rem",
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      color: "#333",
+      fontWeight: 500,
+    }),
+    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+  };
 
   const handleEdit = (task) => {
     setEditingTask(task);
@@ -50,7 +78,7 @@ const RelatoriosPage = () => {
     setIsDuplicate(false);
   };
 
-  // 🔹 Carregar todas as tarefas
+  // 🔹 Carregar dados
   useEffect(() => {
     const carregarDados = async () => {
       try {
@@ -94,11 +122,11 @@ const RelatoriosPage = () => {
 
   // 🔹 Filtrar contratos conforme cliente
   useEffect(() => {
-    if (cliente.value === "---Todos---") {
+    if (cliente === "---Todos---") {
       setContratosFiltrados(contratos);
     } else {
       const filtrados = contratos.filter(
-        (c) => c.cliente_nome === cliente.value || c.cliente === cliente.value
+        (c) => c.cliente_nome === cliente || c.cliente === cliente
       );
       setContratosFiltrados(filtrados);
     }
@@ -108,71 +136,47 @@ const RelatoriosPage = () => {
   const aplicarFiltros = () => {
     let filtrados = [...dadosOriginais];
 
-    if (cliente.value !== "---Todos---")
-      filtrados = filtrados.filter((d) => d.cliente === cliente.value);
-
-    if (contrato.value !== "---Todos---")
-      filtrados = filtrados.filter((d) => d.contrato === contrato.value);
-
-    if (parceiro.value !== "---Todos---")
-      filtrados = filtrados.filter((d) => d.parceiro === parceiro.value);
-
-    if (utilizador.value !== "---Todos---")
-      filtrados = filtrados.filter((d) => d.username === utilizador.value);
-
-    if (faturar.value !== "--Todos--")
+    if (cliente !== "---Todos---")
+      filtrados = filtrados.filter((d) => d.cliente === cliente);
+    if (contrato !== "---Todos---")
+      filtrados = filtrados.filter((d) => d.contrato === contrato);
+    if (parceiro !== "---Todos---")
+      filtrados = filtrados.filter((d) => d.parceiro === parceiro);
+    if (utilizador !== "---Todos---")
+      filtrados = filtrados.filter((d) => d.username === utilizador);
+    if (faturar !== "--Todos--")
       filtrados = filtrados.filter(
-        (d) => String(d.faturavel).toLowerCase() === faturar.value.toLowerCase()
+        (d) => String(d.faturavel).toLowerCase() === faturar.toLowerCase()
       );
-
-    if (faturarDesloc.value !== "--Todos--")
+    if (faturarDesloc !== "--Todos--")
       filtrados = filtrados.filter(
         (d) =>
-          String(d.viagem_faturavel).toLowerCase() ===
-          faturarDesloc.value.toLowerCase()
+          String(d.viagem_faturavel).toLowerCase() === faturarDesloc.toLowerCase()
       );
 
     setDados(filtrados);
     setFiltroAtivo(true);
   };
 
-  // 🔹 Reset cor do botão se alterares algo
-  const handleFiltroChange = (setter) => (value) => {
-    setter(value);
+  // 🔹 Se mudar qualquer filtro → reset cor
+  const handleFiltroChange = (setter) => (selected) => {
+    setter(selected ? selected.value : "");
     setFiltroAtivo(false);
   };
 
   // 🔹 Limpar filtros
   const limparFiltros = () => {
     setDados(dadosOriginais);
-    setCliente({ value: "---Todos---", label: "---Todos---" });
-    setContrato({ value: "---Todos---", label: "---Todos---" });
-    setUtilizador({ value: "---Todos---", label: "---Todos---" });
-    setParceiro({ value: "---Todos---", label: "---Todos---" });
-    setFaturar({ value: "--Todos--", label: "--Todos--" });
-    setFaturarDesloc({ value: "--Todos--", label: "--Todos--" });
+    setCliente("---Todos---");
+    setContrato("---Todos---");
+    setUtilizador("---Todos---");
+    setParceiro("---Todos---");
+    setFaturar("--Todos--");
+    setFaturarDesloc("--Todos--");
     setFiltroAtivo(false);
   };
 
-  // === Opções dos Selects ===
-  const anosOptions = [
-    { value: "2025", label: "2025" },
-    { value: "2024", label: "2024" },
-  ];
-
-  const mesesOptions = [
-    { value: "Outubro", label: "Outubro" },
-    { value: "Setembro", label: "Setembro" },
-    { value: "Agosto", label: "Agosto" },
-  ];
-
-  const simNaoOptions = [
-    { value: "--Todos--", label: "--Todos--" },
-    { value: "Sim", label: "Sim" },
-    { value: "Não", label: "Não" },
-  ];
-
-  // 🔹 Exportar Excel (mesmo código completo do original)
+  // 🔹 Exportar Excel
   const exportarExcel = () => {
     const colunas = [
       "Data",
@@ -228,7 +232,6 @@ const RelatoriosPage = () => {
 
     linhas.push({
       Data: "",
-      Utilizador: "",
       Local: "",
       Cliente: "",
       Parceiro: "",
@@ -250,109 +253,56 @@ const RelatoriosPage = () => {
     XLSX.writeFile(wb, "Relatorio_Atividades.xlsx");
   };
 
-    // 🔹 Exportar PDF (completo)
+  // 🔹 Exportar PDF
   const exportarPDF = () => {
-    try {
-      const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "A4" });
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(14);
-      doc.text("Relatório de Atividades", 40, 40);
+    const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "A4" });
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(14);
+    doc.text("Relatório de Atividades", 40, 40);
 
-      const colunas = [
-        "Data",
-        "Utilizador",
-        "Local",
-        "Cliente",
-        "Parceiro",
-        "Produto",
-        "Contrato",
-        "Atividade",
-        "Faturável",
-        "Viagem Faturável",
-        "Tempo Atividade",
-        "Tempo Faturado",
-        "Valor (€)",
-      ];
+    const colunas = [
+      "Data",
+      "Utilizador",
+      "Local",
+      "Cliente",
+      "Parceiro",
+      "Produto",
+      "Contrato",
+      "Atividade",
+      "Faturável",
+      "Viagem Faturável",
+      "Tempo Atividade",
+      "Tempo Faturado",
+      "Valor (€)",
+    ];
 
-      const linhas = dados.map((d) => [
-        d.data || "",
-        d.username || "",
-        d.local || "",
-        d.cliente || "",
-        d.parceiro || "",
-        d.produto || "",
-        d.contrato || "",
-        d.atividade || "",
-        d.faturavel || "",
-        d.viagem_faturavel || "",
-        d.tempo_atividade || "00:00",
-        d.tempo_faturado || "00:00",
-        d.valor_euro ? Number(d.valor_euro).toFixed(2) : "0.00",
-      ]);
+    const linhas = dados.map((d) => [
+      d.data || "",
+      d.username || "",
+      d.local || "",
+      d.cliente || "",
+      d.parceiro || "",
+      d.produto || "",
+      d.contrato || "",
+      d.atividade || "",
+      d.faturavel || "",
+      d.viagem_faturavel || "",
+      d.tempo_atividade || "00:00",
+      d.tempo_faturado || "00:00",
+      d.valor_euro ? Number(d.valor_euro).toFixed(2) : "0.00",
+    ]);
 
-      if (linhas.length === 0) {
-        alert("Não há dados para exportar.");
-        return;
-      }
+    autoTable(doc, {
+      head: [colunas],
+      body: linhas,
+      startY: 60,
+      theme: "striped",
+      styles: { fontSize: 8, cellPadding: 4 },
+      headStyles: { fillColor: [0, 120, 215], textColor: 255, fontStyle: "bold" },
+      alternateRowStyles: { fillColor: [245, 247, 250] },
+    });
 
-      const somarTempos = (tempos) => {
-        let totalMinutos = 0;
-        tempos.forEach((t) => {
-          if (typeof t === "string" && t.includes(":")) {
-            const [h, m] = t.split(":").map(Number);
-            totalMinutos += h * 60 + m;
-          }
-        });
-        const horas = Math.floor(totalMinutos / 60);
-        const minutos = totalMinutos % 60;
-        return `${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}`;
-      };
-
-      const totalTempoAtividade = somarTempos(dados.map((d) => d.tempo_atividade));
-      const totalTempoFaturado = somarTempos(dados.map((d) => d.tempo_faturado));
-      const totalValor = dados.reduce(
-        (acc, d) => acc + (Number(d.valor_euro) || 0),
-        0
-      );
-
-      const totalRow = [
-        "", "", "", "", "", "", "", "", "TOTAL", "",
-        totalTempoAtividade, totalTempoFaturado, totalValor.toFixed(2),
-      ];
-
-      linhas.push(totalRow);
-
-      autoTable(doc, {
-        head: [colunas],
-        body: linhas,
-        startY: 60,
-        theme: "striped",
-        styles: {
-          fontSize: 8,
-          cellPadding: 4,
-          halign: "center",
-          valign: "middle",
-        },
-        headStyles: {
-          fillColor: [0, 120, 215],
-          textColor: 255,
-          fontStyle: "bold",
-        },
-        alternateRowStyles: { fillColor: [245, 247, 250] },
-        didDrawCell: (data) => {
-          const isTotalRow = data.row.index === linhas.length - 1;
-          if (isTotalRow) {
-            data.cell.styles.fillColor = [232, 234, 246];
-            data.cell.styles.fontStyle = "bold";
-          }
-        },
-      });
-
-      doc.save("Relatorio_Atividades.pdf");
-    } catch (error) {
-      console.error("Erro ao exportar PDF:", error);
-      alert("Erro ao gerar o PDF. Verifica a consola para detalhes.");
-    }
+    doc.save("Relatorio_Atividades.pdf");
   };
 
   return (
@@ -371,79 +321,8 @@ const RelatoriosPage = () => {
         </div>
       ) : (
         <div className="relatorios-main">
-          {/* === FILTROS === */}
           <div className="filtros-container-relatorios">
             <h3>Pesquisar</h3>
-
-            <label>Ano Início</label>
-            <Select
-              options={[
-                { value: "2025", label: "2025" },
-                { value: "2024", label: "2024" },
-              ]}
-              value={anoInicio}
-              onChange={handleFiltroChange(setAnoInicio)}
-              className="select-relatorios"
-            />
-
-            <label>Mês Início</label>
-            <Select
-              options={[
-                { value: "Outubro", label: "Outubro" },
-                { value: "Setembro", label: "Setembro" },
-                { value: "Agosto", label: "Agosto" },
-              ]}
-              value={mesInicio}
-              onChange={handleFiltroChange(setMesInicio)}
-              className="select-relatorios"
-            />
-
-            <label>Ano Fim</label>
-            <Select
-              options={[
-                { value: "2025", label: "2025" },
-                { value: "2024", label: "2024" },
-              ]}
-              value={anoFim}
-              onChange={handleFiltroChange(setAnoFim)}
-              className="select-relatorios"
-            />
-
-            <label>Mês Fim</label>
-            <Select
-              options={[
-                { value: "Outubro", label: "Outubro" },
-                { value: "Setembro", label: "Setembro" },
-                { value: "Agosto", label: "Agosto" },
-              ]}
-              value={mesFim}
-              onChange={handleFiltroChange(setMesFim)}
-              className="select-relatorios"
-            />
-
-            <label>Faturar</label>
-            <Select
-              options={[
-                { value: "--Todos--", label: "--Todos--" },
-                { value: "Sim", label: "Sim" },
-                { value: "Não", label: "Não" },
-              ]}
-              value={faturar}
-              onChange={handleFiltroChange(setFaturar)}
-              className="select-relatorios"
-            />
-
-            <label>Faturar Deslocações</label>
-            <Select
-              options={[
-                { value: "--Todos--", label: "--Todos--" },
-                { value: "Sim", label: "Sim" },
-                { value: "Não", label: "Não" },
-              ]}
-              value={faturarDesloc}
-              onChange={handleFiltroChange(setFaturarDesloc)}
-              className="select-relatorios"
-            />
 
             <label>Utilizador</label>
             <Select
@@ -451,10 +330,12 @@ const RelatoriosPage = () => {
                 { value: "---Todos---", label: "---Todos---" },
                 ...utilizadores.map((u) => ({ value: u.nome, label: u.nome })),
               ]}
-              value={utilizador}
+              value={{ value: utilizador, label: utilizador }}
               onChange={handleFiltroChange(setUtilizador)}
-              className="select-relatorios"
+              styles={customSelectStyles}
+              isClearable
               isSearchable
+              menuPortalTarget={document.body}
             />
 
             <label>Cliente</label>
@@ -463,10 +344,12 @@ const RelatoriosPage = () => {
                 { value: "---Todos---", label: "---Todos---" },
                 ...clientes.map((c) => ({ value: c.nome, label: c.nome })),
               ]}
-              value={cliente}
+              value={{ value: cliente, label: cliente }}
               onChange={handleFiltroChange(setCliente)}
-              className="select-relatorios"
+              styles={customSelectStyles}
+              isClearable
               isSearchable
+              menuPortalTarget={document.body}
             />
 
             <label>Contrato</label>
@@ -478,10 +361,42 @@ const RelatoriosPage = () => {
                   label: c.contrato,
                 })),
               ]}
-              value={contrato}
+              value={{ value: contrato, label: contrato }}
               onChange={handleFiltroChange(setContrato)}
-              className="select-relatorios"
+              styles={customSelectStyles}
+              isClearable
               isSearchable
+              menuPortalTarget={document.body}
+            />
+
+            <label>Faturar</label>
+            <Select
+              options={[
+                { value: "--Todos--", label: "--Todos--" },
+                { value: "Sim", label: "Sim" },
+                { value: "Não", label: "Não" },
+              ]}
+              value={{ value: faturar, label: faturar }}
+              onChange={handleFiltroChange(setFaturar)}
+              styles={customSelectStyles}
+              isClearable
+              isSearchable
+              menuPortalTarget={document.body}
+            />
+
+            <label>Faturar Deslocações</label>
+            <Select
+              options={[
+                { value: "--Todos--", label: "--Todos--" },
+                { value: "Sim", label: "Sim" },
+                { value: "Não", label: "Não" },
+              ]}
+              value={{ value: faturarDesloc, label: faturarDesloc }}
+              onChange={handleFiltroChange(setFaturarDesloc)}
+              styles={customSelectStyles}
+              isClearable
+              isSearchable
+              menuPortalTarget={document.body}
             />
 
             <div className="filtro-botoes-relatorios">
@@ -495,12 +410,11 @@ const RelatoriosPage = () => {
             </div>
           </div>
 
-          {/* === TABELA === */}
           <div className="relatorios-table">
             <table>
               <thead>
                 <tr>
-                  <th style={{ width: "40px" }}></th>
+                  <th></th>
                   <th>Data</th>
                   <th>Local</th>
                   <th>Cliente</th>
@@ -515,7 +429,6 @@ const RelatoriosPage = () => {
                   <th>Valor (€)</th>
                 </tr>
               </thead>
-
               <tbody>
                 {dados.map((d, i) => (
                   <tr key={i}>
@@ -548,7 +461,6 @@ const RelatoriosPage = () => {
         </div>
       )}
 
-      {/* === MODAL === */}
       <TaskModal
         show={showModal}
         onClose={handleCloseModal}
