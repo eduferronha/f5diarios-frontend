@@ -281,13 +281,32 @@ const TaskModal = ({
         : "Guardar Alterações"
       : "Guardar";
 
+  
+  const handleClose = () => {
+  // Verifica se há dados preenchidos (ou diferentes dos defaults)
+  const hasChanges =
+    descricao ||
+    cliente ||
+    parceiro ||
+    produto ||
+    contrato ||
+    atividade ||
+    tempoAtividade !== "00:00" ||
+    tempoFaturado !== "00:00" ||
+    distanciaViagem > 0 ||
+    valorEuro > 0;
+
+  if (hasChanges) {
+    const confirmExit = window.confirm("Existem dados preenchidos. Tens a certeza que queres sair sem guardar?");
+    if (!confirmExit) return; 
+  }
+
+  onClose(); 
+};
+
+
   return (
-    <div
-      className="modal-overlay"
-      onClick={(e) => {
-        if (e.target.classList.contains("modal-overlay")) onClose();
-      }}
-    >
+    <div className="modal-overlay">
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2>{titulo}</h2>
 
@@ -559,9 +578,10 @@ const TaskModal = ({
           <button type="submit" form="form-task" className="btn-primary">
             {textoBotao}
           </button>
-          <button type="button" className="btn-secondary" onClick={onClose}>
+          <button type="button" className="btn-secondary" onClick={handleClose}>
             Cancelar
           </button>
+
         </div>
       </div>
     </div>
