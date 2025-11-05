@@ -454,7 +454,7 @@ const RelatoriosPage = () => {
               menuPortalTarget={document.body}
             />
 
-            <label>Parceiro</label>
+            {/* <label>Parceiro</label>
             <Select
               options={[
                 { value: "---Todos---", label: "---Todos---" },
@@ -465,7 +465,7 @@ const RelatoriosPage = () => {
               styles={customSelectStyles}
               isSearchable
               menuPortalTarget={document.body}
-            />
+            /> */}
 
             <label>Faturar</label>
             <Select
