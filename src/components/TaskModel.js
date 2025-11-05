@@ -5,7 +5,6 @@ import "../components/TaskModel.css";
 import api from "../services/api";
 import Select from "react-select";
 
-
 const TaskModal = ({
   show,
   onClose,
@@ -47,14 +46,13 @@ const TaskModal = ({
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-  if (preselectedDate) {
-    const formattedDate = new Date(preselectedDate)
-      .toISOString()
-      .split("T")[0]; // converte para formato yyyy-mm-dd
-    setData(formattedDate);
-  }
-}, [preselectedDate]);
-
+    if (preselectedDate) {
+      const formattedDate = new Date(preselectedDate)
+        .toISOString()
+        .split("T")[0];
+      setData(formattedDate);
+    }
+  }, [preselectedDate]);
 
   // 🔹 Carregar listas
   useEffect(() => {
@@ -109,7 +107,6 @@ const TaskModal = ({
     }
   }, [isPresetMode, presetData]);
 
-
   // 🔹 Preencher automaticamente ao editar uma tarefa
   useEffect(() => {
     if (editingTask && !isDuplicate) {
@@ -154,7 +151,6 @@ const TaskModal = ({
     }
   }, [show, editingTask, isPresetMode, presetData, preselectedDate]);
 
-
   if (!show) return null;
 
   // 🔹 Guardar tarefa ou preset
@@ -179,7 +175,6 @@ const TaskModal = ({
     };
 
     try {
-      // 🔸 1. Criar Preset Novo
       if (isPresetMode && !presetData) {
         if (!descricao.trim() && !nomePreset.trim()) {
           alert("Indica um nome ou descrição para o preset.");
@@ -191,7 +186,6 @@ const TaskModal = ({
         return;
       }
 
-      // 🔸 2. Aplicar Preset (criar nova tarefa)
       if (presetData) {
         if (!data) {
           alert("Seleciona uma data para a nova tarefa.");
@@ -205,7 +199,6 @@ const TaskModal = ({
         return;
       }
 
-      // 🔸 3. Criar/Editar Tarefa Normal
       if (!descricao || !cliente || !produto || !contrato || !atividade || !data) {
         alert("Preenche todos os campos obrigatórios.");
         return;
@@ -237,9 +230,8 @@ const TaskModal = ({
   };
 
   const toggleData = (date) => {
-    const dataISO = new Date(
-      date.getTime() - date.getTimezoneOffset() * 60000
-    ).toLocaleDateString("en-CA", { timeZone: "Europe/Lisbon" });
+    const dataISO = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+      .toLocaleDateString("en-CA", { timeZone: "Europe/Lisbon" });
 
     if (datasDuplicadas.includes(dataISO)) {
       setDatasDuplicadas(datasDuplicadas.filter((d) => d !== dataISO));
@@ -247,6 +239,13 @@ const TaskModal = ({
       setDatasDuplicadas([...datasDuplicadas, dataISO]);
     }
   };
+
+  // 🔹 Opções para Selects
+  const clienteOptions = clientes.map((c) => ({ value: c.nome, label: c.nome }));
+  const parceiroOptions = parceiros.map((p) => ({ value: p.nome, label: p.nome }));
+  const produtoOptions = produtos.map((p) => ({ value: p.produto, label: p.produto }));
+  const contratoOptions = contratosFiltrados.map((c) => ({ value: c.contrato, label: c.contrato }));
+  const atividadeOptions = atividades.map((a) => ({ value: a.atividade, label: a.atividade }));
 
   const titulo =
     presetData
@@ -270,24 +269,14 @@ const TaskModal = ({
         : "Guardar Alterações"
       : "Guardar";
 
-    const clienteOptions = clientes.map((c) => ({
-                value: c.nome,
-                label: c.nome,
-              }));
-
-      return (
-        <div
-          className="modal-overlay"
-          onClick={(e) => {
-            if (e.target.classList.contains("modal-overlay")) {
-              onClose();
-            }
-          }}
-        >
-          <div
-            className="modal"
-            onClick={(e) => e.stopPropagation()} // 🔹 Impede que o clique dentro feche o modal
-          >
+  return (
+    <div
+      className="modal-overlay"
+      onClick={(e) => {
+        if (e.target.classList.contains("modal-overlay")) onClose();
+      }}
+    >
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2>{titulo}</h2>
 
         <form id="form-task" onSubmit={handleSubmit} className="form-grid">
@@ -306,7 +295,14 @@ const TaskModal = ({
 
           <div className="form-group full-width">
             <label>Data</label>
-            {isDuplicate ? (
+            {!isDuplicate ? (
+              <input
+                type="date"
+                value={data}
+                onChange={(e) => setData(e.target.value)}
+                required={!isPresetMode}
+              />
+            ) : (
               <div
                 className="calendar-hover-container"
                 onMouseEnter={() => setShowCalendar(true)}
@@ -339,33 +335,9 @@ const TaskModal = ({
                           : null;
                       }}
                     />
-                    {datasDuplicadas.length > 0 ? (
-                      <div className="selected-dates-list">
-                        <p>
-                          <strong>Dias selecionados:</strong>
-                        </p>
-                        <ul>
-                          {datasDuplicadas.map((d) => {
-                            const [ano, mes, dia] = d.split("-");
-                            return <li key={d}>{`${dia}/${mes}/${ano}`}</li>;
-                          })}
-                        </ul>
-                      </div>
-                    ) : (
-                      <p className="selected-dates-info">
-                        Nenhum dia selecionado ainda.
-                      </p>
-                    )}
                   </div>
                 )}
               </div>
-            ) : (
-              <input
-                type="date"
-                value={data}
-                onChange={(e) => setData(e.target.value)}
-                required={!isPresetMode}
-              />
             )}
           </div>
 
@@ -380,102 +352,73 @@ const TaskModal = ({
             />
           </div>
 
+          {/* Select Cliente */}
           <div className="form-group">
             <label>Cliente</label>
-            {/* <input
-              list="clientes-list"
-              value={cliente}
-              onChange={(e) => setCliente(e.target.value)}
-              placeholder="Escreve ou seleciona..."
-              required={!isPresetMode}
+            <Select
+              options={clienteOptions}
+              value={clienteOptions.find((opt) => opt.value === cliente) || null}
+              onChange={(selected) => setCliente(selected ? selected.value : "")}
+              placeholder="Seleciona um cliente..."
+              isClearable
+              isSearchable
             />
-            <datalist id="clientes-list">
-              {clientes.map((c) => (
-                <option key={c.id} value={c.nome} />
-              ))}
-            </datalist> */}
-            
-
-              <Select
-                options={clienteOptions}
-                value={clienteOptions.find((opt) => opt.value === cliente) || null}
-                onChange={(selected) => setCliente(selected ? selected.value : "")}
-                placeholder="Seleciona um cliente..."
-                isClearable
-                isSearchable
-                required={!isPresetMode}
-              />
           </div>
 
+          {/* Select Parceiro */}
           <div className="form-group">
             <label>Parceiro</label>
-            <input
-              list="parceiros-list"
-              value={parceiro}
-              onChange={(e) => setParceiro(e.target.value)}
-              placeholder="Escreve ou seleciona..."
-              required={!isPresetMode}
+            <Select
+              options={parceiroOptions}
+              value={parceiroOptions.find((opt) => opt.value === parceiro) || null}
+              onChange={(selected) => setParceiro(selected ? selected.value : "")}
+              placeholder="Seleciona um parceiro..."
+              isClearable
+              isSearchable
             />
-            <datalist id="parceiros-list">
-              {parceiros.map((c) => (
-                <option key={c.id} value={c.nome} />
-              ))}
-            </datalist>
           </div>
 
+          {/* Select Produto */}
           <div className="form-group">
             <label>Produto</label>
-            <input
-              list="produtos-list"
-              value={produto}
-              onChange={(e) => setProduto(e.target.value)}
-              placeholder="Escreve ou seleciona..."
-              required={!isPresetMode}
+            <Select
+              options={produtoOptions}
+              value={produtoOptions.find((opt) => opt.value === produto) || null}
+              onChange={(selected) => setProduto(selected ? selected.value : "")}
+              placeholder="Seleciona um produto..."
+              isClearable
+              isSearchable
             />
-            <datalist id="produtos-list">
-              {produtos.map((p) => (
-                <option key={p.id} value={p.produto} />
-              ))}
-            </datalist>
           </div>
 
+          {/* Select Contrato */}
           <div className="form-group">
             <label>Contrato</label>
-            <input
-              list="contratos-list"
-              value={contrato}
-              onChange={(e) => setContrato(e.target.value)}
-              placeholder={
-                cliente
-                  ? "Escreve ou seleciona..."
-                  : "Escolhe primeiro o cliente"
-              }
-              disabled={!cliente}
-              required={!isPresetMode}
+            <Select
+              options={contratoOptions}
+              value={contratoOptions.find((opt) => opt.value === contrato) || null}
+              onChange={(selected) => setContrato(selected ? selected.value : "")}
+              placeholder={cliente ? "Seleciona um contrato..." : "Escolhe primeiro o cliente"}
+              isDisabled={!cliente}
+              isClearable
+              isSearchable
             />
-            <datalist id="contratos-list">
-              {contratosFiltrados.map((c) => (
-                <option key={c.id} value={c.contrato} />
-              ))}
-            </datalist>
           </div>
 
+          {/* Select Atividade */}
           <div className="form-group">
             <label>Atividade</label>
-            <input
-              list="atividades-list"
-              value={atividade}
-              onChange={(e) => setAtividade(e.target.value)}
-              placeholder="Escreve ou seleciona..."
-              required={!isPresetMode}
+            <Select
+              options={atividadeOptions}
+              value={atividadeOptions.find((opt) => opt.value === atividade) || null}
+              onChange={(selected) => setAtividade(selected ? selected.value : "")}
+              placeholder="Seleciona uma atividade..."
+              isClearable
+              isSearchable
             />
-            <datalist id="atividades-list">
-              {atividades.map((a) => (
-                <option key={a.id} value={a.atividade} />
-              ))}
-            </datalist>
           </div>
 
+          {/* Tempos */}
           <div className="form-row">
             <div>
               <label>Tempo Atividade</label>
@@ -483,7 +426,6 @@ const TaskModal = ({
                 type="time"
                 value={tempoAtividade}
                 onChange={(e) => setTempoAtividade(e.target.value)}
-                required={!isPresetMode}
               />
             </div>
             <div>
@@ -492,7 +434,6 @@ const TaskModal = ({
                 type="time"
                 value={tempoFaturado}
                 onChange={(e) => setTempoFaturado(e.target.value)}
-                required={!isPresetMode}
               />
             </div>
             <div>
@@ -505,11 +446,8 @@ const TaskModal = ({
             </div>
           </div>
 
-          
-
-
+          {/* Local, Faturável, Viagem Faturável */}
           <div className="form-row-align">
-            {/* === Três grupos: Local / Faturável / Viagem Faturável === */}
             <div className="form-row-toggle">
               <div className="form-group">
                 <label>Local</label>
@@ -559,9 +497,7 @@ const TaskModal = ({
                   {["Yes", "No", "For analysis"].map((option) => (
                     <label
                       key={option}
-                      className={`toggle-option ${
-                        viagemFaturavel === option ? "active" : ""
-                      }`}
+                      className={`toggle-option ${viagemFaturavel === option ? "active" : ""}`}
                     >
                       <input
                         type="radio"
@@ -577,7 +513,6 @@ const TaskModal = ({
               </div>
             </div>
 
-            {/* === Inputs: Distância e Valor === */}
             <div className="form-column-right">
               <div>
                 <label>Distância Viagem (km)</label>
@@ -599,39 +534,6 @@ const TaskModal = ({
               </div>
             </div>
           </div>
-
-
-
-          {/* <div className="form-column-right">
-            <div>
-              <label>Distância Viagem (km)</label>
-              <input
-                type="number"
-                min="0"
-                value={distanciaViagem}
-                onChange={(e) => setDistanciaViagem(e.target.value)}
-              />
-            </div>
-            <div>
-              <label>Valor (€)</label>
-              <input
-                type="number"
-                min="0"
-                value={valorEuro}
-                onChange={(e) => setValorEuro(e.target.value)}
-              />
-            </div>
-          </div> */}
-
-          {/* <div className="modal-buttons">
-            <button type="submit" className="btn-primary">
-              {textoBotao}
-            </button>
-            <button type="button" className="btn-secondary" onClick={onClose}>
-              Cancelar
-            </button>
-          </div> */}
-          
         </form>
 
         <div className="modal-buttons-row">
@@ -642,8 +544,6 @@ const TaskModal = ({
             Cancelar
           </button>
         </div>
-
-        
       </div>
     </div>
   );
