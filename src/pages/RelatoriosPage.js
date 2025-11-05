@@ -480,7 +480,7 @@ const RelatoriosPage = () => {
               menuPortalTarget={document.body}
             />
 
-            <label>Faturar Deslocações</label>
+            {/* <label>Faturar Deslocações</label>
             <Select
               options={[
                 { value: "--Todos--", label: "--Todos--" },
@@ -491,7 +491,7 @@ const RelatoriosPage = () => {
               onChange={handleFiltroChange(setFaturarDesloc)}
               styles={customSelectStyles}
               menuPortalTarget={document.body}
-            />
+            /> */}
 
             <div className="filtro-botoes-relatorios">
               <button
