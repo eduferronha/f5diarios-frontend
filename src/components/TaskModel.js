@@ -280,7 +280,7 @@ const TaskModal = ({
 
   // 🔹 Opções para Selects
   const clienteOptions = clientes.map((c) => ({ value: c.nome, label: c.nome }));
-  const parceiroOptions = parceiros.map((p) => ({ value: p.nome, label: p.nome }));
+  const parceiroOptions = parceiros.map((p) => ({ value: p.parceiro, label: p.parceiro }));
   const produtoOptions = produtos.map((p) => ({ value: p.produto, label: p.produto }));
   const contratoOptions = contratosFiltrados.map((c) => ({ value: c.contrato, label: c.contrato }));
   const atividadeOptions = atividades.map((a) => ({ value: a.atividade, label: a.atividade }));
