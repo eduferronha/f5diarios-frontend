@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./Agenda.css";
 import api from "../services/api";
+import { ArrowUp } from "lucide-react";
+
 
 export default function Agenda() {
   const [users, setUsers] = useState([]);
@@ -18,6 +20,7 @@ export default function Agenda() {
 
   const token = localStorage.getItem("token");
 
+  const [showScroll, setShowScroll] = useState(false);
 
   // const loggedUser = (() => {
   //   try {
@@ -28,7 +31,18 @@ export default function Agenda() {
   //   }
   // })();
 
-    
+  // Mostrar botão apenas depois de rolar um pouco
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScroll(window.scrollY > 300);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
 
   // === Carregar utilizadores e eventos ===
@@ -412,6 +426,13 @@ const isWeekend = (dateString) => {
           </div>
         </div>
       )}
+
+    {showScroll && (
+      <button className="scroll-top-btn" onClick={scrollToTop}>
+        <ArrowUp size={20} />
+      </button>
+    )}
+
     </div>
   );
 }
