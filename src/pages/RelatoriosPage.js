@@ -132,10 +132,31 @@ const RelatoriosPage = () => {
     }
   }, [cliente, contratos]);
 
+  // 🔹 Opções de meses e anos
+  const anos = ["2023", "2024", "2025", "2026", "2027"].map((a) => ({
+    value: a,
+    label: a,
+  }));
+  const meses = [
+    "Janeiro",
+    "Fevereiro",
+    "Março",
+    "Abril",
+    "Maio",
+    "Junho",
+    "Julho",
+    "Agosto",
+    "Setembro",
+    "Outubro",
+    "Novembro",
+    "Dezembro",
+  ].map((m) => ({ value: m, label: m }));
+
   // 🔹 Aplicar filtros
   const aplicarFiltros = () => {
     let filtrados = [...dadosOriginais];
 
+    // Filtros principais
     if (cliente !== "---Todos---")
       filtrados = filtrados.filter((d) => d.cliente === cliente);
     if (contrato !== "---Todos---")
@@ -154,17 +175,41 @@ const RelatoriosPage = () => {
           String(d.viagem_faturavel).toLowerCase() === faturarDesloc.toLowerCase()
       );
 
+    // 🔹 Filtro por intervalo de datas (ano/mês)
+    const mesesLista = [
+      "Janeiro",
+      "Fevereiro",
+      "Março",
+      "Abril",
+      "Maio",
+      "Junho",
+      "Julho",
+      "Agosto",
+      "Setembro",
+      "Outubro",
+      "Novembro",
+      "Dezembro",
+    ];
+
+    const inicio = new Date(Number(anoInicio), mesesLista.indexOf(mesInicio), 1);
+    const fim = new Date(Number(anoFim), mesesLista.indexOf(mesFim) + 1, 0);
+
+    filtrados = filtrados.filter((d) => {
+      if (!d.data) return true;
+      const [dia, mes, ano] = d.data.split("/");
+      const dataObj = new Date(ano, mes - 1, dia);
+      return dataObj >= inicio && dataObj <= fim;
+    });
+
     setDados(filtrados);
     setFiltroAtivo(true);
   };
 
-  // 🔹 Se mudar qualquer filtro → reset cor
   const handleFiltroChange = (setter) => (selected) => {
     setter(selected ? selected.value : "");
     setFiltroAtivo(false);
   };
 
-  // 🔹 Limpar filtros
   const limparFiltros = () => {
     setDados(dadosOriginais);
     setCliente("---Todos---");
@@ -173,6 +218,10 @@ const RelatoriosPage = () => {
     setParceiro("---Todos---");
     setFaturar("--Todos--");
     setFaturarDesloc("--Todos--");
+    setAnoInicio("2025");
+    setMesInicio("Outubro");
+    setAnoFim("2025");
+    setMesFim("Outubro");
     setFiltroAtivo(false);
   };
 
@@ -220,7 +269,10 @@ const RelatoriosPage = () => {
       });
       const horas = Math.floor(totalMinutos / 60);
       const minutos = totalMinutos % 60;
-      return `${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}`;
+      return `${String(horas).padStart(2, "0")}:${String(minutos).padStart(
+        2,
+        "0"
+      )}`;
     };
 
     const totalTempoAtividade = somarTempos(linhas.map((l) => l["Tempo Atividade"]));
@@ -324,6 +376,42 @@ const RelatoriosPage = () => {
           <div className="filtros-container-relatorios">
             <h3>Pesquisar</h3>
 
+            <label>Ano Início</label>
+            <Select
+              options={anos}
+              value={{ value: anoInicio, label: anoInicio }}
+              onChange={handleFiltroChange(setAnoInicio)}
+              styles={customSelectStyles}
+              menuPortalTarget={document.body}
+            />
+
+            <label>Mês Início</label>
+            <Select
+              options={meses}
+              value={{ value: mesInicio, label: mesInicio }}
+              onChange={handleFiltroChange(setMesInicio)}
+              styles={customSelectStyles}
+              menuPortalTarget={document.body}
+            />
+
+            <label>Ano Fim</label>
+            <Select
+              options={anos}
+              value={{ value: anoFim, label: anoFim }}
+              onChange={handleFiltroChange(setAnoFim)}
+              styles={customSelectStyles}
+              menuPortalTarget={document.body}
+            />
+
+            <label>Mês Fim</label>
+            <Select
+              options={meses}
+              value={{ value: mesFim, label: mesFim }}
+              onChange={handleFiltroChange(setMesFim)}
+              styles={customSelectStyles}
+              menuPortalTarget={document.body}
+            />
+
             <label>Utilizador</label>
             <Select
               options={[
@@ -333,7 +421,6 @@ const RelatoriosPage = () => {
               value={{ value: utilizador, label: utilizador }}
               onChange={handleFiltroChange(setUtilizador)}
               styles={customSelectStyles}
-              isClearable
               isSearchable
               menuPortalTarget={document.body}
             />
@@ -347,7 +434,6 @@ const RelatoriosPage = () => {
               value={{ value: cliente, label: cliente }}
               onChange={handleFiltroChange(setCliente)}
               styles={customSelectStyles}
-              isClearable
               isSearchable
               menuPortalTarget={document.body}
             />
@@ -364,7 +450,19 @@ const RelatoriosPage = () => {
               value={{ value: contrato, label: contrato }}
               onChange={handleFiltroChange(setContrato)}
               styles={customSelectStyles}
-              isClearable
+              isSearchable
+              menuPortalTarget={document.body}
+            />
+
+            <label>Parceiro</label>
+            <Select
+              options={[
+                { value: "---Todos---", label: "---Todos---" },
+                ...parceiros.map((p) => ({ value: p.nome, label: p.nome })),
+              ]}
+              value={{ value: parceiro, label: parceiro }}
+              onChange={handleFiltroChange(setParceiro)}
+              styles={customSelectStyles}
               isSearchable
               menuPortalTarget={document.body}
             />
@@ -379,8 +477,6 @@ const RelatoriosPage = () => {
               value={{ value: faturar, label: faturar }}
               onChange={handleFiltroChange(setFaturar)}
               styles={customSelectStyles}
-              isClearable
-              isSearchable
               menuPortalTarget={document.body}
             />
 
@@ -394,8 +490,6 @@ const RelatoriosPage = () => {
               value={{ value: faturarDesloc, label: faturarDesloc }}
               onChange={handleFiltroChange(setFaturarDesloc)}
               styles={customSelectStyles}
-              isClearable
-              isSearchable
               menuPortalTarget={document.body}
             />
 
