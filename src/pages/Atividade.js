@@ -124,10 +124,10 @@ export default function Atividade() {
 
             <label>Utilizador</label>
             <Select
-              options={[{ value: "todos", label: "--- Todos ---" }, ...userOptions]}
+              options={[{ value: "todos", label: "Todos" }, ...userOptions]}
               value={
                 filtroUser === "todos"
-                  ? { value: "todos", label: "--- Todos ---" }
+                  ? { value: "todos", label: "Todos" }
                   : userOptions.find((opt) => opt.value === filtroUser) || null
               }
               onChange={(selected) => setFiltroUser(selected ? selected.value : "todos")}
@@ -139,10 +139,10 @@ export default function Atividade() {
 
             <label>Cliente</label>
             <Select
-              options={[{ value: "todos", label: "--- Todos ---" }, ...clienteOptions]}
+              options={[{ value: "todos", label: "Todos" }, ...clienteOptions]}
               value={
                 filtroCliente === "todos"
-                  ? { value: "todos", label: "--- Todos ---" }
+                  ? { value: "todos", label: "Todos" }
                   : clienteOptions.find((opt) => opt.value === filtroCliente) || null
               }
               onChange={(selected) => setFiltroCliente(selected ? selected.value : "todos")}
