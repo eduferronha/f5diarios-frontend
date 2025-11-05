@@ -3,6 +3,8 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "../components/TaskModel.css";
 import api from "../services/api";
+import Select from "react-select";
+
 
 const TaskModal = ({
   show,
@@ -268,6 +270,11 @@ const TaskModal = ({
         : "Guardar Alterações"
       : "Guardar";
 
+    const clienteOptions = clientes.map((c) => ({
+                value: c.nome,
+                label: c.nome,
+              }));
+
       return (
         <div
           className="modal-overlay"
@@ -375,7 +382,7 @@ const TaskModal = ({
 
           <div className="form-group">
             <label>Cliente</label>
-            <input
+            {/* <input
               list="clientes-list"
               value={cliente}
               onChange={(e) => setCliente(e.target.value)}
@@ -386,7 +393,18 @@ const TaskModal = ({
               {clientes.map((c) => (
                 <option key={c.id} value={c.nome} />
               ))}
-            </datalist>
+            </datalist> */}
+            
+
+              <Select
+                options={clienteOptions}
+                value={clienteOptions.find((opt) => opt.value === cliente) || null}
+                onChange={(selected) => setCliente(selected ? selected.value : "")}
+                placeholder="Seleciona um cliente..."
+                isClearable
+                isSearchable
+                required={!isPresetMode}
+              />
           </div>
 
           <div className="form-group">
