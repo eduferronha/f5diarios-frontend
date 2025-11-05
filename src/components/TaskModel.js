@@ -157,7 +157,42 @@ const TaskModal = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 🔸 Verificação de campos obrigatórios
+    // 🔹 Caso esteja a criar um PRESET
+    if (isPresetMode && !presetData) {
+      if (!nomePreset.trim()) {
+        alert("O campo 'Nome do Preset' é obrigatório.");
+        return;
+      }
+
+      const baseTaskData = {
+        descricao,
+        cliente,
+        parceiro,
+        produto,
+        contrato,
+        atividade,
+        tempo_atividade: tempoAtividade,
+        tempo_faturado: tempoFaturado,
+        tempo_viagem: tempoViagem,
+        distancia_viagem: distanciaViagem,
+        valor_euro: valorEuro,
+        local,
+        faturavel,
+        viagem_faturavel: viagemFaturavel,
+      };
+
+      const presetPayload = { ...baseTaskData, nome: nomePreset.trim() };
+      try {
+        await onPresetSaved(presetPayload);
+        onClose();
+      } catch (error) {
+        console.error("Erro ao guardar preset:", error);
+        alert("Erro ao guardar preset.");
+      }
+      return; // ✅ encerra aqui, sem continuar com as validações de tarefa
+    }
+
+    // 🔹 Caso esteja a CRIAR / EDITAR uma TAREFA normal
     if (!cliente || !produto || !contrato || !atividade || !tempoAtividade || !tempoFaturado || !faturavel) {
       alert("Preenche todos os campos obrigatórios: Cliente, Produto, Contrato, Atividade, Tempo Atividade, Tempo Faturado e Faturável.");
       return;
@@ -186,18 +221,8 @@ const TaskModal = ({
       viagem_faturavel: viagemFaturavel,
     };
 
+    // 🔹 Continua a lógica normal (tarefas ou duplicação)
     try {
-      if (isPresetMode && !presetData) {
-        if (!descricao.trim() && !nomePreset.trim()) {
-          alert("Indica um nome ou descrição para o preset.");
-          return;
-        }
-        const presetPayload = { ...baseTaskData, nome: nomePreset || descricao };
-        await onPresetSaved(presetPayload);
-        onClose();
-        return;
-      }
-
       if (presetData) {
         if (!data) {
           alert("Seleciona uma data para a nova tarefa.");
@@ -240,6 +265,7 @@ const TaskModal = ({
       alert("Erro ao guardar.");
     }
   };
+
 
   const toggleData = (date) => {
     const dataISO = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
