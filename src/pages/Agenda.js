@@ -428,9 +428,13 @@ const isWeekend = (dateString) => {
       )}
 
     {showScroll && (
-      <button className="scroll-top-btn" onClick={scrollToTop}>
-        <ArrowUp size={20} />
-      </button>
+      <button
+          className={`scroll-top-btn ${showScroll ? "show" : ""}`}
+          onClick={scrollToTop}
+        >
+          <ArrowUp size={22} />
+        </button>
+
     )}
 
     </div>
