@@ -1,4 +1,9 @@
 import React, { useState, useEffect } from "react";
+import {
+  useReactTable,
+  getCoreRowModel,
+  flexRender,
+} from "@tanstack/react-table";
 import "./Agenda.css";
 import api from "../services/api";
 
@@ -18,7 +23,6 @@ export default function Agenda() {
 
   const token = localStorage.getItem("token");
 
-  // === Carregar utilizadores e eventos ===
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -38,7 +42,7 @@ export default function Agenda() {
     fetchData();
   }, []);
 
-  // === Gerar lista de dias ===
+  // === Gerar lista de dias a partir de segunda ===
   const getDias = () => {
     const lista = [];
     const hoje = new Date();
@@ -55,14 +59,42 @@ export default function Agenda() {
 
   const diasLista = getDias();
 
-  // === Obter evento de um utilizador num dia ===
-  const getEvent = (data, user) => {
-    return events.find(
-      (e) => e.data === data && e.utilizador?.toLowerCase() === user?.toLowerCase()
+  // === Buscar evento ===
+  const getEvent = (data, user) =>
+    events.find(
+      (e) =>
+        e.data === data &&
+        e.utilizador?.toLowerCase() === user?.toLowerCase()
+    );
+
+  // === Feriado e fim de semana ===
+  const isHoliday = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const feriados = [
+      new Date(year, 0, 1),
+      new Date(year, 3, 25),
+      new Date(year, 4, 1),
+      new Date(year, 5, 10),
+      new Date(year, 5, 24),
+      new Date(year, 7, 15),
+      new Date(year, 9, 5),
+      new Date(year, 10, 1),
+      new Date(year, 11, 1),
+      new Date(year, 11, 8),
+      new Date(year, 11, 25),
+    ];
+    return feriados.some(
+      (f) => f.getDate() === date.getDate() && f.getMonth() === date.getMonth()
     );
   };
 
-  // === Abrir modal ===
+  const isWeekend = (dateString) => {
+    const day = new Date(dateString).getDay();
+    return day === 0 || day === 6;
+  };
+
+  // === Clicar numa célula ===
   const handleCellClick = (data, user) => {
     const existing = getEvent(data, user);
     if (existing) {
@@ -145,7 +177,8 @@ export default function Agenda() {
   // === Eliminar ===
   const handleDelete = async () => {
     if (!editingEvent) return;
-    if (!window.confirm("Tens a certeza que queres eliminar esta marcação?")) return;
+    if (!window.confirm("Tens a certeza que queres eliminar esta marcação?"))
+      return;
     try {
       await api.delete(`/agenda/${editingEvent.id}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -161,32 +194,55 @@ export default function Agenda() {
     }
   };
 
-  // === Verificar feriados / fim de semana ===
-  const isHoliday = (dateString) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const feriados = [
-      new Date(year, 0, 1),
-      new Date(year, 3, 25),
-      new Date(year, 4, 1),
-      new Date(year, 5, 10),
-      new Date(year, 5, 24),
-      new Date(year, 7, 15),
-      new Date(year, 9, 5),
-      new Date(year, 10, 1),
-      new Date(year, 11, 1),
-      new Date(year, 11, 8),
-      new Date(year, 11, 25),
-    ];
-    return feriados.some(
-      (f) => f.getDate() === date.getDate() && f.getMonth() === date.getMonth()
-    );
-  };
+  // === Tabela dinâmica ===
+  const columns = [
+    {
+      accessorKey: "data",
+      header: "Data",
+      cell: (info) => new Date(info.getValue()).toLocaleDateString("pt-PT"),
+    },
+    ...users.map((u) => ({
+      accessorKey: u.username,
+      header: u.nome,
+      cell: (info) => {
+        const evento = getEvent(info.row.original.data, u.username);
+        const data = info.row.original.data;
 
-  const isWeekend = (dateString) => {
-    const day = new Date(dateString).getDay();
-    return day === 0 || day === 6;
-  };
+        let bgColor = "transparent";
+        if (isWeekend(data) || isHoliday(data)) bgColor = "#d6d6d6";
+        else if (evento) {
+          bgColor = evento.descricao?.toLowerCase().includes("férias")
+            ? "#fff59d"
+            : "#c8e6c9";
+        }
+
+        return (
+          <div
+            className="agenda-cell"
+            style={{ backgroundColor: bgColor }}
+            onClick={() => handleCellClick(data, u.username)}
+          >
+            {evento && (
+              <div className="event-info">
+                <strong>{evento.descricao}</strong>
+                <div>
+                  {evento.hora_inicio} - {evento.hora_fim}
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      },
+    })),
+  ];
+
+  const data = diasLista.map((data) => ({ data }));
+
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   return (
     <div className="agenda-container">
@@ -210,67 +266,32 @@ export default function Agenda() {
         <div className="agenda-table-wrapper">
           <table className="agenda-table">
             <thead>
-              <tr>
-                <th className="sticky-col">Data</th>
-                {users.map((u) => (
-                  <th key={u.id}>{u.nome}</th>
-                ))}
-              </tr>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <th key={header.id}>
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                    </th>
+                  ))}
+                </tr>
+              ))}
             </thead>
-
             <tbody>
-              {diasLista.map((data) => {
-                const hoje = new Date().toISOString().split("T")[0];
-                const isToday = data === hoje;
-
-                return (
-                  <tr key={data}>
-                    <td
-                      className="agenda-date sticky-col"
-                      style={{
-                        backgroundColor: isToday ? "#f3e5f5" : "#fafafa",
-                        fontWeight: isToday ? "bold" : "normal",
-                      }}
-                    >
-                      {new Date(data).toLocaleDateString("pt-PT")}
+              {table.getRowModel().rows.map((row) => (
+                <tr key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </td>
-
-                    {users.map((u) => {
-                      const evento = getEvent(data, u.username);
-                      let bgColor = "transparent";
-                      if (isWeekend(data) || isHoliday(data)) bgColor = "#d6d6d6";
-                      else if (evento) {
-                        bgColor = evento.descricao?.toLowerCase().includes("férias")
-                          ? "#fff59d"
-                          : "#c8e6c9";
-                      }
-
-                      return (
-                        <td
-                          key={u.id}
-                          className="agenda-cell"
-                          style={{ backgroundColor: bgColor }}
-                          onClick={() => handleCellClick(data, u.username)}
-                          title={
-                            evento
-                              ? `${evento.descricao} (${evento.hora_inicio} - ${evento.hora_fim})`
-                              : ""
-                          }
-                        >
-                          {evento && (
-                            <div className="event-info">
-                              <strong>{evento.descricao}</strong>
-                              <div>
-                                {evento.hora_inicio} - {evento.hora_fim}
-                              </div>
-                            </div>
-                          )}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
+                  ))}
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
