@@ -225,13 +225,22 @@ const renderForm = () => {
   }
 };
 
-
-
-
   const getHeaders = () => {
     if (!data.length) return [];
-    return Object.keys(data[0]).filter((key) => key !== "_id" && key !== "password");
+    return Object.keys(data[0]).filter(
+      (key) =>
+        key.toLowerCase() !== "id" && // esconde "id"
+        key !== "_id" &&              // esconde "_id"
+        key !== "password"            // esconde passwords
+    );
   };
+
+
+
+  // const getHeaders = () => {
+  //   if (!data.length) return [];
+  //   return Object.keys(data[0]).filter((key) => key !== "_id" && key !== "password");
+  // };
 
   return (
     <div className="admin-container">
