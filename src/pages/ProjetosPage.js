@@ -15,8 +15,8 @@ const ProjetosPage = () => {
   const [contratosFiltrados, setContratosFiltrados] = useState([]);
 
   // Filtros
-  const [cliente, setCliente] = useState("---Todos---");
-  const [contrato, setContrato] = useState("---Todos---");
+  const [cliente, setCliente] = useState("Todos");
+  const [contrato, setContrato] = useState("Todos");
 
   // Campos do novo projeto
   const [novoCliente, setNovoCliente] = useState("");
@@ -59,7 +59,7 @@ const ProjetosPage = () => {
 
   // 🟦 Filtrar contratos conforme cliente
   useEffect(() => {
-    if (cliente === "---Todos---") {
+    if (cliente === "Todos") {
       setContratosFiltrados(contratos);
     } else {
       const filtrados = contratos.filter(
@@ -114,10 +114,10 @@ const ProjetosPage = () => {
   // 🟦 Aplicar filtros
   const aplicarFiltros = () => {
     let filtrados = [...projetosOriginais];
-    if (cliente !== "---Todos---") {
+    if (cliente !== "Todos") {
       filtrados = filtrados.filter((p) => p.cliente === cliente);
     }
-    if (contrato !== "---Todos---") {
+    if (contrato !== "Todos") {
       filtrados = filtrados.filter((p) => p.contrato === contrato);
     }
     setProjetos(filtrados);
@@ -272,7 +272,7 @@ const ProjetosPage = () => {
           <h3>Filtros</h3>
           <label>Cliente</label>
           <select value={cliente} onChange={(e) => setCliente(e.target.value)}>
-            <option>---Todos---</option>
+            <option>Todos</option>
             {clientes.map((c) => (
               <option key={c.id} value={c.nome}>
                 {c.nome}
@@ -282,7 +282,7 @@ const ProjetosPage = () => {
 
           <label>Contrato</label>
           <select value={contrato} onChange={(e) => setContrato(e.target.value)}>
-            <option>---Todos---</option>
+            <option>Todos</option>
             {contratosFiltrados.map((c) => (
               <option key={c.id} value={c.contrato}>
                 {c.contrato}
@@ -295,8 +295,8 @@ const ProjetosPage = () => {
             <button
               onClick={() => {
                 setProjetos(projetosOriginais);
-                setCliente("---Todos---");
-                setContrato("---Todos---");
+                setCliente("Todos");
+                setContrato("Todos");
               }}
             >
               Limpar

@@ -18,12 +18,12 @@ const RelatoriosPage = () => {
   const [mesInicio, setMesInicio] = useState("Outubro");
   const [anoFim, setAnoFim] = useState("2025");
   const [mesFim, setMesFim] = useState("Outubro");
-  const [faturar, setFaturar] = useState("--Todos--");
-  const [faturarDesloc, setFaturarDesloc] = useState("--Todos--");
-  const [cliente, setCliente] = useState("---Todos---");
-  const [utilizador, setUtilizador] = useState("---Todos---");
-  const [parceiro, setParceiro] = useState("---Todos---");
-  const [contrato, setContrato] = useState("---Todos---");
+  const [faturar, setFaturar] = useState("Todos");
+  const [faturarDesloc, setFaturarDesloc] = useState("Todos");
+  const [cliente, setCliente] = useState("-Todos-");
+  const [utilizador, setUtilizador] = useState("-Todos-");
+  const [parceiro, setParceiro] = useState("-Todos-");
+  const [contrato, setContrato] = useState("-Todos-");
 
   const [clientes, setClientes] = useState([]);
   const [utilizadores, setUtilizadores] = useState([]);
@@ -122,7 +122,7 @@ const RelatoriosPage = () => {
 
   // 🔹 Filtrar contratos conforme cliente
   useEffect(() => {
-    if (cliente === "---Todos---") {
+    if (cliente === "-Todos-") {
       setContratosFiltrados(contratos);
     } else {
       const filtrados = contratos.filter(
@@ -158,17 +158,17 @@ const RelatoriosPage = () => {
 
     // Filtros principais
     // 🔹 Filtros principais
-if (cliente !== "---Todos---")
+if (cliente !== "-Todos-")
   filtrados = filtrados.filter((d) => d.cliente === cliente);
-if (contrato !== "---Todos---")
+if (contrato !== "-Todos-")
   filtrados = filtrados.filter((d) => d.contrato === contrato);
-if (parceiro !== "---Todos---")
+if (parceiro !== "-Todos-")
   filtrados = filtrados.filter((d) => d.parceiro === parceiro);
-if (utilizador !== "---Todos---")
+if (utilizador !== "-Todos-")
   filtrados = filtrados.filter((d) => d.username === utilizador);
 
 // 🔹 Filtro "Faturar"
-if (faturar !== "--Todos--") {
+if (faturar !== "Todos") {
   filtrados = filtrados.filter((d) => {
     const valor = String(d.faturavel || "").toLowerCase();
     if (faturar === "Sim") return valor === "yes" || valor === "for analysis";
@@ -178,7 +178,7 @@ if (faturar !== "--Todos--") {
 }
 
 // 🔹 Filtro "Faturar Deslocações"
-if (faturarDesloc !== "--Todos--") {
+if (faturarDesloc !== "Todos") {
   filtrados = filtrados.filter((d) => {
     const valor = String(d.viagem_faturavel || "").toLowerCase();
     if (faturarDesloc === "Sim") return valor === "yes";
@@ -245,12 +245,12 @@ filtrados = filtrados.filter((d) => {
 
   const limparFiltros = () => {
     setDados(dadosOriginais);
-    setCliente("---Todos---");
-    setContrato("---Todos---");
-    setUtilizador("---Todos---");
-    setParceiro("---Todos---");
-    setFaturar("--Todos--");
-    setFaturarDesloc("--Todos--");
+    setCliente("-Todos-");
+    setContrato("-Todos-");
+    setUtilizador("-Todos-");
+    setParceiro("-Todos-");
+    setFaturar("Todos");
+    setFaturarDesloc("Todos");
     setAnoInicio("2025");
     setMesInicio("Outubro");
     setAnoFim("2025");
@@ -448,7 +448,7 @@ filtrados = filtrados.filter((d) => {
             <label>Utilizador</label>
             <Select
               options={[
-                { value: "---Todos---", label: "---Todos---" },
+                { value: "-Todos-", label: "-Todos-" },
                 ...utilizadores.map((u) => ({ value: u.nome, label: u.nome })),
               ]}
               value={{ value: utilizador, label: utilizador }}
@@ -461,7 +461,7 @@ filtrados = filtrados.filter((d) => {
             <label>Cliente</label>
             <Select
               options={[
-                { value: "---Todos---", label: "---Todos---" },
+                { value: "-Todos-", label: "-Todos-" },
                 ...clientes.map((c) => ({ value: c.nome, label: c.nome })),
               ]}
               value={{ value: cliente, label: cliente }}
@@ -474,7 +474,7 @@ filtrados = filtrados.filter((d) => {
             <label>Contrato</label>
             <Select
               options={[
-                { value: "---Todos---", label: "---Todos---" },
+                { value: "-Todos-", label: "-Todos-" },
                 ...contratosFiltrados.map((c) => ({
                   value: c.contrato,
                   label: c.contrato,
@@ -490,7 +490,7 @@ filtrados = filtrados.filter((d) => {
             {/* <label>Parceiro</label>
             <Select
               options={[
-                { value: "---Todos---", label: "---Todos---" },
+                { value: "-Todos-", label: "-Todos-" },
                 ...parceiros.map((p) => ({ value: p.nome, label: p.nome })),
               ]}
               value={{ value: parceiro, label: parceiro }}
@@ -503,7 +503,7 @@ filtrados = filtrados.filter((d) => {
             <label>Faturar</label>
             <Select
               options={[
-                { value: "--Todos--", label: "--Todos--" },
+                { value: "Todos", label: "Todos" },
                 { value: "Sim", label: "Sim" },
                 { value: "Não", label: "Não" },
               ]}
@@ -516,7 +516,7 @@ filtrados = filtrados.filter((d) => {
             {/* <label>Faturar Deslocações</label>
             <Select
               options={[
-                { value: "--Todos--", label: "--Todos--" },
+                { value: "Todos", label: "Todos" },
                 { value: "Sim", label: "Sim" },
                 { value: "Não", label: "Não" },
               ]}
@@ -527,12 +527,12 @@ filtrados = filtrados.filter((d) => {
             /> */}
 
             <div className="filtro-botoes-relatorios">
-              <button
+              {/* <button
                 onClick={aplicarFiltros}
                 className={filtroAtivo ? "filtro-ativo" : ""}
               >
                 Filtrar
-              </button>
+              </button> */}
               <button onClick={limparFiltros}>Limpar</button>
             </div>
           </div>
