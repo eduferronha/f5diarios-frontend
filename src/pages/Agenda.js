@@ -17,16 +17,26 @@ export default function Agenda() {
   const [editingEvent, setEditingEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showScroll, setShowScroll] = useState(false);
-
+  const tableRef = React.useRef(null);
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    const handleScroll = () => setShowScroll(window.scrollY > 300);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const table = tableRef.current;
+    if (!table) return;
+
+    const handleScroll = () => {
+      setShowScroll(table.scrollTop > 200);
+    };
+
+    table.addEventListener("scroll", handleScroll);
+    return () => table.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+  const scrollToTop = () => {
+    if (tableRef.current) {
+      tableRef.current.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   // === Carregar utilizadores e eventos ===
   useEffect(() => {
@@ -215,7 +225,7 @@ export default function Agenda() {
           <p>A carregar agenda...</p>
         </div>
       ) : (
-        <div className="agenda-table-wrapper">
+        <div className="agenda-table-wrapper" ref={tableRef}>
           <table className="agenda-table">
             <thead>
               <tr>
@@ -281,7 +291,18 @@ export default function Agenda() {
               })}
             </tbody>
           </table>
+
+          {showScroll && (
+            <button
+              className={`scroll-top-btn ${showScroll ? "show" : ""}`}
+              onClick={scrollToTop}
+              aria-label="Voltar ao topo"
+            >
+              <ArrowUp size={22} />
+            </button>
+          )}
         </div>
+
       )}
 
       {showModal && (
@@ -353,16 +374,6 @@ export default function Agenda() {
             </div>
           </div>
         </div>
-      )}
-
-      {showScroll && (
-        <button
-          className={`scroll-top-btn ${showScroll ? "show" : ""}`}
-          onClick={scrollToTop}
-          aria-label="Voltar ao topo"
-        >
-          <ArrowUp size={22} />
-        </button>
       )}
 
     </div>
