@@ -8,9 +8,6 @@ import TaskModal from "../components/TaskModel";
 import { Edit3 } from "lucide-react";
 import Select from "react-select";
 
-/* eslint-disable react-hooks/exhaustive-deps */
-
-
 const RelatoriosPage = () => {
   const token = localStorage.getItem("token");
   const [loading, setLoading] = useState(true);
@@ -30,7 +27,7 @@ const RelatoriosPage = () => {
 
   const [clientes, setClientes] = useState([]);
   const [utilizadores, setUtilizadores] = useState([]);
-  // const [parceiros, setParceiros] = useState([]);
+  const [parceiros, setParceiros] = useState([]);
   const [contratos, setContratos] = useState([]);
   const [contratosFiltrados, setContratosFiltrados] = useState([]);
 
@@ -104,18 +101,17 @@ const RelatoriosPage = () => {
   useEffect(() => {
     const carregarListas = async () => {
       try {
-        // const [clientesRes, contratosRes, parceirosRes, utilizadoresRes] =
-        const [clientesRes, contratosRes, utilizadoresRes] =
+        const [clientesRes, contratosRes, parceirosRes, utilizadoresRes] =
           await Promise.all([
             api.get("/clients/", { headers: { Authorization: `Bearer ${token}` } }),
             api.get("/contracts/", { headers: { Authorization: `Bearer ${token}` } }),
-            // api.get("/partners/", { headers: { Authorization: `Bearer ${token}` } }),
+            api.get("/partners/", { headers: { Authorization: `Bearer ${token}` } }),
             api.get("/users/", { headers: { Authorization: `Bearer ${token}` } }),
           ]);
 
         setClientes(clientesRes.data);
         setContratos(contratosRes.data);
-        // setParceiros(parceirosRes.data);
+        setParceiros(parceirosRes.data);
         setUtilizadores(utilizadoresRes.data);
       } catch (error) {
         console.error("Erro ao carregar listas:", error);
@@ -180,34 +176,30 @@ const RelatoriosPage = () => {
       );
 
     // 🔹 Filtro por intervalo de datas (ano/mês)
-    // 🔹 Filtro por intervalo de datas (ano/mês)
-      const mesesLista = [
-        "janeiro", "fevereiro", "março", "abril", "maio", "junho",
-        "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
-      ];
+    const mesesLista = [
+      "Janeiro",
+      "Fevereiro",
+      "Março",
+      "Abril",
+      "Maio",
+      "Junho",
+      "Julho",
+      "Agosto",
+      "Setembro",
+      "Outubro",
+      "Novembro",
+      "Dezembro",
+    ];
 
-      const inicio = new Date(
-        Number(anoInicio),
-        mesesLista.indexOf(mesInicio.toLowerCase()),
-        1
-      );
-      const fim = new Date(
-        Number(anoFim),
-        mesesLista.indexOf(mesFim.toLowerCase()) + 1,
-        0,
-        23, 59, 59 // inclui o fim do dia
-      );
+    const inicio = new Date(Number(anoInicio), mesesLista.indexOf(mesInicio), 1);
+    const fim = new Date(Number(anoFim), mesesLista.indexOf(mesFim) + 1, 0);
 
-      filtrados = filtrados.filter((d) => {
-        if (!d.data) return false;
-        const partes = d.data.split("/");
-        if (partes.length !== 3) return false;
-        const [dia, mes, ano] = partes.map((p) => parseInt(p));
-        if (isNaN(dia) || isNaN(mes) || isNaN(ano)) return false;
-        const dataObj = new Date(ano, mes - 1, dia);
-        return dataObj >= inicio && dataObj <= fim;
-      });
-
+    filtrados = filtrados.filter((d) => {
+      if (!d.data) return true;
+      const [dia, mes, ano] = d.data.split("/");
+      const dataObj = new Date(ano, mes - 1, dia);
+      return dataObj >= inicio && dataObj <= fim;
+    });
 
     setDados(filtrados);
     setFiltroAtivo(true);
