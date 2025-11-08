@@ -545,31 +545,39 @@ filtrados = filtrados.filter((d) => {
                 </tr>
               </thead>
               <tbody>
-                {dados.map((d, i) => (
-                  <tr key={i}>
-                    <td className="cell-edit">
-                      <button
-                        className="btn-icon"
-                        title="Editar tarefa"
-                        onClick={() => handleEdit(d)}
-                      >
-                        <Edit3 size={16} color="#237c9b" />
-                      </button>
+                {dados.length === 0 ? (
+                  <tr>
+                    <td colSpan="13" style={{ textAlign: "center", padding: "20px", color: "#666" }}>
+                      Nenhum resultado encontrado com os filtros aplicados.
                     </td>
-                    <td>{d.data}</td>
-                    <td>{d.local}</td>
-                    <td>{d.cliente}</td>
-                    <td>{d.parceiro}</td>
-                    <td>{d.produto}</td>
-                    <td>{d.contrato}</td>
-                    <td>{d.atividade}</td>
-                    <td>{d.tempo_atividade}</td>
-                    <td>{d.tempo_faturado}</td>
-                    <td>{d.faturavel}</td>
-                    <td>{d.viagem_faturavel}</td>
-                    <td>{d.valor_euro}</td>
                   </tr>
-                ))}
+                ) : (
+                  dados.map((d, i) => (
+                    <tr key={i}>
+                      <td className="cell-edit">
+                        <button
+                          className="btn-icon"
+                          title="Editar tarefa"
+                          onClick={() => handleEdit(d)}
+                        >
+                          <Edit3 size={16} color="#237c9b" />
+                        </button>
+                      </td>
+                      <td>{d.data}</td>
+                      <td>{d.local}</td>
+                      <td>{d.cliente}</td>
+                      <td>{d.parceiro}</td>
+                      <td>{d.produto}</td>
+                      <td>{d.contrato}</td>
+                      <td>{d.atividade}</td>
+                      <td>{d.tempo_atividade}</td>
+                      <td>{d.tempo_faturado}</td>
+                      <td>{d.faturavel}</td>
+                      <td>{d.viagem_faturavel}</td>
+                      <td>{d.valor_euro}</td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
