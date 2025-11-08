@@ -95,9 +95,11 @@ function App() {
             </AdminRoute>
           }
         />
-      </Routes>
 
       <Route path="/profile" element={<ProfilePage />} />
+
+      </Routes>
+
 
     </Router>
   );
