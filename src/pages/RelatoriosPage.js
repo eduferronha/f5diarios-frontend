@@ -177,32 +177,49 @@ const RelatoriosPage = () => {
 
     // 🔹 Filtro por intervalo de datas (ano/mês)
     // 🔹 Filtro por intervalo de datas (ano/mês)
-      const mesesLista = [
-        "janeiro", "fevereiro", "março", "abril", "maio", "junho",
-        "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
-      ];
+      // 🔹 Filtro por intervalo de datas (ano/mês)
+const mesesLista = [
+  "janeiro", "fevereiro", "março", "abril", "maio", "junho",
+  "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
+];
 
-      const inicio = new Date(
-        Number(anoInicio),
-        mesesLista.indexOf(mesInicio.toLowerCase()),
-        1
-      );
-      const fim = new Date(
-        Number(anoFim),
-        mesesLista.indexOf(mesFim.toLowerCase()) + 1,
-        0,
-        23, 59, 59 // inclui o fim do dia
-      );
+const inicio = new Date(
+  Number(anoInicio),
+  mesesLista.indexOf(mesInicio.toLowerCase()),
+  1
+);
+const fim = new Date(
+  Number(anoFim),
+  mesesLista.indexOf(mesFim.toLowerCase()) + 1,
+  0,
+  23, 59, 59 // último dia, até o fim do dia
+);
 
-      filtrados = filtrados.filter((d) => {
-        if (!d.data) return false;
-        const partes = d.data.split("/");
-        if (partes.length !== 3) return false;
-        const [dia, mes, ano] = partes.map((p) => parseInt(p));
-        if (isNaN(dia) || isNaN(mes) || isNaN(ano)) return false;
-        const dataObj = new Date(ano, mes - 1, dia);
-        return dataObj >= inicio && dataObj <= fim;
-      });
+filtrados = filtrados.filter((d) => {
+  if (!d.data) return false;
+
+  // Remove espaços e aceita tanto "/" como "-"
+  const partes = d.data.trim().replace(/-/g, "/").split("/");
+  if (partes.length !== 3) return false;
+
+  // Lida com formatos "dd/mm/yyyy" e "yyyy/mm/dd"
+  let dia, mes, ano;
+  if (partes[0].length === 4) {
+    // formato "yyyy/mm/dd"
+    [ano, mes, dia] = partes.map(Number);
+  } else {
+    // formato "dd/mm/yyyy"
+    [dia, mes, ano] = partes.map(Number);
+  }
+
+  if (isNaN(dia) || isNaN(mes) || isNaN(ano)) return false;
+
+  const dataObj = new Date(ano, mes - 1, dia);
+  if (isNaN(dataObj)) return false; // ainda não é data válida
+
+  return dataObj >= inicio && dataObj <= fim;
+});
+
 
 
     setDados(filtrados);
