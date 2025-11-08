@@ -166,3 +166,30 @@ body {
     }
   }
 }
+
+
+/* === UTILIZADOR + SETTINGS === */
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #237c9b;
+  font-weight: 500;
+}
+
+.navbar-username {
+  font-size: 0.9rem;
+}
+
+.settings-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #237c9b;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.settings-button:hover {
+  color: #1b607a;
+  transform: rotate(25deg);
+}

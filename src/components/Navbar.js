@@ -2,18 +2,21 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 import logo from "../f5tci_logo_small.png";
+import { Settings } from "lucide-react"; // Ícone moderno
 
 function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
   const [role, setRole] = useState(null);
+  const [username, setUsername] = useState("");
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
       setRole(parsedUser.role);
+      setUsername(parsedUser.username || parsedUser.name || "");
     }
   }, []);
 
@@ -79,7 +82,6 @@ function Navbar() {
             >
               Projetos
             </li>
-
             <li
               className={`nav-item ${
                 location.pathname === "/admin" ? "active" : ""
@@ -91,6 +93,18 @@ function Navbar() {
           </>
         )}
       </ul>
+
+      {/* 🔹 Nome do utilizador + botão settings */}
+      <div className="navbar-user">
+        <span className="navbar-username">{username}</span>
+        <button
+          className="settings-button"
+          title="Definições"
+          onClick={() => navigate("/settings")}
+        >
+          <Settings size={18} />
+        </button>
+      </div>
     </nav>
   );
 }
