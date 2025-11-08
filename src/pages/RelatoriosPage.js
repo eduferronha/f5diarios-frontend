@@ -8,6 +8,9 @@ import TaskModal from "../components/TaskModel";
 import { Edit3 } from "lucide-react";
 import Select from "react-select";
 
+/* eslint-disable react-hooks/exhaustive-deps */
+
+
 const RelatoriosPage = () => {
   const token = localStorage.getItem("token");
   const [loading, setLoading] = useState(true);
