@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import "./Agenda.css";
 import api from "../services/api";
 import { ArrowUp } from "lucide-react";
@@ -21,16 +21,12 @@ export default function Agenda() {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    const handleScroll = () => {
-      setShowScroll(window.scrollY > 300);
-    };
+    const handleScroll = () => setShowScroll(window.scrollY > 300);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   // === Carregar utilizadores e eventos ===
   useEffect(() => {
@@ -52,35 +48,6 @@ export default function Agenda() {
     fetchData();
   }, []);
 
-  const headerRef = useRef(null);
-  const bodyRef = useRef(null);
-
-  // === Sincronizar larguras entre cabeçalho e corpo ===
-  useEffect(() => {
-    const syncWidths = () => {
-      const headerTable = headerRef.current?.querySelector("table");
-      const bodyTable = bodyRef.current?.querySelector("table");
-
-      if (!headerTable || !bodyTable) return;
-
-      const headerCells = headerTable.querySelectorAll("th");
-      const bodyRow = bodyTable.querySelector("tr");
-      if (!bodyRow) return;
-
-      const bodyCells = bodyRow.querySelectorAll("td");
-
-      bodyCells.forEach((cell, i) => {
-        if (headerCells[i]) {
-          headerCells[i].style.width = `${cell.offsetWidth}px`;
-        }
-      });
-    };
-
-    syncWidths();
-    window.addEventListener("resize", syncWidths);
-    return () => window.removeEventListener("resize", syncWidths);
-  }, [users, dias]);
-
   // === Gerar lista de dias ===
   const getDias = () => {
     const lista = [];
@@ -98,12 +65,11 @@ export default function Agenda() {
 
   const diasLista = getDias();
 
-  const getEvent = (data, user) => {
-    return events.find(
+  const getEvent = (data, user) =>
+    events.find(
       (e) =>
         e.data === data && e.utilizador?.toLowerCase() === user?.toLowerCase()
     );
-  };
 
   const handleCellClick = (data, user) => {
     const existing = getEvent(data, user);
@@ -249,85 +215,75 @@ export default function Agenda() {
           <p>A carregar agenda...</p>
         </div>
       ) : (
-        <div className="agenda-table-container">
-          {/* Header fixo */}
-          <div className="agenda-table-header" ref={headerRef}>
-            <table>
-              <thead>
-                <tr>
-                  <th>Data</th>
-                  {users.map((u) => (
-                    <th key={u.id}>{u.nome}</th>
-                  ))}
-                </tr>
-              </thead>
-            </table>
-          </div>
+        <div className="agenda-table-wrapper">
+          <table className="agenda-table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                {users.map((u) => (
+                  <th key={u.id}>{u.nome}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {diasLista.map((data) => {
+                const hoje = new Date().toISOString().split("T")[0];
+                const isToday = data === hoje;
+                return (
+                  <tr key={data}>
+                    <td
+                      className="agenda-date"
+                      style={{
+                        backgroundColor: isToday ? "#f3e5f5" : "transparent",
+                        fontWeight: isToday ? "bold" : "normal",
+                      }}
+                    >
+                      {new Date(data).toLocaleDateString("pt-PT")}
+                    </td>
+                    {users.map((u) => {
+                      const evento = getEvent(data, u.username);
+                      let bgColor = "transparent";
 
-          {/* Corpo scrollável */}
-          <div className="agenda-table-body" ref={bodyRef}>
-            <table>
-              <tbody>
-                {diasLista.map((data) => {
-                  const hoje = new Date().toISOString().split("T")[0];
-                  const isToday = data === hoje;
-                  return (
-                    <tr key={data}>
-                      <td
-                        className="agenda-date"
-                        style={{
-                          backgroundColor: isToday ? "#f3e5f5" : "transparent",
-                          fontWeight: isToday ? "bold" : "normal",
-                        }}
-                      >
-                        {new Date(data).toLocaleDateString("pt-PT")}
-                      </td>
-                      {users.map((u) => {
-                        const evento = getEvent(data, u.username);
-                        let bgColor = "transparent";
+                      if (isWeekend(data) || isHoliday(data)) bgColor = "#d6d6d6";
+                      else if (evento) {
+                        bgColor = evento.descricao
+                          ?.toLowerCase()
+                          .includes("férias")
+                          ? "#fff59d"
+                          : "#c8e6c9";
+                      }
 
-                        if (isWeekend(data) || isHoliday(data)) bgColor = "#d6d6d6";
-                        else if (evento) {
-                          bgColor = evento.descricao
-                            ?.toLowerCase()
-                            .includes("férias")
-                            ? "#fff59d"
-                            : "#c8e6c9";
-                        }
-
-                        return (
-                          <td
-                            key={u.id}
-                            className="agenda-cell"
-                            style={{ backgroundColor: bgColor }}
-                            onClick={() => handleCellClick(data, u.username)}
-                            title={
-                              evento
-                                ? `${evento.descricao} (${evento.hora_inicio} - ${evento.hora_fim})`
-                                : ""
-                            }
-                          >
-                            {evento && (
-                              <div className="event-info">
-                                <strong>{evento.descricao}</strong>
-                                <div>
-                                  {evento.hora_inicio} - {evento.hora_fim}
-                                </div>
+                      return (
+                        <td
+                          key={u.id}
+                          className="agenda-cell"
+                          style={{ backgroundColor: bgColor }}
+                          onClick={() => handleCellClick(data, u.username)}
+                          title={
+                            evento
+                              ? `${evento.descricao} (${evento.hora_inicio} - ${evento.hora_fim})`
+                              : ""
+                          }
+                        >
+                          {evento && (
+                            <div className="event-info">
+                              <strong>{evento.descricao}</strong>
+                              <div>
+                                {evento.hora_inicio} - {evento.hora_fim}
                               </div>
-                            )}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                            </div>
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
 
-      {/* Modal */}
       {showModal && (
         <div className="modal-overlay">
           <div className="modal">

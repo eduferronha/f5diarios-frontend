@@ -174,3 +174,103 @@
   border-collapse: collapse;
   table-layout: fixed;
 }
+
+/*sss*/
+.agenda-container {
+  padding: 1.5rem 2rem;
+  font-family: "Poppins", sans-serif;
+  color: #333;
+}
+
+.agenda-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.agenda-table-wrapper {
+  width: 100%;
+  max-height: 75vh;
+  overflow: auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.agenda-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.agenda-table th,
+.agenda-table td {
+  border: 1px solid #e5e7eb;
+  text-align: center;
+  padding: 0.5rem;
+  min-width: 100px;
+  height: 70px;
+  vertical-align: top;
+}
+
+.agenda-table th {
+  position: sticky;
+  top: 0;
+  background-color: #f3f4f6;
+  z-index: 5;
+  font-weight: 600;
+  font-size: 14px;
+  text-align: center;
+}
+
+.agenda-date {
+  font-weight: 500;
+}
+
+.agenda-cell {
+  cursor: pointer;
+  transition: background-color 0.25s, transform 0.1s;
+}
+
+.agenda-cell:hover {
+  background-color: #e8f2ff !important;
+  transform: scale(1.03);
+  box-shadow: 0 2px 8px rgba(0, 120, 215, 0.15);
+}
+
+.event-info {
+  font-size: 0.8rem;
+  color: #1f2937;
+}
+
+.scroll-top-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #237c9b;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s ease;
+  z-index: 2000;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.scroll-top-btn.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-top-btn:hover {
+  background-color: #1b5f73;
+  transform: translateY(-3px);
+}
