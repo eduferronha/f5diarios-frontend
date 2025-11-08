@@ -53,33 +53,33 @@ export default function Agenda() {
   }, []);
 
   const headerRef = useRef(null);
-const bodyRef = useRef(null);
+  const bodyRef = useRef(null);
 
-useEffect(() => {
-  const syncWidths = () => {
-    const headerTable = headerRef.current?.querySelector("table");
-    const bodyTable = bodyRef.current?.querySelector("table");
+  // === Sincronizar larguras entre cabeçalho e corpo ===
+  useEffect(() => {
+    const syncWidths = () => {
+      const headerTable = headerRef.current?.querySelector("table");
+      const bodyTable = bodyRef.current?.querySelector("table");
 
-    if (!headerTable || !bodyTable) return;
+      if (!headerTable || !bodyTable) return;
 
-    const headerCells = headerTable.querySelectorAll("th");
-    const bodyRow = bodyTable.querySelector("tr");
-    if (!bodyRow) return;
+      const headerCells = headerTable.querySelectorAll("th");
+      const bodyRow = bodyTable.querySelector("tr");
+      if (!bodyRow) return;
 
-    const bodyCells = bodyRow.querySelectorAll("td");
+      const bodyCells = bodyRow.querySelectorAll("td");
 
-    bodyCells.forEach((cell, i) => {
-      if (headerCells[i]) {
-        headerCells[i].style.width = `${cell.offsetWidth}px`;
-      }
-    });
-  };
+      bodyCells.forEach((cell, i) => {
+        if (headerCells[i]) {
+          headerCells[i].style.width = `${cell.offsetWidth}px`;
+        }
+      });
+    };
 
-  syncWidths();
-  window.addEventListener("resize", syncWidths);
-  return () => window.removeEventListener("resize", syncWidths);
-}, [users, dias]);
-
+    syncWidths();
+    window.addEventListener("resize", syncWidths);
+    return () => window.removeEventListener("resize", syncWidths);
+  }, [users, dias]);
 
   // === Gerar lista de dias ===
   const getDias = () => {
@@ -251,79 +251,79 @@ useEffect(() => {
       ) : (
         <div className="agenda-table-container">
           {/* Header fixo */}
-         <div className="agenda-table-header" ref={headerRef}>
-    <table>
-      <thead>
-        <tr>
-          <th>Data</th>
-          {users.map((u) => (
-            <th key={u.id}>{u.nome}</th>
-          ))}
-        </tr>
-      </thead>
-    </table>
-  </div>
+          <div className="agenda-table-header" ref={headerRef}>
+            <table>
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  {users.map((u) => (
+                    <th key={u.id}>{u.nome}</th>
+                  ))}
+                </tr>
+              </thead>
+            </table>
+          </div>
 
-  {/* Corpo scrollável */}
-  <div className="agenda-table-body" ref={bodyRef}>
-    <table>
-      <tbody>
-        {diasLista.map((data) => {
-          const hoje = new Date().toISOString().split("T")[0];
-          const isToday = data === hoje;
-          return (
-            <tr key={data}>
-              <td
-                className="agenda-date"
-                style={{
-                  backgroundColor: isToday ? "#f3e5f5" : "transparent",
-                  fontWeight: isToday ? "bold" : "normal",
-                }}
-              >
-                {new Date(data).toLocaleDateString("pt-PT")}
-              </td>
-              {users.map((u) => {
-                const evento = getEvent(data, u.username);
-                let bgColor = "transparent";
+          {/* Corpo scrollável */}
+          <div className="agenda-table-body" ref={bodyRef}>
+            <table>
+              <tbody>
+                {diasLista.map((data) => {
+                  const hoje = new Date().toISOString().split("T")[0];
+                  const isToday = data === hoje;
+                  return (
+                    <tr key={data}>
+                      <td
+                        className="agenda-date"
+                        style={{
+                          backgroundColor: isToday ? "#f3e5f5" : "transparent",
+                          fontWeight: isToday ? "bold" : "normal",
+                        }}
+                      >
+                        {new Date(data).toLocaleDateString("pt-PT")}
+                      </td>
+                      {users.map((u) => {
+                        const evento = getEvent(data, u.username);
+                        let bgColor = "transparent";
 
-                if (isWeekend(data) || isHoliday(data)) bgColor = "#d6d6d6";
-                else if (evento) {
-                  bgColor = evento.descricao
-                    ?.toLowerCase()
-                    .includes("férias")
-                    ? "#fff59d"
-                    : "#c8e6c9";
-                }
+                        if (isWeekend(data) || isHoliday(data)) bgColor = "#d6d6d6";
+                        else if (evento) {
+                          bgColor = evento.descricao
+                            ?.toLowerCase()
+                            .includes("férias")
+                            ? "#fff59d"
+                            : "#c8e6c9";
+                        }
 
-                return (
-                  <td
-                    key={u.id}
-                    className="agenda-cell"
-                    style={{ backgroundColor: bgColor }}
-                    onClick={() => handleCellClick(data, u.username)}
-                    title={
-                      evento
-                        ? `${evento.descricao} (${evento.hora_inicio} - ${evento.hora_fim})`
-                        : ""
-                    }
-                  >
-                    {evento && (
-                      <div className="event-info">
-                        <strong>{evento.descricao}</strong>
-                        <div>
-                          {evento.hora_inicio} - {evento.hora_fim}
-                        </div>
-                      </div>
-                    )}
-                  </td>
-                );
-              })}
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
-  </div>
+                        return (
+                          <td
+                            key={u.id}
+                            className="agenda-cell"
+                            style={{ backgroundColor: bgColor }}
+                            onClick={() => handleCellClick(data, u.username)}
+                            title={
+                              evento
+                                ? `${evento.descricao} (${evento.hora_inicio} - ${evento.hora_fim})`
+                                : ""
+                            }
+                          >
+                            {evento && (
+                              <div className="event-info">
+                                <strong>{evento.descricao}</strong>
+                                <div>
+                                  {evento.hora_inicio} - {evento.hora_fim}
+                                </div>
+                              </div>
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
