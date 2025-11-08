@@ -176,30 +176,34 @@ const RelatoriosPage = () => {
       );
 
     // 🔹 Filtro por intervalo de datas (ano/mês)
-    const mesesLista = [
-      "Janeiro",
-      "Fevereiro",
-      "Março",
-      "Abril",
-      "Maio",
-      "Junho",
-      "Julho",
-      "Agosto",
-      "Setembro",
-      "Outubro",
-      "Novembro",
-      "Dezembro",
-    ];
+    // 🔹 Filtro por intervalo de datas (ano/mês)
+      const mesesLista = [
+        "janeiro", "fevereiro", "março", "abril", "maio", "junho",
+        "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
+      ];
 
-    const inicio = new Date(Number(anoInicio), mesesLista.indexOf(mesInicio), 1);
-    const fim = new Date(Number(anoFim), mesesLista.indexOf(mesFim) + 1, 0);
+      const inicio = new Date(
+        Number(anoInicio),
+        mesesLista.indexOf(mesInicio.toLowerCase()),
+        1
+      );
+      const fim = new Date(
+        Number(anoFim),
+        mesesLista.indexOf(mesFim.toLowerCase()) + 1,
+        0,
+        23, 59, 59 // inclui o fim do dia
+      );
 
-    filtrados = filtrados.filter((d) => {
-      if (!d.data) return true;
-      const [dia, mes, ano] = d.data.split("/");
-      const dataObj = new Date(ano, mes - 1, dia);
-      return dataObj >= inicio && dataObj <= fim;
-    });
+      filtrados = filtrados.filter((d) => {
+        if (!d.data) return false;
+        const partes = d.data.split("/");
+        if (partes.length !== 3) return false;
+        const [dia, mes, ano] = partes.map((p) => parseInt(p));
+        if (isNaN(dia) || isNaN(mes) || isNaN(ano)) return false;
+        const dataObj = new Date(ano, mes - 1, dia);
+        return dataObj >= inicio && dataObj <= fim;
+      });
+
 
     setDados(filtrados);
     setFiltroAtivo(true);
