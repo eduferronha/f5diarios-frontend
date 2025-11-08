@@ -96,7 +96,18 @@ function App() {
           }
         />
 
-      <Route path="/profile" element={<ProfilePage />} />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <>
+              <Navbar />
+              <ProfilePage />
+            </>
+          </ProtectedRoute>
+        }
+      />
+
 
       </Routes>
 
