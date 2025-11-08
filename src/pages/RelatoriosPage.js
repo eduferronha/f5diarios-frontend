@@ -27,7 +27,7 @@ const RelatoriosPage = () => {
 
   const [clientes, setClientes] = useState([]);
   const [utilizadores, setUtilizadores] = useState([]);
-  const [parceiros, setParceiros] = useState([]);
+  // const [parceiros, setParceiros] = useState([]);
   const [contratos, setContratos] = useState([]);
   const [contratosFiltrados, setContratosFiltrados] = useState([]);
 
@@ -101,17 +101,18 @@ const RelatoriosPage = () => {
   useEffect(() => {
     const carregarListas = async () => {
       try {
-        const [clientesRes, contratosRes, parceirosRes, utilizadoresRes] =
+        // const [clientesRes, contratosRes, parceirosRes, utilizadoresRes] =
+        const [clientesRes, contratosRes, utilizadoresRes] =
           await Promise.all([
             api.get("/clients/", { headers: { Authorization: `Bearer ${token}` } }),
             api.get("/contracts/", { headers: { Authorization: `Bearer ${token}` } }),
-            api.get("/partners/", { headers: { Authorization: `Bearer ${token}` } }),
+            // api.get("/partners/", { headers: { Authorization: `Bearer ${token}` } }),
             api.get("/users/", { headers: { Authorization: `Bearer ${token}` } }),
           ]);
 
         setClientes(clientesRes.data);
         setContratos(contratosRes.data);
-        setParceiros(parceirosRes.data);
+        // setParceiros(parceirosRes.data);
         setUtilizadores(utilizadoresRes.data);
       } catch (error) {
         console.error("Erro ao carregar listas:", error);
