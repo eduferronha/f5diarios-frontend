@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./Agenda.css";
 import api from "../services/api";
 import { ArrowUp } from "lucide-react";
@@ -17,21 +17,24 @@ export default function Agenda() {
   const [editingEvent, setEditingEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showScroll, setShowScroll] = useState(false);
-  const tableRef = React.useRef(null);
+
+  const tableRef = useRef(null);
   const token = localStorage.getItem("token");
 
+  // 👇 Detecta scroll na tabela
   useEffect(() => {
     const table = tableRef.current;
     if (!table) return;
 
     const handleScroll = () => {
-      setShowScroll(table.scrollTop > 200);
+      setShowScroll(table.scrollTop > 150);
     };
 
     table.addEventListener("scroll", handleScroll);
     return () => table.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // 👇 Faz scroll suave até ao topo da tabela
   const scrollToTop = () => {
     if (tableRef.current) {
       tableRef.current.scrollTo({ top: 0, behavior: "smooth" });
@@ -225,157 +228,90 @@ export default function Agenda() {
           <p>A carregar agenda...</p>
         </div>
       ) : (
-        <div className="agenda-table-wrapper" ref={tableRef}>
-          <table className="agenda-table">
-            <thead>
-              <tr>
-                <th>Data</th>
-                {users.map((u) => (
-                  <th key={u.id}>{u.nome}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {diasLista.map((data) => {
-                const hoje = new Date().toISOString().split("T")[0];
-                const isToday = data === hoje;
-                return (
-                  <tr key={data}>
-                    <td
-                      className="agenda-date"
-                      style={{
-                        backgroundColor: isToday ? "#f3e5f5" : "transparent",
-                        fontWeight: isToday ? "bold" : "normal",
-                      }}
-                    >
-                      {new Date(data).toLocaleDateString("pt-PT")}
-                    </td>
-                    {users.map((u) => {
-                      const evento = getEvent(data, u.username);
-                      let bgColor = "transparent";
+        <>
+          <div className="agenda-table-wrapper" ref={tableRef}>
+            <table className="agenda-table">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  {users.map((u) => (
+                    <th key={u.id}>{u.nome}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {diasLista.map((data) => {
+                  const hoje = new Date().toISOString().split("T")[0];
+                  const isToday = data === hoje;
+                  return (
+                    <tr key={data}>
+                      <td
+                        className="agenda-date"
+                        style={{
+                          backgroundColor: isToday ? "#f3e5f5" : "transparent",
+                          fontWeight: isToday ? "bold" : "normal",
+                        }}
+                      >
+                        {new Date(data).toLocaleDateString("pt-PT")}
+                      </td>
+                      {users.map((u) => {
+                        const evento = getEvent(data, u.username);
+                        let bgColor = "transparent";
 
-                      if (isWeekend(data) || isHoliday(data)) bgColor = "#d6d6d6";
-                      else if (evento) {
-                        bgColor = evento.descricao
-                          ?.toLowerCase()
-                          .includes("férias")
-                          ? "#fff59d"
-                          : "#c8e6c9";
-                      }
+                        if (isWeekend(data) || isHoliday(data))
+                          bgColor = "#d6d6d6";
+                        else if (evento) {
+                          bgColor = evento.descricao
+                            ?.toLowerCase()
+                            .includes("férias")
+                            ? "#fff59d"
+                            : "#c8e6c9";
+                        }
 
-                      return (
-                        <td
-                          key={u.id}
-                          className="agenda-cell"
-                          style={{ backgroundColor: bgColor }}
-                          onClick={() => handleCellClick(data, u.username)}
-                          title={
-                            evento
-                              ? `${evento.descricao} (${evento.hora_inicio} - ${evento.hora_fim})`
-                              : ""
-                          }
-                        >
-                          {evento && (
-                            <div className="event-info">
-                              <strong>{evento.descricao}</strong>
-                              <div>
-                                {evento.hora_inicio} - {evento.hora_fim}
+                        return (
+                          <td
+                            key={u.id}
+                            className="agenda-cell"
+                            style={{ backgroundColor: bgColor }}
+                            onClick={() => handleCellClick(data, u.username)}
+                            title={
+                              evento
+                                ? `${evento.descricao} (${evento.hora_inicio} - ${evento.hora_fim})`
+                                : ""
+                            }
+                          >
+                            {evento && (
+                              <div className="event-info">
+                                <strong>{evento.descricao}</strong>
+                                <div>
+                                  {evento.hora_inicio} - {evento.hora_fim}
+                                </div>
                               </div>
-                            </div>
-                          )}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-
-          {showScroll && (
-            <button
-              className={`scroll-top-btn ${showScroll ? "show" : ""}`}
-              onClick={scrollToTop}
-              aria-label="Voltar ao topo"
-            >
-              <ArrowUp size={22} />
-            </button>
-          )}
-        </div>
-
-      )}
-
-      {showModal && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h3>{editingEvent ? "Editar Marcação" : "Adicionar Marcação"}</h3>
-
-            <div className="form-group">
-              <label>Início Marcação:</label>
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Fim Marcação:</label>
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Início:</label>
-              <input
-                type="time"
-                value={inicio}
-                onChange={(e) => setInicio(e.target.value)}
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Fim:</label>
-              <input
-                type="time"
-                value={fim}
-                onChange={(e) => setFim(e.target.value)}
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Descrição:</label>
-              <input
-                type="text"
-                placeholder="Descrição do evento"
-                value={descricao}
-                onChange={(e) => setDescricao(e.target.value)}
-              />
-            </div>
-
-            <div className="modal-buttons">
-              {editingEvent && (
-                <button onClick={handleDelete} className="btn-delete">
-                  Eliminar
-                </button>
-              )}
-              <button
-                onClick={() => setShowModal(false)}
-                className="btn-secondary"
-              >
-                Fechar
-              </button>
-              <button onClick={handleSave} className="btn-primary">
-                Guardar
-              </button>
-            </div>
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
-        </div>
-      )}
 
+          {/* 👇 Botão agora por DEBAIXO da tabela */}
+          {showScroll && (
+            <div className="scroll-btn-container">
+              <button
+                className="scroll-top-btn"
+                onClick={scrollToTop}
+                aria-label="Voltar ao topo"
+              >
+                <ArrowUp size={22} />
+              </button>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }
