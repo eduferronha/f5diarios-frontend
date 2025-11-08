@@ -157,23 +157,35 @@ const RelatoriosPage = () => {
     let filtrados = [...dadosOriginais];
 
     // Filtros principais
-    if (cliente !== "---Todos---")
-      filtrados = filtrados.filter((d) => d.cliente === cliente);
-    if (contrato !== "---Todos---")
-      filtrados = filtrados.filter((d) => d.contrato === contrato);
-    if (parceiro !== "---Todos---")
-      filtrados = filtrados.filter((d) => d.parceiro === parceiro);
-    if (utilizador !== "---Todos---")
-      filtrados = filtrados.filter((d) => d.username === utilizador);
-    if (faturar !== "--Todos--")
-      filtrados = filtrados.filter(
-        (d) => String(d.faturavel).toLowerCase() === faturar.toLowerCase()
-      );
-    if (faturarDesloc !== "--Todos--")
-      filtrados = filtrados.filter(
-        (d) =>
-          String(d.viagem_faturavel).toLowerCase() === faturarDesloc.toLowerCase()
-      );
+    // 🔹 Filtros principais
+if (cliente !== "---Todos---")
+  filtrados = filtrados.filter((d) => d.cliente === cliente);
+if (contrato !== "---Todos---")
+  filtrados = filtrados.filter((d) => d.contrato === contrato);
+if (parceiro !== "---Todos---")
+  filtrados = filtrados.filter((d) => d.parceiro === parceiro);
+if (utilizador !== "---Todos---")
+  filtrados = filtrados.filter((d) => d.username === utilizador);
+
+// 🔹 Filtro "Faturar"
+if (faturar !== "--Todos--") {
+  filtrados = filtrados.filter((d) => {
+    const valor = String(d.faturavel || "").toLowerCase();
+    if (faturar === "Sim") return valor === "yes" || valor === "for analysis";
+    if (faturar === "Não") return valor === "no";
+    return true;
+  });
+}
+
+// 🔹 Filtro "Faturar Deslocações"
+if (faturarDesloc !== "--Todos--") {
+  filtrados = filtrados.filter((d) => {
+    const valor = String(d.viagem_faturavel || "").toLowerCase();
+    if (faturarDesloc === "Sim") return valor === "yes";
+    if (faturarDesloc === "Não") return valor === "no";
+    return true;
+  });
+}
 
     // 🔹 Filtro por intervalo de datas (ano/mês)
     // 🔹 Filtro por intervalo de datas (ano/mês)
