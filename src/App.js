@@ -8,8 +8,9 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
 import AdminPage from "./pages/AdminPage";
 import Agenda from "./pages/Agenda";
-import Atividade from "./pages/Atividade"; // ✅ nova página
+import Atividade from "./pages/Atividade"; 
 import ProjetosPage from "./pages/ProjetosPage";
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
   return (
@@ -95,6 +96,9 @@ function App() {
           }
         />
       </Routes>
+
+      <Route path="/profile" element={<ProfilePage />} />
+
     </Router>
   );
 }
