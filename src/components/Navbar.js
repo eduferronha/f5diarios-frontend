@@ -99,8 +99,8 @@ function Navbar() {
         <span className="navbar-username">{username}</span>
         <button
           className="settings-button"
-          title="Definições"
-          onClick={() => navigate("/settings")}
+          title="Perfil"
+          onClick={() => navigate("/profile")}
         >
           <Settings size={18} />
         </button>
