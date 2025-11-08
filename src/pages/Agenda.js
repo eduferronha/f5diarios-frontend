@@ -359,10 +359,12 @@ export default function Agenda() {
         <button
           className={`scroll-top-btn ${showScroll ? "show" : ""}`}
           onClick={scrollToTop}
+          aria-label="Voltar ao topo"
         >
           <ArrowUp size={22} />
         </button>
       )}
+
     </div>
   );
 }

@@ -244,6 +244,7 @@
   color: #1f2937;
 }
 
+/* === Botão de Scroll para o Topo === */
 .scroll-top-btn {
   position: fixed;
   bottom: 30px;
@@ -274,3 +275,4 @@
   background-color: #1b5f73;
   transform: translateY(-3px);
 }
+
