@@ -17,8 +17,30 @@ export default function Atividade() {
   const [loading, setLoading] = useState(true); // 🌀 estado do spinner
 
   useEffect(() => {
-    fetchAtividades();
-  }, [mesSelecionado]);
+  const filtrarOuCarregar = async () => {
+    await fetchAtividades();
+  };
+
+  filtrarOuCarregar();
+}, [mesSelecionado]);
+
+useEffect(() => {
+  // só aplicar filtros locais (sem recarregar do servidor)
+  if (dadosOriginais.length > 0) {
+    let filtrados = [...dadosOriginais];
+
+    if (filtroUser !== "todos") {
+      filtrados = filtrados.filter((a) => a.username === filtroUser);
+    }
+
+    if (filtroCliente !== "todos") {
+      filtrados = filtrados.filter((a) => a.cliente === filtroCliente);
+    }
+
+    construirPivot(filtrados);
+  }
+}, [filtroUser, filtroCliente]);
+
 
   const fetchAtividades = async () => {
     try {
