@@ -542,12 +542,12 @@ filtrados = filtrados.filter((d) => {
             /> */}
 
             <div className="filtro-botoes-relatorios">
-              {/* <button
+              <button
                 onClick={aplicarFiltros}
                 className={filtroAtivo ? "filtro-ativo" : ""}
               >
                 Filtrar
-              </button> */}
+              </button>
               <button onClick={limparFiltros}>Limpar</button>
             </div>
           </div>
