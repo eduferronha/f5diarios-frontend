@@ -280,3 +280,12 @@
     transform: translateY(0);
   }
 }
+
+/* === Destaque do utilizador logado === */
+.agenda-table th.header-active {
+  background-color: #d4ebf2 !important; /* azul suave */
+  color: #0b4f6c; /* azul mais escuro para contraste */
+  font-weight: 700;
+  border-bottom: 2px solid #0b4f6c;
+  transition: all 0.3s ease;
+}

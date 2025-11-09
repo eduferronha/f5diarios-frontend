@@ -21,27 +21,24 @@ export default function Agenda() {
   const tableRef = useRef(null);
   const token = localStorage.getItem("token");
 
-  // 👇 Detecta scroll na tabela
+  // 🧩 Obter utilizador logado
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const loggedUsername = storedUser?.username?.toLowerCase() || "";
+
   useEffect(() => {
     const table = tableRef.current;
     if (!table) return;
-
-    const handleScroll = () => {
-      setShowScroll(table.scrollTop > 150);
-    };
-
+    const handleScroll = () => setShowScroll(table.scrollTop > 150);
     table.addEventListener("scroll", handleScroll);
     return () => table.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // 👇 Faz scroll suave até ao topo da tabela
   const scrollToTop = () => {
     if (tableRef.current) {
       tableRef.current.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
-  // === Carregar utilizadores e eventos ===
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -235,7 +232,16 @@ export default function Agenda() {
                 <tr>
                   <th>Data</th>
                   {users.map((u) => (
-                    <th key={u.id}>{u.nome}</th>
+                    <th
+                      key={u.id}
+                      className={
+                        u.username.toLowerCase() === loggedUsername
+                          ? "header-active"
+                          : ""
+                      }
+                    >
+                      {u.nome}
+                    </th>
                   ))}
                 </tr>
               </thead>
