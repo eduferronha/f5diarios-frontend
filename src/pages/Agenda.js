@@ -206,6 +206,11 @@ export default function Agenda() {
     return day === 0 || day === 6;
   };
 
+  const usersSorted = [...users].sort((a, b) =>
+    a.nome.localeCompare(b.nome, "pt", { sensitivity: "base" })
+  );
+
+
   return (
     <div className="agenda-container">
       <div className="agenda-controls">
@@ -231,7 +236,7 @@ export default function Agenda() {
               <thead>
                 <tr>
                   <th>Data</th>
-                  {users.map((u) => (
+                  {usersSorted.map((u) => (
                     <th
                       key={u.id}
                       className={
@@ -260,7 +265,7 @@ export default function Agenda() {
                       >
                         {new Date(data).toLocaleDateString("pt-PT")}
                       </td>
-                      {users.map((u) => {
+                      {usersSorted.map((u) => {
                         const evento = getEvent(data, u.username);
                         let bgColor = "transparent";
 
