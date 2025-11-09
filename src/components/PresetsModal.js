@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import api from "../services/api";
 import TaskModal from "./TaskModel";
 import "../components/PresetsModel.css";
+import { Trash2 } from "lucide-react"; // 👈 ícone de lixo moderno
 
 const PresetsModal = ({ show, onClose }) => {
   const [presets, setPresets] = useState([]);
@@ -64,18 +65,22 @@ const PresetsModal = ({ show, onClose }) => {
   const toggleAtivo = async (preset) => {
     try {
       if (preset.ativo) {
-        await api.patch(`/presets/${preset.id}`, { ativo: false }, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await api.patch(
+          `/presets/${preset.id}`,
+          { ativo: false },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
       } else {
         const ativos = presets.filter((p) => p.ativo);
         if (ativos.length >= 4) {
           alert("Só podes ter no máximo 4 presets ativos.");
           return;
         }
-        await api.patch(`/presets/${preset.id}`, { ativo: true }, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await api.patch(
+          `/presets/${preset.id}`,
+          { ativo: true },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
       }
       await fetchPresets();
     } catch (err) {
@@ -106,14 +111,20 @@ const PresetsModal = ({ show, onClose }) => {
           ) : (
             ativos.map((p) => (
               <div key={p.id} className="preset-card ativo">
-                <div>
+                <div className="preset-info">
                   <strong>{p.nome || "Preset sem nome"}</strong>
-                  <p>{p.descricao || "Sem descrição"}</p>
+                  <span>{p.descricao || "Sem descrição"}</span>
                 </div>
                 <div className="preset-actions">
                   <button onClick={() => handleApply(p)}>Aplicar</button>
                   <button onClick={() => toggleAtivo(p)}>Desativar</button>
-                  <button onClick={() => handleDelete(p.id)}>🗑️</button>
+                  <button
+                    className="btn-trash"
+                    title="Eliminar"
+                    onClick={() => handleDelete(p.id)}
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </div>
               </div>
             ))
@@ -128,13 +139,19 @@ const PresetsModal = ({ show, onClose }) => {
           ) : (
             naoAtivos.map((p) => (
               <div key={p.id} className="preset-card">
-                <div>
+                <div className="preset-info">
                   <strong>{p.nome || "Preset sem nome"}</strong>
-                  <p>{p.descricao || "Sem descrição"}</p>
+                  <span>{p.descricao || "Sem descrição"}</span>
                 </div>
                 <div className="preset-actions">
                   <button onClick={() => toggleAtivo(p)}>Ativar</button>
-                  <button onClick={() => handleDelete(p.id)}>🗑️</button>
+                  <button
+                    className="btn-trash"
+                    title="Eliminar"
+                    onClick={() => handleDelete(p.id)}
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </div>
               </div>
             ))

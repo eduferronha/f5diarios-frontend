@@ -1,67 +1,143 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
+
 .presets-modal {
   max-width: 700px;
   background: #fff;
   border-radius: 10px;
   padding: 1.5rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  font-family: "Poppins", sans-serif;
 }
 
 .section-title {
-  margin-top: 1.2rem;
-  margin-bottom: 0.5rem;
-  font-size: 1rem;
-  color: #444;
+  margin-top: 1rem;
+  margin-bottom: 0.4rem;
+  font-size: 0.95rem;
+  color: #333;
   border-bottom: 2px solid #e0e0e0;
   padding-bottom: 0.2rem;
 }
 
 .presets-list {
-  margin-top: 0.5rem;
+  margin-top: 0.3rem;
   max-height: 400px;
   overflow-y: auto;
+  padding-right: 4px;
 }
 
 .preset-card {
-  background: #f9f9f9;
+  background: #fafafa;
   border: 1px solid #ddd;
   border-radius: 8px;
-  margin-bottom: 0.5rem;
-  padding: 0.7rem 1rem;
+  margin-bottom: 0.4rem;
+  padding: 0.5rem 0.7rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: 0.2s;
+  transition: background 0.2s, transform 0.1s;
+  min-height: 55px; /* 👈 mais pequeno */
 }
 
 .preset-card:hover {
   background: #f1f1f1;
+  transform: translateY(-2px);
 }
 
 .preset-card.ativo {
-  border-left: 5px solid #4caf50;
+  border-left: 4px solid #4caf50;
   background: #f5fff5;
 }
 
-.preset-card strong {
-  color: #333;
-  font-size: 0.95rem;
+.preset-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 70%;
+}
+
+.preset-info strong {
+  color: #222;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.preset-info span {
+  color: #666;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.preset-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 .preset-actions button {
-  margin-left: 0.4rem;
   background: none;
   border: none;
   cursor: pointer;
-  color: #007bff;
-  font-size: 0.85rem;
+  color: #237c9b;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: color 0.2s;
+  font-family: "Poppins", sans-serif;
 }
 
 .preset-actions button:hover {
+  color: #005fa3;
   text-decoration: underline;
-  color: #0056b3;
+}
+
+.btn-trash {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #d9534f;
+  border-radius: 4px;
+  transition: color 0.2s, transform 0.1s;
+}
+
+.btn-trash:hover {
+  color: #b52b27;
+  transform: scale(1.1);
 }
 
 .modal-buttons {
   margin-top: 1rem;
   text-align: right;
+}
+
+.btn-primary {
+  background: #237c9b;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s;
+  font-family: "Poppins", sans-serif;
+}
+
+.btn-primary:hover {
+  background: #1b5f73;
+}
+
+.btn-secondary {
+  background: #e0e0e0;
+  color: #333;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-secondary:hover {
+  background: #d0d0d0;
 }
