@@ -50,9 +50,15 @@ const PresetsModal = ({ show, onClose }) => {
   // 🔹 Guardar novo preset
   const handleSavePreset = async (presetData) => {
     try {
-      await api.post("/presets/", presetData, {
+      // ✅ Limpa campos undefined
+      const cleanData = Object.fromEntries(
+        Object.entries(presetData).filter(([_, v]) => v !== undefined)
+      );
+
+      await api.post("/presets/", cleanData, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
       await fetchPresets();
       setShowTaskModal(false);
     } catch (err) {
