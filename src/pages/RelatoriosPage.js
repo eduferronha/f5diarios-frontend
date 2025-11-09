@@ -558,6 +558,7 @@ filtrados = filtrados.filter((d) => {
                 <tr>
                   <th></th>
                   <th>Data</th>
+                  <th>Utilizador</th>
                   <th>Local</th>
                   <th>Cliente</th>
                   <th>Parceiro</th>
@@ -591,6 +592,7 @@ filtrados = filtrados.filter((d) => {
                         </button>
                       </td>
                       <td>{d.data}</td>
+                      <td>{d.username}</td>
                       <td>{d.local}</td>
                       <td>{d.cliente}</td>
                       <td>{d.parceiro}</td>
