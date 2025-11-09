@@ -298,3 +298,57 @@ body {
     min-width: 800px;
   }
 }
+
+
+/* === Controlo de nº de itens === */
+.items-control {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: auto;
+  background-color: #f2f4f6;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-family: "Poppins", sans-serif;
+}
+
+.items-control label {
+  font-weight: 500;
+  color: #333;
+}
+
+.items-control input {
+  width: 60px;
+  padding: 0.2rem 0.3rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 0.8rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.items-control input:focus {
+  border-color: #237c9b;
+}
+
+.items-control span {
+  color: #555;
+  font-size: 0.8rem;
+}
+
+.items-control button {
+  background: #237c9b;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.items-control button:hover {
+  background: #005fa3;
+}

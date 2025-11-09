@@ -36,6 +36,10 @@ const RelatoriosPage = () => {
   const [isDuplicate, setIsDuplicate] = useState(false);
   const [filtroAtivo, setFiltroAtivo] = useState(false);
 
+  const [itemsPorPagina, setItemsPorPagina] = useState(50);
+  const dadosVisiveis = dados.slice(0, itemsPorPagina);
+
+
   // ✅ Estilo igual ao TaskModal
   const customSelectStyles = {
     control: (provided, state) => ({
@@ -392,12 +396,23 @@ filtrados = filtrados.filter((d) => {
 
   return (
     <div className="relatorios-container">
-      <div className="relatorios-header">
-        <div className="relatorios-actions">
-          <button onClick={exportarExcel}>Exportar para Excel</button>
-          <button onClick={exportarPDF}>Exportar para PDF</button>
-        </div>
+      <div className="relatorios-actions">
+      <button onClick={exportarExcel}>Exportar para Excel</button>
+      <button onClick={exportarPDF}>Exportar para PDF</button>
+
+      <div className="items-control">
+        <label>Mostrar</label>
+        <input
+          type="number"
+          min="1"
+          value={itemsPorPagina}
+          onChange={(e) => setItemsPorPagina(Number(e.target.value))}
+        />
+        <span>itens</span>
+        <button onClick={() => setItemsPorPagina(dados.length)}>Ver Todos</button>
       </div>
+    </div>
+
 
       {loading ? (
         <div className="spinner-container">
@@ -564,7 +579,7 @@ filtrados = filtrados.filter((d) => {
                     </td>
                   </tr>
                 ) : (
-                  dados.map((d, i) => (
+                  dadosVisiveis.map((d, i) => (
                     <tr key={i}>
                       <td className="cell-edit">
                         <button
