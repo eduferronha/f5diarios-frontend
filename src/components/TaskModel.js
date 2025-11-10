@@ -525,10 +525,9 @@ const TaskModal = ({
 
           
 
-          {/* Local, Faturável, Viagem Faturável */}
+{/* Local, Faturável, Viagem Faturável */}
 <div className="form-row-align">
   <div className="form-row-toggle">
-    {/* Local */}
     <div className="form-group">
       <label>Local</label>
       <div className="local-toggle-group">
@@ -550,7 +549,6 @@ const TaskModal = ({
       </div>
     </div>
 
-    {/* Faturável */}
     <div className="form-group">
       <label>Faturável</label>
       <div className="local-toggle-group">
@@ -572,7 +570,6 @@ const TaskModal = ({
       </div>
     </div>
 
-    {/* Viagem Faturável */}
     <div className="form-group">
       <label>Viagem Faturável</label>
       <div className="local-toggle-group">
@@ -596,8 +593,8 @@ const TaskModal = ({
   </div>
 </div>
 
-{/* ⚙️ NOVA LINHA — fora do form-row-align */}
-<div className="form-column-right">
+{/* 🔹 Linha separada abaixo — Distância e Valor */}
+<div className="form-distance-value">
   <div>
     <label>Distância (km)</label>
     <input

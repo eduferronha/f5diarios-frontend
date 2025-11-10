@@ -479,3 +479,36 @@ textarea:focus {
   }
 }
 
+/* === Linha Distância e Valor abaixo dos toggles === */
+.form-distance-value {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 1rem; /* 🔹 garante que fica abaixo dos toggles */
+  margin-left: 130px; /* 🔹 alinha com os labels (Local, Faturável...) */
+}
+
+.form-distance-value div {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.form-distance-value label {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.form-distance-value input {
+  width: 90px;
+  text-align: center;
+  font-size: 0.78rem;
+  padding: 0.3rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fafafa;
+}
