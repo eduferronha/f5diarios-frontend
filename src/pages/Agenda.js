@@ -195,12 +195,40 @@ export default function Agenda() {
 
   const handleDelete = async () => {
     if (!editingEvent) return;
-    if (!window.confirm("Tens a certeza que queres eliminar esta marcação?"))
+
+    if (!window.confirm("Tens a certeza que queres eliminar esta(s) marcação(ões)?"))
       return;
+
     try {
-      await api.delete(`/agenda/${editingEvent.id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const start = new Date(selectedDate);
+      const end = endDate ? new Date(endDate) : start;
+
+      // Se só há um dia → elimina apenas um
+      if (end <= start) {
+        await api.delete(`/agenda/${editingEvent.id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else {
+        // Caso haja um intervalo (ex: 11–13)
+        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+          const dataDia = d.toISOString().split("T")[0];
+
+          // Verifica se existe evento nesse dia para o utilizador
+          const eventoExistente = events.find(
+            (e) =>
+              e.utilizador?.toLowerCase() === selectedUser.toLowerCase() &&
+              e.data === dataDia
+          );
+
+          if (eventoExistente) {
+            await api.delete(`/agenda/${eventoExistente.id}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+          }
+        }
+      }
+
+      // Recarrega lista atualizada
       const res = await api.get("/agenda/", {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -211,6 +239,7 @@ export default function Agenda() {
       alert("Erro ao eliminar marcação.");
     }
   };
+
 
   const isHoliday = (dateString) => {
     const date = new Date(dateString);
