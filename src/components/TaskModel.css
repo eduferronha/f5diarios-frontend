@@ -422,17 +422,16 @@ textarea:focus {
   font-size: 0.75rem !important;
 }
 
-/* === Coluna direita agora vira uma linha abaixo === */
-/* === Linha Distância e Valor após os toggles === */
 .form-column-right {
   display: flex;
-  flex-direction: row; /* 👉 horizontal */
+  flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-  gap: 1.2rem; /* espaço entre os dois campos */
-  margin-top: 0.6rem;
-  margin-left: 130px; /* 🔹 alinha com labels à esquerda */
+  gap: 1.2rem;
+  margin-top: 0.8rem; /* ligeiramente maior para separar bem */
+  margin-left: 130px; /* alinha com os labels à esquerda */
 }
+
 
 .form-column-right div {
   display: flex;
