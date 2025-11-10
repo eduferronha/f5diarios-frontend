@@ -314,26 +314,33 @@ const TaskModal = ({
 
   
   const handleClose = () => {
-  // Verifica se há dados preenchidos (ou diferentes dos defaults)
-  const hasChanges =
-    descricao ||
-    cliente ||
-    parceiro ||
-    produto ||
-    contrato ||
-    atividade ||
-    tempoAtividade !== "00:00" ||
-    tempoFaturado !== "00:00" ||
-    distanciaViagem > 0 ||
-    valorEuro > 0;
+    // ✅ Verifica se há alterações em relação aos valores iniciais
+    const hasChanges =
+      descricao.trim() !== "" ||
+      cliente !== "" ||
+      parceiro !== "" ||
+      produto !== "" ||
+      contrato !== "" ||
+      atividade !== "" ||
+      tempoAtividade !== "00:00" ||
+      tempoFaturado !== "00:00" ||
+      tempoViagem !== "00:00" ||
+      distanciaViagem !== 0 ||
+      valorEuro !== 0 ||
+      local !== "Employee House" ||
+      faturavel !== "No" ||
+      viagemFaturavel !== "No";
 
-  if (hasChanges) {
-    const confirmExit = window.confirm("Existem dados preenchidos. Tens a certeza que queres sair sem guardar?");
-    if (!confirmExit) return; 
-  }
+    if (hasChanges) {
+      const confirmExit = window.confirm(
+        "Existem dados preenchidos. Tens a certeza que queres sair sem guardar?"
+      );
+      if (!confirmExit) return;
+    }
 
-  onClose(); 
-};
+    onClose();
+  };
+
 
 
   return (
