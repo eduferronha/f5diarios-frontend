@@ -357,6 +357,8 @@ const TaskModal = ({
           )}
 
           {!isDuplicate ? (
+            <>
+              {/* 🔹 Modo normal: mostrar campo de Data e Descrição separados */}
               <div className="form-group full-width">
                 <label>Data</label>
                 <input
@@ -366,8 +368,22 @@ const TaskModal = ({
                   required={!isPresetMode}
                 />
               </div>
-            ) : (
-              <div className="calendar-duplicate-container full-width">
+
+              <div className="form-group full-width">
+                <label>Descrição</label>
+                <textarea
+                  rows="4"
+                  placeholder="Descreve a tarefa..."
+                  value={descricao}
+                  onChange={(e) => setDescricao(e.target.value)}
+                  required={!isPresetMode}
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              {/* 🔹 Modo duplicação: calendário e descrição lado a lado */}
+              <div className="calendar-description-row full-width">
                 <div className="calendar-box">
                   <Calendar
                     key={datasDuplicadas.join(",")}
@@ -386,40 +402,33 @@ const TaskModal = ({
                   />
                 </div>
 
-                <div className="form-group full-width">
+                <div className="form-group descricao-side">
                   <label>Descrição</label>
                   <textarea
-                    rows="4"
+                    rows="12"
                     placeholder="Descreve a tarefa..."
                     value={descricao}
                     onChange={(e) => setDescricao(e.target.value)}
                     required={!isPresetMode}
                   />
                 </div>
-
-                {/* <div className="selected-dates-list">
-                  <h4>Datas selecionadas</h4>
-                  {datasDuplicadas.length === 0 ? (
-                    <p className="no-dates">Nenhuma data</p>
-                  ) : (
-                    <ul>
-                      {datasDuplicadas.map((d) => (
-                        <li key={d}>
-                          {new Date(d).toLocaleDateString("pt-PT", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div> */}
               </div>
-            )}
+            </>
+          )}
 
 
-          
+
+
+          {/* <div className="form-group full-width">
+            <label>Descrição</label>
+            <textarea
+              rows="4"
+              placeholder="Descreve a tarefa..."
+              value={descricao}
+              onChange={(e) => setDescricao(e.target.value)}
+              required={!isPresetMode}
+            />
+          </div> */}
 
           {/* Select Cliente */}
           <div className="form-group">
