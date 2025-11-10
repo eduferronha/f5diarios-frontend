@@ -356,53 +356,57 @@ const TaskModal = ({
             </div>
           )}
 
-          <div className="form-group full-width">
-            <label>Data</label>
-            {!isDuplicate ? (
-              <input
-                type="date"
-                value={data}
-                onChange={(e) => setData(e.target.value)}
-                required={!isPresetMode}
-              />
-            ) : (
-              <div
-                className="calendar-hover-container"
-                onMouseEnter={() => setShowCalendar(true)}
-                onMouseLeave={() => setShowCalendar(false)}
-              >
+          {!isDuplicate ? (
+              <div className="form-group full-width">
+                <label>Data</label>
                 <input
-                  type="text"
-                  readOnly
-                  className="calendar-input"
-                  placeholder={
-                    datasDuplicadas.length > 0
-                      ? `${datasDuplicadas.length} dia(s) selecionado(s)`
-                      : "Selecionar datas..."
-                  }
+                  type="date"
+                  value={data}
+                  onChange={(e) => setData(e.target.value)}
+                  required={!isPresetMode}
                 />
-                {isDuplicate && (
-                  <div className="calendar-popup always-visible">
-                    <Calendar
-                      key={datasDuplicadas.join(",")}
-                      value={null}
-                      onClickDay={toggleData}
-                      tileClassName={({ date }) => {
-                        const dataISO = new Date(
-                          date.getTime() - date.getTimezoneOffset() * 60000
-                        ).toLocaleDateString("en-CA", {
-                          timeZone: "Europe/Lisbon",
-                        });
-                        return datasDuplicadas.includes(dataISO)
-                          ? "selected-day"
-                          : null;
-                      }}
-                    />
-                  </div>
-                )}
+              </div>
+            ) : (
+              <div className="calendar-duplicate-container full-width">
+                <div className="calendar-box">
+                  <Calendar
+                    key={datasDuplicadas.join(",")}
+                    value={null}
+                    onClickDay={toggleData}
+                    tileClassName={({ date }) => {
+                      const dataISO = new Date(
+                        date.getTime() - date.getTimezoneOffset() * 60000
+                      ).toLocaleDateString("en-CA", {
+                        timeZone: "Europe/Lisbon",
+                      });
+                      return datasDuplicadas.includes(dataISO)
+                        ? "selected-day"
+                        : null;
+                    }}
+                  />
+                </div>
+
+                <div className="selected-dates-list">
+                  <h4>Datas selecionadas</h4>
+                  {datasDuplicadas.length === 0 ? (
+                    <p className="no-dates">Nenhuma data</p>
+                  ) : (
+                    <ul>
+                      {datasDuplicadas.map((d) => (
+                        <li key={d}>
+                          {new Date(d).toLocaleDateString("pt-PT", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </div>
             )}
-          </div>
+
 
           <div className="form-group full-width">
             <label>Descrição</label>
