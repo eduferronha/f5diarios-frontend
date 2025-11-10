@@ -126,7 +126,7 @@ textarea {
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: #0078d7;
+  border-color: #237c9b;
   outline: none;
   background: #fff;
   box-shadow: 0 0 0 2px rgba(0, 120, 215, 0.1);
@@ -174,9 +174,9 @@ textarea:focus {
 }
 
 .toggle-option.active {
-  background: #0078d7;
+  background: #237c9b;
   color: #fff;
-  border-color: #0078d7;
+  border-color: #237c9b;
   box-shadow: 0 0 4px rgba(0, 120, 215, 0.3);
 }
 
@@ -251,8 +251,8 @@ textarea:focus {
 
 .duplicate-date-item {
   background: #e7f1ff;
-  border: 1px solid #0078d7;
-  color: #0078d7;
+  border: 1px solid #237c9b;
+  color: #237c9b;
   padding: 0.2rem 0.5rem; /* 🔹 compacto */
   border-radius: 20px;
   font-size: 0.75rem; /* 🔹 menor */
@@ -306,7 +306,7 @@ textarea:focus {
 
 .react-calendar__tile--active,
 .selected-day {
-  background: #0078d7 !important;
+  background: #237c9b !important;
   color: white !important;
   border-radius: 5px;
 }
