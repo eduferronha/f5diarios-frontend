@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./Agenda.css";
 import api from "../services/api";
+import { ArrowUp } from "lucide-react";
 
 export default function Agenda() {
   const [users, setUsers] = useState([]);
@@ -14,34 +15,56 @@ export default function Agenda() {
   const [fim, setFim] = useState("18:00");
   const [dias, setDias] = useState(15);
   const [editingEvent, setEditingEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [showScroll, setShowScroll] = useState(false);
 
+  const tableRef = useRef(null);
   const token = localStorage.getItem("token");
 
-  // === Carregar utilizadores e eventos ===
+  // 🧩 Obter utilizador logado
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const loggedUsername = storedUser?.username?.toLowerCase() || "";
+
+  useEffect(() => {
+    const table = tableRef.current;
+    if (!table) return;
+    const handleScroll = () => setShowScroll(table.scrollTop > 150);
+    table.addEventListener("scroll", handleScroll);
+    return () => table.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    if (tableRef.current) {
+      tableRef.current.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const [usersRes, agendaRes] = await Promise.all([
-          api.get("/users", { headers: { Authorization: `Bearer ${token}` } }),
-          api.get("/agenda", { headers: { Authorization: `Bearer ${token}` } }),
+          api.get("/users/", { headers: { Authorization: `Bearer ${token}` } }),
+          api.get("/agenda/", { headers: { Authorization: `Bearer ${token}` } }),
         ]);
         setUsers(usersRes.data);
         setEvents(agendaRes.data);
       } catch (err) {
         console.error("Erro ao carregar dados:", err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
   }, []);
 
-  // === Gerar lista de dias a partir da segunda-feira ===
+  // === Gerar lista de dias ===
   const getDias = () => {
     const lista = [];
     const hoje = new Date();
     const diaSemana = hoje.getDay();
     const segunda = new Date(hoje);
     segunda.setDate(hoje.getDate() - ((diaSemana + 6) % 7));
-
     for (let i = 0; i < dias; i++) {
       const d = new Date(segunda);
       d.setDate(segunda.getDate() + i);
@@ -52,42 +75,36 @@ export default function Agenda() {
 
   const diasLista = getDias();
 
-  // === Obter evento de um utilizador num dia ===
   const getEvent = (data, user) =>
     events.find(
       (e) =>
-        e.data === data &&
-        e.utilizador?.toLowerCase() === user?.toLowerCase()
+        e.data === data && e.utilizador?.toLowerCase() === user?.toLowerCase()
     );
 
-  // === Abrir modal (novo ou editar) ===
   const handleCellClick = (data, user) => {
     const existing = getEvent(data, user);
 
     if (existing) {
-      // Editar marcação existente
+      // --- Editar marcação existente ---
       setEditingEvent(existing);
       setDescricao(existing.descricao || "");
       setInicio(existing.hora_inicio || "09:00");
       setFim(existing.hora_fim || "18:00");
       setSelectedDate(existing.data);
       setSelectedUser(existing.utilizador || user);
-      setEndDate("");
     } else {
-      // Criar nova marcação
+      // --- Criar nova marcação ---
       setEditingEvent(null);
       setDescricao("");
       setInicio("09:00");
       setFim("18:00");
       setSelectedDate(data);
-      setSelectedUser(user);
-      setEndDate("");
+      setSelectedUser(user); // 👈 preenche automaticamente com o nome da coluna
     }
 
     setShowModal(true);
   };
 
-  // === Guardar ou atualizar marcação ===
   const handleSave = async () => {
     if (!selectedUser || !selectedDate || !descricao) {
       alert("Preencha todos os campos obrigatórios.");
@@ -129,13 +146,13 @@ export default function Agenda() {
             hora_fim: fim,
             descricao,
           };
-          await api.post("/agenda", newEvent, {
+          await api.post("/agenda/", newEvent, {
             headers: { Authorization: `Bearer ${token}` },
           });
         }
       }
 
-      const res = await api.get("/agenda", {
+      const res = await api.get("/agenda/", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setEvents(res.data);
@@ -146,7 +163,6 @@ export default function Agenda() {
     }
   };
 
-  // === Eliminar evento ===
   const handleDelete = async () => {
     if (!editingEvent) return;
     if (!window.confirm("Tens a certeza que queres eliminar esta marcação?"))
@@ -155,7 +171,7 @@ export default function Agenda() {
       await api.delete(`/agenda/${editingEvent.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const res = await api.get("/agenda", {
+      const res = await api.get("/agenda/", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setEvents(res.data);
@@ -166,7 +182,6 @@ export default function Agenda() {
     }
   };
 
-  // === Verificar feriado e fim de semana ===
   const isHoliday = (dateString) => {
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -193,6 +208,12 @@ export default function Agenda() {
     return day === 0 || day === 6;
   };
 
+  const usersSorted = [...users].sort((a, b) =>
+    (a.nome || "").localeCompare(b.nome || "", "pt", { sensitivity: "base" })
+  );
+
+
+
   return (
     <div className="agenda-container">
       <div className="agenda-controls">
@@ -206,85 +227,110 @@ export default function Agenda() {
         </select>
       </div>
 
-      <div className="agenda-table-wrapper">
-        <table className="agenda-table">
-          <thead>
-            <tr>
-              <th>Data</th>
-              {users.map((u) => (
-                <th key={u.id}>{u.nome}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {diasLista.map((data) => {
-              const hoje = new Date().toISOString().split("T")[0];
-              const isToday = data === hoje;
-
-              return (
-                <tr key={data}>
-                  <td
-                    className="agenda-date"
-                    style={{
-                      backgroundColor: isToday ? "#f3e5f5" : "transparent",
-                      fontWeight: isToday ? "bold" : "normal",
-                    }}
-                  >
-                    {new Date(data).toLocaleDateString("pt-PT")}
-                  </td>
-
-                  {users.map((u) => {
-                    const evento = getEvent(data, u.username);
-                    let bgColor = "transparent";
-
-                    if (isWeekend(data) || isHoliday(data)) {
-                      bgColor = "#d6d6d6";
-                    } else if (evento) {
-                      bgColor = evento.descricao
-                        ?.toLowerCase()
-                        .includes("férias")
-                        ? "#fff59d"
-                        : "#c8e6c9";
-                    }
-
-                    return (
-                      <td
-                        key={u.id}
-                        className="agenda-cell"
-                        style={{ backgroundColor: bgColor, cursor: "pointer" }}
-                        onClick={() => handleCellClick(data, u.username)}
-                        title={
-                          evento
-                            ? `${evento.descricao} (${evento.hora_inicio} - ${evento.hora_fim})`
-                            : ""
-                        }
-                      >
-                        {evento && (
-                          <div className="event-info">
-                            <strong>{evento.descricao}</strong>
-                            <div>
-                              {evento.hora_inicio} - {evento.hora_fim}
-                            </div>
-                          </div>
-                        )}
-                      </td>
-                    );
-                  })}
+      {loading ? (
+        <div className="spinner-container">
+          <div className="spinner"></div>
+          <p>A carregar agenda...</p>
+        </div>
+      ) : (
+        <>
+          <div className="agenda-table-wrapper" ref={tableRef}>
+            <table className="agenda-table">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  {usersSorted.map((u) => (
+                    <th
+                      key={u.id}
+                      className={
+                        u.username.toLowerCase() === loggedUsername
+                          ? "header-active"
+                          : ""
+                      }
+                    >
+                      {u.nome}
+                    </th>
+                  ))}
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+              </thead>
+              <tbody>
+                {diasLista.map((data) => {
+                  const hoje = new Date().toISOString().split("T")[0];
+                  const isToday = data === hoje;
+                  return (
+                    <tr key={data}>
+                      <td
+                        className="agenda-date"
+                        style={{
+                          backgroundColor: isToday ? "#f3e5f5" : "transparent",
+                          fontWeight: isToday ? "bold" : "normal",
+                        }}
+                      >
+                        {new Date(data).toLocaleDateString("pt-PT")}
+                      </td>
+                      {usersSorted.map((u) => {
+                        const evento = getEvent(data, u.username);
+                        let bgColor = "transparent";
 
-      {/* Modal */}
+                        if (isWeekend(data) || isHoliday(data))
+                          bgColor = "#d6d6d6";
+                        else if (evento) {
+                          bgColor = evento.descricao
+                            ?.toLowerCase()
+                            .includes("férias")
+                            ? "#fff59d"
+                            : "#c8e6c9";
+                        }
+
+                        return (
+                          <td
+                            key={u.id}
+                            className="agenda-cell"
+                            style={{ backgroundColor: bgColor }}
+                            onClick={() => handleCellClick(data, u.username)}
+                            title={
+                              evento
+                                ? `${evento.descricao} (${evento.hora_inicio} - ${evento.hora_fim})`
+                                : ""
+                            }
+                          >
+                            {evento && (
+                              <div className="event-info">
+                                <strong>{evento.descricao}</strong>
+                                <div>
+                                  {evento.hora_inicio} - {evento.hora_fim}
+                                </div>
+                              </div>
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* 👇 Botão agora por DEBAIXO da tabela */}
+          {showScroll && (
+            <div className="scroll-btn-container">
+              <button
+                className="scroll-top-btn"
+                onClick={scrollToTop}
+                aria-label="Voltar ao topo"
+              >
+                <ArrowUp size={22} />
+              </button>
+            </div>
+          )}
+        </>
+      )}
+
       {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div
-            className="modal"
-            onClick={(e) => e.stopPropagation()} // impede fechar ao clicar dentro
-          >
-            <h3>{editingEvent ? "Editar Marcação" : "Adicionar Marcação"}</h3>
+  <div className="agenda-modal-overlay" onClick={() => setShowModal(false)}>
+    <div className="agenda-modal" onClick={(e) => e.stopPropagation()}>
+      <h3>{editingEvent ? "Editar Marcação" : "Nova Marcação"}</h3>
 
             <div className="form-group">
               <label>Início Marcação:</label>
@@ -332,25 +378,17 @@ export default function Agenda() {
               />
             </div>
 
-            <div className="modal-buttons">
-              {editingEvent && (
-                <button onClick={handleDelete} className="btn-delete">
-                  Eliminar
-                </button>
-              )}
-              <button
-                onClick={() => setShowModal(false)}
-                className="btn-secondary"
-              >
-                Fechar
-              </button>
-              <button onClick={handleSave} className="btn-primary">
-                Guardar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <div className="modal-buttons">
+        <button onClick={handleSave}>
+          {editingEvent ? "Guardar Alterações" : "Guardar"}
+        </button>
+        {editingEvent && <button onClick={handleDelete}>Eliminar</button>}
+        <button onClick={() => setShowModal(false)}>Cancelar</button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }
