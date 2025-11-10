@@ -76,7 +76,15 @@
 .form-group-time {
   display: flex;
   flex-direction: column;
+  align-items: flex-start; /* garante alinhamento à esquerda */
+  gap: 0.4rem; /* pequeno espaçamento entre campos */
 }
+
+.form-group-time > div {
+  display: flex;
+  flex-direction: column;
+}
+
 
 .form-group.full-width {
   grid-column: 1 / -1;
