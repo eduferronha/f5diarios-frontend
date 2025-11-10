@@ -42,6 +42,18 @@ const TaskModal = ({
 
   const [datasDuplicadas, setDatasDuplicadas] = useState([]);
   const [showCalendar, setShowCalendar] = useState(true);
+  
+  useEffect(() => {
+  const handleKeyDown = (e) => {
+    // impede o Enter enquanto o alert/confirm está aberto
+    if (e.key === "Enter" && document.activeElement.tagName !== "TEXTAREA") {
+      e.preventDefault();
+    }
+  };
+  window.addEventListener("keydown", handleKeyDown);
+  return () => window.removeEventListener("keydown", handleKeyDown);
+}, []);
+
 
   const token = localStorage.getItem("token");
 
