@@ -324,6 +324,44 @@ export default function Agenda() {
           )}
         </>
       )}
+
+      {showModal && (
+  <div className="agenda-modal-overlay" onClick={() => setShowModal(false)}>
+    <div className="agenda-modal" onClick={(e) => e.stopPropagation()}>
+      <h3>{editingEvent ? "Editar Marcação" : "Nova Marcação"}</h3>
+
+      <label>Descrição</label>
+      <input
+        type="text"
+        value={descricao}
+        onChange={(e) => setDescricao(e.target.value)}
+      />
+
+      <label>Hora Início</label>
+      <input
+        type="time"
+        value={inicio}
+        onChange={(e) => setInicio(e.target.value)}
+      />
+
+      <label>Hora Fim</label>
+      <input
+        type="time"
+        value={fim}
+        onChange={(e) => setFim(e.target.value)}
+      />
+
+      <div className="modal-buttons">
+        <button onClick={handleSave}>
+          {editingEvent ? "Guardar Alterações" : "Guardar"}
+        </button>
+        {editingEvent && <button onClick={handleDelete}>Eliminar</button>}
+        <button onClick={() => setShowModal(false)}>Cancelar</button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }
