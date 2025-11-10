@@ -207,8 +207,9 @@ export default function Agenda() {
   };
 
   const usersSorted = [...users].sort((a, b) =>
-    a.nome.localeCompare(b.nome, "pt", { sensitivity: "base" })
+    (a.nome || "").localeCompare(b.nome || "", "pt", { sensitivity: "base" })
   );
+
 
 
   return (

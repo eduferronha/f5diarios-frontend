@@ -186,8 +186,8 @@ const TaskModal = ({
         await onPresetSaved(presetPayload);
         onClose();
       } catch (error) {
-        console.error("Erro ao guardar preset:", error);
-        alert("Erro ao guardar preset.");
+        console.error("Task - Erro ao guardar preset:", error);
+        alert("Task - Erro ao guardar preset.");
       }
       return; // ✅ encerra aqui, sem continuar com as validações de tarefa
     }

@@ -206,7 +206,7 @@ const renderForm = () => {
           <input name="latitude" type="number" step="0.000001" placeholder="Latitude" onChange={handleChange} />
           <input name="longitude" type="number" step="0.000001" placeholder="Longitude" onChange={handleChange} />
         </>
-      );
+      ); 
 
     // --- AGENDA ---
     case "agenda":
