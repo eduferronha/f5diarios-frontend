@@ -596,8 +596,9 @@ const TaskModal = ({
 
             
           </div>
-
-          <div className="form-column-right">
+            
+            <div className="form-group">
+          {/* <div className="form-column-right"> */}
               <div>
                 <label>Distância (km)</label>
                 <input
@@ -616,6 +617,7 @@ const TaskModal = ({
                   onChange={(e) => setValorEuro(e.target.value)}
                 />
               </div>
+            {/* </div> */}
             </div>
         </form>
 
