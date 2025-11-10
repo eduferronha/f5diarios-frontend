@@ -313,33 +313,29 @@ const TaskModal = ({
       : "Guardar";
 
   
-  const handleClose = () => {
-    // ✅ Verifica se há alterações em relação aos valores iniciais
+  const handleClose = async () => {
     const hasChanges =
-      descricao.trim() !== "" ||
-      cliente !== "" ||
-      parceiro !== "" ||
-      produto !== "" ||
-      contrato !== "" ||
-      atividade !== "" ||
+      descricao ||
+      cliente ||
+      parceiro ||
+      produto ||
+      contrato ||
+      atividade ||
       tempoAtividade !== "00:00" ||
       tempoFaturado !== "00:00" ||
-      tempoViagem !== "00:00" ||
-      distanciaViagem !== 0 ||
-      valorEuro !== 0 ||
-      local !== "Employee House" ||
-      faturavel !== "No" ||
-      viagemFaturavel !== "No";
+      distanciaViagem > 0 ||
+      valorEuro > 0;
 
     if (hasChanges) {
-      const confirmExit = window.confirm(
+      const confirmExit = await window.confirm(
         "Existem dados preenchidos. Tens a certeza que queres sair sem guardar?"
       );
-      if (!confirmExit) return;
+      if (!confirmExit) return; // ❌ não fecha se escolher "Cancelar"
     }
 
-    onClose();
+    onClose(); // ✅ fecha apenas se confirmou
   };
+
 
 
 
