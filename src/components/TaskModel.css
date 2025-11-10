@@ -485,15 +485,15 @@ textarea:focus {
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-  gap: 1.5rem;
-  margin-top: 1rem; /* 🔹 garante que fica abaixo dos toggles */
-  margin-left: 130px; /* 🔹 alinha com os labels (Local, Faturável...) */
+  gap: 2rem;
+  margin-top: 0.8rem;
+  margin-left: 130px; /* alinha com os labels acima */
 }
 
 .form-distance-value div {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.5rem;
 }
 
 .form-distance-value label {
@@ -512,3 +512,4 @@ textarea:focus {
   border-radius: 6px;
   background: #fafafa;
 }
+

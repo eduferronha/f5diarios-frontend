@@ -525,8 +525,9 @@ const TaskModal = ({
 
           
 
-{/* Local, Faturável, Viagem Faturável */}
-<div className="form-row-align">
+{/* 🔹 Secção de Local / Faturável / Viagem Faturável + Distância e Valor */}
+<div className="form-group full-width"> 
+  {/* 3 linhas de toggles */}
   <div className="form-row-toggle">
     <div className="form-group">
       <label>Local</label>
@@ -591,31 +592,30 @@ const TaskModal = ({
       </div>
     </div>
   </div>
-</div>
 
-{/* 🔹 Linha separada abaixo — Distância e Valor */}
-<div className="form-distance-value">
-  <div>
-    <label>Distância (km)</label>
-    <input
-      type="number"
-      min="0"
-      value={distanciaViagem}
-      onChange={(e) => setDistanciaViagem(e.target.value)}
-    />
-  </div>
-  <div>
-    <label>Valor (€)</label>
-    <input
-      type="number"
-      min="0"
-      value={valorEuro}
-      onChange={(e) => setValorEuro(e.target.value)}
-    />
+  {/* 🔹 Linha separada — Distância e Valor */}
+  <div className="form-distance-value">
+    <div>
+      <label>Distância (km)</label>
+      <input
+        type="number"
+        min="0"
+        value={distanciaViagem}
+        onChange={(e) => setDistanciaViagem(e.target.value)}
+      />
+    </div>
+    <div>
+      <label>Valor (€)</label>
+      <input
+        type="number"
+        min="0"
+        value={valorEuro}
+        onChange={(e) => setValorEuro(e.target.value)}
+      />
+    </div>
   </div>
 </div>
-
-            
+ 
           
         </form>
 
