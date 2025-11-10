@@ -494,7 +494,7 @@ const TaskModal = ({
           </div>
 
           {/* Tempos */}
-          <div className="form-group">
+          <div className="form-group-time">
             <div>
               <label>Tempo Atividade</label>
               <input
