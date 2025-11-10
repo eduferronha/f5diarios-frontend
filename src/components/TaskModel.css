@@ -13,6 +13,20 @@
   z-index: 999;
 }
 
+/* .modal {
+  background: #ffffff;
+  width: 90%;
+  max-width: 640px;
+  max-height: 90vh;
+  border-radius: 14px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  padding: 1.6rem 1.8rem;
+  animation: fadeIn 0.25s ease-in-out;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
+} */
+
 .modal {
   background: #ffffff;
   width: 90%;
@@ -25,6 +39,11 @@
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: #ccc transparent;
+}
+
+.modal-large {
+  max-height: 98vh;   /* quase ecrã inteiro */
+  max-width: 720px;   /* mais largo */
 }
 
 .modal::-webkit-scrollbar {

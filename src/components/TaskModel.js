@@ -338,7 +338,8 @@ const TaskModal = ({
 
   return (
     <div className="modal-overlay">
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
+      {/* <div className="modal" onClick={(e) => e.stopPropagation()}> */}
+      <div className={`modal ${isDuplicate ? "modal-large" : ""}`} onClick={(e) => e.stopPropagation()}>
         <h2>{titulo}</h2>
 
         <form id="form-task" onSubmit={handleSubmit} className="form-grid">
