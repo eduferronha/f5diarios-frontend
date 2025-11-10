@@ -9,7 +9,8 @@
 }
 
 .global-alert {
-  background-color: #237c9b;
+  font-family: "Poppins", sans-serif !important;
+  background-color: #237c9b !important;
   color: white;
   padding: 0.6rem 1rem;
   border-radius: 6px;
