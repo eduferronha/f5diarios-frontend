@@ -325,33 +325,44 @@ textarea:focus {
   margin-top: 0.6rem; /* 🔹 menor */
 }
 
-/* === Grupos dos toggles === */
+/* === Corrige alinhamento horizontal Local / Faturável / Viagem Faturável === */
 .form-row-toggle {
   display: flex;
-  flex-direction: column; /* Cada grupo numa linha */
-  gap: 0.6rem;
+  flex-direction: column;
+  gap: 0.8rem;
 }
 
 .form-row-toggle .form-group {
   display: flex;
-  align-items: center; /* Alinha label e botões na mesma linha */
+  align-items: center;
   gap: 0.8rem;
 }
 
 .form-row-toggle .form-group label {
-  width: 130px; /* Mantém os nomes (Local, Faturável, etc.) alinhados */
+  width: 130px;
   text-align: right;
-  margin: 0;
   font-weight: 600;
+  margin: 0;
 }
 
+/* 🔹 força os botões a ficarem lado a lado */
 .local-toggle-group {
-  display: flex;
-  flex-direction: row; /* 👉 botões lado a lado */
-  flex-wrap: wrap;
-  gap: 0.4rem;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: flex-start;
   align-items: center;
+  gap: 0.5rem;
+  flex-wrap: nowrap; /* impede quebra vertical */
+  width: 100%;
 }
+
+.toggle-option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
 
 
 
