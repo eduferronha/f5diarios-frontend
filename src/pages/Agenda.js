@@ -126,7 +126,7 @@ export default function Agenda() {
 
     try {
       if (editingEvent) {
-        await api.put(
+        await api.patch(
           `/agenda/${editingEvent.id}`,
           {
             utilizador: selectedUser,
