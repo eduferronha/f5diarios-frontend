@@ -145,13 +145,13 @@ textarea:focus {
 }
 
 /* === Botões toggle (Local, Faturável, etc.) === */
-.local-toggle-group {
+/* .local-toggle-group {
   display: flex;
   flex-wrap: wrap;
   gap: 0.3rem;
   margin-top: 0.2rem;
   justify-content: center; 
-}
+} */
 
 .toggle-option {
   position: relative;
@@ -328,28 +328,31 @@ textarea:focus {
 /* === Grupos dos toggles === */
 .form-row-toggle {
   display: flex;
-  flex-direction: column; /* 👉 coloca os 3 grupos na vertical */
+  flex-direction: column; /* Cada grupo numa linha */
   gap: 0.6rem;
 }
 
 .form-row-toggle .form-group {
   display: flex;
-  align-items: center;
-  gap: 0.6rem;
+  align-items: center; /* Alinha label e botões na mesma linha */
+  gap: 0.8rem;
 }
 
 .form-row-toggle .form-group label {
-  width: 130px; /* garante que os inputs ficam alinhados verticalmente */
-  font-weight: 600;
+  width: 130px; /* Mantém os nomes (Local, Faturável, etc.) alinhados */
   text-align: right;
-  margin-bottom: 0;
+  margin: 0;
+  font-weight: 600;
 }
 
 .local-toggle-group {
   display: flex;
+  flex-direction: row; /* 👉 botões lado a lado */
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.4rem;
+  align-items: center;
 }
+
 
 
 /* === Coluna dos inputs === */
