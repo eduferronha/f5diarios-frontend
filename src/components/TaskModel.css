@@ -326,36 +326,39 @@ textarea:focus {
 }
 
 /* === Corrige alinhamento horizontal Local / Faturável / Viagem Faturável === */
+/* === Alinhamento horizontal de Local / Faturável / Viagem Faturável === */
 .form-row-toggle {
   display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
+  flex-direction: column; /* Cada grupo numa linha */
+  gap: 0.6rem;
+  width: 100%;
 }
 
 .form-row-toggle .form-group {
   display: flex;
+  flex-direction: row; /* 👉 Label e opções lado a lado */
   align-items: center;
   gap: 0.8rem;
+  width: 100%;
 }
 
 .form-row-toggle .form-group label {
-  width: 130px;
+  flex: 0 0 130px; /* largura fixa p/ alinhar labels */
   text-align: right;
   font-weight: 600;
   margin: 0;
 }
 
-/* 🔹 força os botões a ficarem lado a lado */
+/* Botões lado a lado */
 .local-toggle-group {
-  display: flex !important;
-  flex-direction: row !important;
-  justify-content: flex-start;
+  display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   flex-wrap: nowrap; /* impede quebra vertical */
-  width: 100%;
 }
 
+/* Mantém o visual compacto dos botões */
 .toggle-option {
   display: inline-flex;
   align-items: center;

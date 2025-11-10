@@ -596,7 +596,7 @@ const TaskModal = ({
 
             <div className="form-column-right">
               <div>
-                <label>Distância Viagem (km)</label>
+                <label>Distância (km)</label>
                 <input
                   type="number"
                   min="0"
