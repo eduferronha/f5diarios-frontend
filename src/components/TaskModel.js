@@ -523,26 +523,7 @@ const TaskModal = ({
             </div>
           </div>
 
-          <div className="form-column-right">
-              <div>
-                <label>Distância (km)</label>
-                <input
-                  type="number"
-                  min="0"
-                  value={distanciaViagem}
-                  onChange={(e) => setDistanciaViagem(e.target.value)}
-                />
-              </div>
-              <div>
-                <label>Valor (€)</label>
-                <input
-                  type="number"
-                  min="0"
-                  value={valorEuro}
-                  onChange={(e) => setValorEuro(e.target.value)}
-                />
-              </div>
-            </div>
+          
 
           {/* Local, Faturável, Viagem Faturável */}
           <div className="form-row-align">
@@ -617,6 +598,27 @@ const TaskModal = ({
 
             
           </div>
+
+          <div className="form-column-right">
+              <div>
+                <label>Distância (km)</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={distanciaViagem}
+                  onChange={(e) => setDistanciaViagem(e.target.value)}
+                />
+              </div>
+              <div>
+                <label>Valor (€)</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={valorEuro}
+                  onChange={(e) => setValorEuro(e.target.value)}
+                />
+              </div>
+            </div>
             
           
         </form>
