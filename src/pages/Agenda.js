@@ -126,6 +126,47 @@ export default function Agenda() {
 
     try {
       if (editingEvent) {
+      // Verifica se há intervalo
+      if (end > start) {
+        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+          const dataDia = d.toISOString().split("T")[0];
+          // Procura se há evento para esse utilizador e data
+          const eventoExistente = events.find(
+            (e) =>
+              e.utilizador?.toLowerCase() === selectedUser.toLowerCase() &&
+              e.data === dataDia
+          );
+
+          if (eventoExistente) {
+            // Atualiza evento existente
+            await api.patch(
+              `/agenda/${eventoExistente.id}`,
+              {
+                utilizador: selectedUser,
+                data: dataDia,
+                hora_inicio: inicio,
+                hora_fim: fim,
+                descricao,
+              },
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
+          } else {
+            // Cria novo se não existir
+            await api.post(
+              "/agenda/",
+              {
+                utilizador: selectedUser,
+                data: dataDia,
+                hora_inicio: inicio,
+                hora_fim: fim,
+                descricao,
+              },
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
+          }
+        }
+      } else {
+        // Caso normal: apenas um evento
         await api.patch(
           `/agenda/${editingEvent.id}`,
           {
@@ -137,20 +178,9 @@ export default function Agenda() {
           },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-      } else {
-        for (const dataDia of diasNoIntervalo) {
-          const newEvent = {
-            utilizador: selectedUser,
-            data: dataDia,
-            hora_inicio: inicio,
-            hora_fim: fim,
-            descricao,
-          };
-          await api.post("/agenda/", newEvent, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-        }
       }
+    }
+
 
       const res = await api.get("/agenda/", {
         headers: { Authorization: `Bearer ${token}` },
