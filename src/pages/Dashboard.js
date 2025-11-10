@@ -109,10 +109,13 @@ function Dashboard() {
     const duplicatedTask = { ...task };
     delete duplicatedTask.id;
     delete duplicatedTask._id;
+
+    setPresetToApply(null); 
     setEditingTask(duplicatedTask);
     setIsDuplicate(true);
     setShowModal(true);
   };
+
 
   const handleCloseModal = () => {
     setEditingTask(null);
