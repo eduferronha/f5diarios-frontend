@@ -57,7 +57,8 @@
   text-align: center;
   color: #333;
   font-size: 1.1rem; /* 🔹 menor */
-  margin-bottom: 0.9rem; /* 🔹 menos espaço */
+  margin-bottom: 0.9rem; 
+  margin-top: 0;
   font-weight: 600;
 }
 
@@ -147,9 +148,9 @@ textarea:focus {
 .local-toggle-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.3rem; /* 🔹 menor */
-  margin-top: 0.2rem; /* 🔹 menor */
-  justify-content: center; /* 🔹 centrado */
+  gap: 0.3rem;
+  margin-top: 0.2rem;
+  justify-content: center; 
 }
 
 .toggle-option {
@@ -327,23 +328,29 @@ textarea:focus {
 /* === Grupos dos toggles === */
 .form-row-toggle {
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 0.8rem; /* 🔹 menor */
-  flex: 2;
+  flex-direction: column; /* 👉 coloca os 3 grupos na vertical */
+  gap: 0.6rem;
 }
 
 .form-row-toggle .form-group {
-  flex: 1;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
 }
 
 .form-row-toggle .form-group label {
-  display: block;
+  width: 130px; /* garante que os inputs ficam alinhados verticalmente */
   font-weight: 600;
-  margin-bottom: 0.3rem;
-  font-size: 0.75rem; /* 🔹 menor */
+  text-align: right;
+  margin-bottom: 0;
 }
+
+.local-toggle-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
 
 /* === Coluna dos inputs === */
 .form-column-right {
