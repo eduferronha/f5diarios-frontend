@@ -525,96 +525,96 @@ const TaskModal = ({
 
           
 
-{/* 🔹 Secção de Local / Faturável / Viagem Faturável + Distância e Valor */}
-<div className="form-group full-width"> 
-  {/* 3 linhas de toggles */}
-  <div className="form-row-toggle">
-    <div className="form-group">
-      <label>Local</label>
-      <div className="local-toggle-group">
-        {["Customer Site", "Office", "Employee House"].map((option) => (
-          <label
-            key={option}
-            className={`toggle-option ${local === option ? "active" : ""}`}
-          >
-            <input
-              type="radio"
-              name="local"
-              value={option}
-              checked={local === option}
-              onChange={() => setLocal(option)}
-            />
-            {option}
-          </label>
-        ))}
-      </div>
-    </div>
+          {/* 🔹 Secção de Local / Faturável / Viagem Faturável + Distância e Valor */}
+          <div className="form-group full-width"> 
+            {/* 3 linhas de toggles */}
+            <div className="form-row-toggle">
+              <div className="form-group">
+                <label>Local</label>
+                <div className="local-toggle-group">
+                  {["Customer Site", "Office", "Employee House"].map((option) => (
+                    <label
+                      key={option}
+                      className={`toggle-option ${local === option ? "active" : ""}`}
+                    >
+                      <input
+                        type="radio"
+                        name="local"
+                        value={option}
+                        checked={local === option}
+                        onChange={() => setLocal(option)}
+                      />
+                      {option}
+                    </label>
+                  ))}
+                </div>
+              </div>
 
-    <div className="form-group">
-      <label>Faturável</label>
-      <div className="local-toggle-group">
-        {["Yes", "No", "For analysis"].map((option) => (
-          <label
-            key={option}
-            className={`toggle-option ${faturavel === option ? "active" : ""}`}
-          >
-            <input
-              type="radio"
-              name="faturavel"
-              value={option}
-              checked={faturavel === option}
-              onChange={() => setFaturavel(option)}
-            />
-            {option}
-          </label>
-        ))}
-      </div>
-    </div>
+              <div className="form-group">
+                <label>Faturável</label>
+                <div className="local-toggle-group">
+                  {["Yes", "No", "For analysis"].map((option) => (
+                    <label
+                      key={option}
+                      className={`toggle-option ${faturavel === option ? "active" : ""}`}
+                    >
+                      <input
+                        type="radio"
+                        name="faturavel"
+                        value={option}
+                        checked={faturavel === option}
+                        onChange={() => setFaturavel(option)}
+                      />
+                      {option}
+                    </label>
+                  ))}
+                </div>
+              </div>
 
-    <div className="form-group">
-      <label>Viagem Faturável</label>
-      <div className="local-toggle-group">
-        {["Yes", "No", "For analysis"].map((option) => (
-          <label
-            key={option}
-            className={`toggle-option ${viagemFaturavel === option ? "active" : ""}`}
-          >
-            <input
-              type="radio"
-              name="viagem_faturavel"
-              value={option}
-              checked={viagemFaturavel === option}
-              onChange={() => setViagemFaturavel(option)}
-            />
-            {option}
-          </label>
-        ))}
-      </div>
-    </div>
-  </div>
+              <div className="form-group">
+                <label>Viagem Faturável</label>
+                <div className="local-toggle-group">
+                  {["Yes", "No", "For analysis"].map((option) => (
+                    <label
+                      key={option}
+                      className={`toggle-option ${viagemFaturavel === option ? "active" : ""}`}
+                    >
+                      <input
+                        type="radio"
+                        name="viagem_faturavel"
+                        value={option}
+                        checked={viagemFaturavel === option}
+                        onChange={() => setViagemFaturavel(option)}
+                      />
+                      {option}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
 
-  {/* 🔹 Linha separada — Distância e Valor */}
-  <div className="form-distance-value">
-    <div>
-      <label>Distância (km)</label>
-      <input
-        type="number"
-        min="0"
-        value={distanciaViagem}
-        onChange={(e) => setDistanciaViagem(e.target.value)}
-      />
-    </div>
-    <div>
-      <label>Valor (€)</label>
-      <input
-        type="number"
-        min="0"
-        value={valorEuro}
-        onChange={(e) => setValorEuro(e.target.value)}
-      />
-    </div>
-  </div>
-</div>
+            {/* 🔹 Linha separada — Distância e Valor */}
+            <div className="form-distance-value">
+              <div>
+                <label>Distância (km)</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={distanciaViagem}
+                  onChange={(e) => setDistanciaViagem(e.target.value)}
+                />
+              </div>
+              <div>
+                <label>Valor (€)</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={valorEuro}
+                  onChange={(e) => setValorEuro(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
  
           
         </form>

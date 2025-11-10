@@ -343,11 +343,12 @@ textarea:focus {
 }
 
 .form-row-toggle .form-group label {
-  flex: 0 0 130px; /* largura fixa p/ alinhar labels */
-  text-align: right;
+  flex: 0 0 130px; /* mantém o mesmo espaçamento para consistência */
+  text-align: left; /* 👉 alinha o texto à esquerda */
   font-weight: 600;
   margin: 0;
 }
+
 
 /* Botões lado a lado */
 .local-toggle-group {
