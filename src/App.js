@@ -24,21 +24,49 @@ function App() {
     }
 
     // 🔹 redefine alert() global
-    window.alert = function (message) {
-      const container = document.getElementById(containerId);
-      if (!container) return;
+    window.confirm = async function (message) {
+    return new Promise((resolve) => {
+      const container = document.getElementById("global-alert-container");
+      if (!container) return resolve(false);
 
-      const alertDiv = document.createElement("div");
-      alertDiv.className = "global-alert";
-      alertDiv.innerText = message;
-      container.appendChild(alertDiv);
+      const overlay = document.createElement("div");
+      overlay.className = "confirm-overlay";
 
-      // remove após 3.5s com animação suave
-      setTimeout(() => {
-        alertDiv.classList.add("fade-out");
-        setTimeout(() => alertDiv.remove(), 500);
-      }, 3500);
-    };
+      const box = document.createElement("div");
+      box.className = "confirm-box";
+
+      const text = document.createElement("p");
+      text.innerText = message;
+
+      const btns = document.createElement("div");
+      btns.className = "confirm-buttons";
+
+      const okBtn = document.createElement("button");
+      okBtn.className = "confirm-ok";
+      okBtn.textContent = "Sim";
+
+      const cancelBtn = document.createElement("button");
+      cancelBtn.className = "confirm-cancel";
+      cancelBtn.textContent = "Cancelar";
+
+      okBtn.onclick = () => {
+        overlay.remove();
+        resolve(true);
+      };
+      cancelBtn.onclick = () => {
+        overlay.remove();
+        resolve(false);
+      };
+
+      btns.appendChild(okBtn);
+      btns.appendChild(cancelBtn);
+      box.appendChild(text);
+      box.appendChild(btns);
+      overlay.appendChild(box);
+      document.body.appendChild(overlay);
+    });
+  };
+
   }, []);
 
   return (
