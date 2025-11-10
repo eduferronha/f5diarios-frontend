@@ -432,6 +432,7 @@ textarea:focus {
   justify-content: space-between;
   align-items: flex-start;
   gap: 1.5rem;
+  width: 75vh;
 }
 
 .calendar-box {
@@ -444,7 +445,7 @@ textarea:focus {
   border-radius: 10px;
   padding: 0.8rem 1rem;
   border: 1px solid #ddd;
-  max-height: 320px;
+  max-height: 20vh;
   overflow-y: auto;
 }
 

@@ -386,7 +386,18 @@ const TaskModal = ({
                   />
                 </div>
 
-                <div className="selected-dates-list">
+                <div className="form-group full-width">
+                  <label>Descrição</label>
+                  <textarea
+                    rows="4"
+                    placeholder="Descreve a tarefa..."
+                    value={descricao}
+                    onChange={(e) => setDescricao(e.target.value)}
+                    required={!isPresetMode}
+                  />
+                </div>
+
+                {/* <div className="selected-dates-list">
                   <h4>Datas selecionadas</h4>
                   {datasDuplicadas.length === 0 ? (
                     <p className="no-dates">Nenhuma data</p>
@@ -403,21 +414,12 @@ const TaskModal = ({
                       ))}
                     </ul>
                   )}
-                </div>
+                </div> */}
               </div>
             )}
 
 
-          <div className="form-group full-width">
-            <label>Descrição</label>
-            <textarea
-              rows="4"
-              placeholder="Descreve a tarefa..."
-              value={descricao}
-              onChange={(e) => setDescricao(e.target.value)}
-              required={!isPresetMode}
-            />
-          </div>
+          
 
           {/* Select Cliente */}
           <div className="form-group">
