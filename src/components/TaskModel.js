@@ -41,9 +41,14 @@ const TaskModal = ({
   const [contratosFiltrados, setContratosFiltrados] = useState([]);
 
   const [datasDuplicadas, setDatasDuplicadas] = useState([]);
-  const [showCalendar, setShowCalendar] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(true);
 
   const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    if (isDuplicate) setShowCalendar(true);
+  }, [isDuplicate]);
+
 
   useEffect(() => {
     if (preselectedDate) {
@@ -375,8 +380,8 @@ const TaskModal = ({
                       : "Selecionar datas..."
                   }
                 />
-                {showCalendar && (
-                  <div className="calendar-popup">
+                {isDuplicate && (
+                  <div className="calendar-popup always-visible">
                     <Calendar
                       key={datasDuplicadas.join(",")}
                       value={null}

@@ -286,6 +286,7 @@ function Dashboard() {
           preselectedDate={preselectedDate} 
         /> */}
         <TaskModal
+          key={isDuplicate ? `duplicate-${editingTask?.id || "new"}` : "normal"} // 👈 força recriação no modo duplicação
           show={showModal}
           onClose={handleCloseModal}
           onTaskAdded={fetchTasks}
@@ -293,8 +294,9 @@ function Dashboard() {
           isDuplicate={isDuplicate}
           isPresetMode={!!presetToApply}
           presetData={presetToApply}
-          preselectedDate={preselectedDate}   // ✅ passa a data clicada
+          preselectedDate={preselectedDate}
         />
+
 
 
         <PresetsModal

@@ -400,3 +400,9 @@ textarea:focus {
   }
 }
 
+.always-visible {
+  display: block !important;
+  position: relative;
+  z-index: 10;
+  margin-top: 10px;
+}
