@@ -370,21 +370,21 @@ textarea:focus {
 
 
 /* === Coluna dos inputs === */
-.form-column-right {
+/* .form-column-right {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem; /* 🔹 menor */
+  gap: 0.4rem; 
   flex: 1;
   align-items: stretch;
 }
 
 .form-column-right input {
   width: 100%;
-  max-width: 110px; /* 🔹 mais pequeno */
+  max-width: 110px; 
   text-align: center;
   margin: 0 auto;
   font-size: 0.78rem;
-}
+} */
 
 /* === Layout modo duplicar === */
 .calendar-duplicate-container {
@@ -421,6 +421,41 @@ textarea:focus {
 .css-3iigni-container {
   font-size: 0.75rem !important;
 }
+
+/* === Coluna direita agora vira uma linha abaixo === */
+.form-column-right {
+  display: flex;
+  flex-direction: row; /* 👉 horizontal */
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1.5rem; /* espaço entre os dois grupos */
+  margin-left: 130px; /* alinha com os labels acima (Local, Faturável...) */
+  margin-top: 0.4rem;
+}
+
+.form-column-right div {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.form-column-right label {
+  font-weight: 500;
+  color: #444;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.form-column-right input {
+  width: 80px;
+  text-align: center;
+  font-size: 0.78rem;
+  padding: 0.25rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background: #fafafa;
+}
+
 
 /* === Responsivo adicional === */
 @media (max-width: 750px) {

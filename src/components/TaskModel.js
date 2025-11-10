@@ -411,7 +411,7 @@ const TaskModal = ({
           <div className="form-group full-width">
             <label>Descrição</label>
             <textarea
-              rows="4"
+              rows="3"
               placeholder="Descreve a tarefa..."
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
