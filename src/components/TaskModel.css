@@ -76,33 +76,7 @@
 .form-group-time {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem; /* espaço entre os 3 campos */
-  margin-top: 0.5rem;
 }
-
-.form-group-time label {
-  font-weight: 500;
-  color: #444;
-  font-size: 0.8rem;
-  margin-bottom: 0.2rem;
-}
-
-.form-group-time input[type="time"] {
-  width: 160px; /* largura fixa e alinhada */
-  padding: 0.3rem 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  background: #fafafa;
-  transition: all 0.2s ease;
-}
-
-.form-group-time input[type="time"]:focus {
-  border-color: #0078d7;
-  background: #fff;
-  box-shadow: 0 0 0 2px rgba(0, 120, 215, 0.1);
-}
-
 
 .form-group.full-width {
   grid-column: 1 / -1;
