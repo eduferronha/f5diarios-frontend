@@ -398,20 +398,3 @@ textarea:focus {
   }
 }
 
-/* === Correção: inputs de tempo cortados === */
-.form-row {
-  display: flex;
-  flex-wrap: wrap; /* 👉 permite quebrar linha se faltar espaço */
-  gap: 0.8rem;
-}
-
-.form-row > div {
-  flex: 1;
-  min-width: 120px; /* 👉 garante espaço mínimo suficiente */
-}
-
-.form-row input[type="time"] {
-  width: 100%;
-  min-width: 100px;
-  box-sizing: border-box;
-}
