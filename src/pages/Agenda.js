@@ -503,6 +503,8 @@ export default function Agenda() {
                             onDragEnter={() => handleDragEnterCellAgenda(data, u.username)}
                             onDragLeave={() => handleDragLeaveCellAgenda(data, u.username)}
                             onDrop={(e) => handleDropOnCellAgenda(e, data, u.username)}
+                            draggable={!!evento}                              // 👈 célula inteira arrastável se houver evento
+                            onDragStart={(e) => evento && handleDragStartAgenda(e, evento)}  // 👈 usa o evento da célula
                             title={
                               evento
                                 ? `${evento.descricao} (${evento.hora_inicio} - ${evento.hora_fim})`
@@ -510,11 +512,7 @@ export default function Agenda() {
                             }
                           >
                             {evento && (
-                              <div
-                                className="event-info-agenda"
-                                draggable
-                                onDragStart={(e) => handleDragStartAgenda(e, evento)}
-                              >
+                              <div className="event-info-agenda">
                                 <strong>{evento.descricao}</strong>
                                 <div>
                                   {evento.hora_inicio} - {evento.hora_fim}

@@ -136,6 +136,7 @@
   font-size: 0.85rem;
   cursor: pointer;
   transition: background 0.3s;
+  font-family: Poppins, sans-serif;
 }
 
 .btn-secondary:hover {
