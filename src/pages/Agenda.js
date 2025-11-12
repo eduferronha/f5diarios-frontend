@@ -437,13 +437,25 @@ export default function Agenda() {
               />
             </div>
 
-      <div className="modal-buttons">
-        <button onClick={handleSave}>
+      <div className="modal-buttons-agenda">
+        <button className="btn-agenda btn-primary-agenda" onClick={handleSave}>
           {editingEvent ? "Guardar Alterações" : "Guardar"}
         </button>
-        {editingEvent && <button onClick={handleDelete}>Eliminar</button>}
-        <button onClick={() => setShowModal(false)}>Cancelar</button>
+
+        {editingEvent && (
+          <button className="btn-agenda btn-danger-agenda" onClick={handleDelete}>
+            Eliminar
+          </button>
+        )}
+
+        <button
+          className="btn-agenda btn-secondary-agenda"
+          onClick={() => setShowModal(false)}
+        >
+          Cancelar
+        </button>
       </div>
+
     </div>
   </div>
 )}
