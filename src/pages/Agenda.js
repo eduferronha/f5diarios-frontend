@@ -18,10 +18,13 @@ export default function Agenda() {
   const [loading, setLoading] = useState(true);
   const [showScroll, setShowScroll] = useState(false);
 
+  // 👉 estado visual do DnD
+  const [dragHoverKey, setDragHoverKey] = useState(null); // `${date}__${user}`
+
   const tableRef = useRef(null);
   const token = localStorage.getItem("token");
 
-  // 🧩 Obter utilizador logado (parse seguro, evita ecrã branco)
+  // 🧩 Obter utilizador logado (parse seguro)
   let storedUser = null;
   try {
     const raw = localStorage.getItem("user");
@@ -110,6 +113,93 @@ export default function Agenda() {
 
     setShowModal(true);
   };
+
+  // ====== Drag & Drop: duplicar no destino ======
+  const handleDragStartAgenda = (e, sourceEvent) => {
+    // guardamos info essencial no dataTransfer
+    const payload = JSON.stringify({
+      descricao: sourceEvent.descricao || "",
+      hora_inicio: sourceEvent.hora_inicio || "09:00",
+      hora_fim: sourceEvent.hora_fim || "18:00",
+      utilizador: sourceEvent.utilizador || "",
+      data: sourceEvent.data || "",
+      id: sourceEvent.id,
+    });
+    e.dataTransfer.setData("text/plain", payload);
+    e.dataTransfer.effectAllowed = "copy";
+  };
+
+  const handleDragOverCellAgenda = (e) => {
+    e.preventDefault(); // necessário para permitir drop
+    e.dataTransfer.dropEffect = "copy";
+  };
+
+  const handleDragEnterCellAgenda = (date, user) => {
+    setDragHoverKey(`${date}__${user}`);
+  };
+
+  const handleDragLeaveCellAgenda = (date, user) => {
+    const key = `${date}__${user}`;
+    if (dragHoverKey === key) setDragHoverKey(null);
+  };
+
+  const handleDropOnCellAgenda = async (e, targetDate, targetUser) => {
+    e.preventDefault();
+    setDragHoverKey(null);
+
+    let dataText = e.dataTransfer.getData("text/plain");
+    if (!dataText) return;
+    let src;
+    try {
+      src = JSON.parse(dataText);
+    } catch {
+      return;
+    }
+
+    // Se for o mesmo destino (mesmo utilizador e mesma data), ignoramos
+    if (
+      src.utilizador?.toLowerCase?.() === targetUser?.toLowerCase?.() &&
+      src.data === targetDate
+    ) {
+      return;
+    }
+
+    // Se já existe evento no destino, perguntar se quer criar mais um (duplicado no mesmo dia)
+    const existsAtTarget = events.some(
+      (e) =>
+        e.utilizador?.toLowerCase?.() === targetUser?.toLowerCase?.() &&
+        e.data === targetDate
+    );
+    if (existsAtTarget) {
+      const ok = window.confirm(
+        "Já existe uma marcação nesse dia/utilizador. Queres criar MAIS UMA marcação no mesmo destino?"
+      );
+      if (!ok) return;
+    }
+
+    // Criar novo no destino com os mesmos dados (duplicar)
+    try {
+      await api.post(
+        "/agenda/",
+        {
+          utilizador: targetUser,
+          data: targetDate,
+          hora_inicio: src.hora_inicio || "09:00",
+          hora_fim: src.hora_fim || "18:00",
+          descricao: src.descricao || "",
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const res = await api.get("/agenda/", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setEvents(res.data || []);
+    } catch (err) {
+      console.error("Erro ao duplicar marcação por drag & drop:", err);
+      alert("Erro ao duplicar marcação.");
+    }
+  };
+  // ====== fim DnD ======
 
   const handleSave = useCallback(async () => {
     if (!selectedUser || !selectedDate || !descricao) {
@@ -258,7 +348,7 @@ export default function Agenda() {
     }
   }, [editingEvent, selectedDate, endDate, events, selectedUser, token]);
 
-  // ✅ Fechar modal com confirmação se houver alterações (mesma ideia do TaskModal)
+  // ✅ Fechar modal com confirmação (igual TaskModal)
   const handleCloseAgenda = useCallback(() => {
     const hasChanges =
       (descricao && descricao.trim() !== "") ||
@@ -289,18 +379,12 @@ export default function Agenda() {
     if (!showModal) return;
 
     const handleKeyDown = (e) => {
-      // ENTER: submeter se NÃO estivermos num TEXTAREA
       if (e.key === "Enter" && document.activeElement?.tagName !== "TEXTAREA") {
         e.preventDefault();
         const form = document.getElementById("form-agenda");
-        if (form) {
-          form.requestSubmit();
-        } else {
-          handleSave();
-        }
+        if (form) form.requestSubmit();
+        else handleSave();
       }
-
-      // ESC: fecha com confirmação
       if (e.key === "Escape") {
         e.preventDefault();
         handleCloseAgenda();
@@ -406,12 +490,19 @@ export default function Agenda() {
                             : "#c8e6c9";
                         }
 
+                        const cellKey = `${data}__${u.username}`;
+                        const isHover = dragHoverKey === cellKey;
+
                         return (
                           <td
                             key={u.id}
-                            className="agenda-cell-agenda"
+                            className={`agenda-cell-agenda ${isHover ? "drop-target-agenda" : ""}`}
                             style={{ backgroundColor: bgColor }}
                             onClick={() => handleCellClick(data, u.username)}
+                            onDragOver={handleDragOverCellAgenda}
+                            onDragEnter={() => handleDragEnterCellAgenda(data, u.username)}
+                            onDragLeave={() => handleDragLeaveCellAgenda(data, u.username)}
+                            onDrop={(e) => handleDropOnCellAgenda(e, data, u.username)}
                             title={
                               evento
                                 ? `${evento.descricao} (${evento.hora_inicio} - ${evento.hora_fim})`
@@ -419,7 +510,11 @@ export default function Agenda() {
                             }
                           >
                             {evento && (
-                              <div className="event-info-agenda">
+                              <div
+                                className="event-info-agenda"
+                                draggable
+                                onDragStart={(e) => handleDragStartAgenda(e, evento)}
+                              >
                                 <strong>{evento.descricao}</strong>
                                 <div>
                                   {evento.hora_inicio} - {evento.hora_fim}

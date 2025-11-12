@@ -258,3 +258,18 @@
   flex-wrap: wrap;
   margin-top: 1rem;
 }
+
+/* Estado de drop target durante o arrasto */
+.drop-target-agenda {
+  outline: 2px dashed #237c9b;
+  outline-offset: -4px;
+}
+
+/* Sugestão: cursor de "move/copy" ao passar por cima do evento arrastável */
+.event-info-agenda[draggable="true"] {
+  cursor: grab;
+}
+.event-info-agenda[draggable="true"]:active {
+  cursor: grabbing;
+}
+
