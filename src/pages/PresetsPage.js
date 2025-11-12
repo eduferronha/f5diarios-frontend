@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import api from "../services/api";
 import TaskModal from "./TaskModel";
 import "../components/PresetsModel.css";
@@ -9,6 +9,40 @@ const PresetsModal = ({ show, onClose }) => {
   const [presetToApply, setPresetToApply] = useState(null);
 
   const token = localStorage.getItem("token");
+
+  // ✅ Fechar com Esc
+  const handleClose = useCallback(() => {
+    onClose();
+  }, [onClose]);
+
+  // ⌨️ Teclas no PresetsModal: activo só quando este modal está aberto
+  // e o TaskModal NÃO está aberto (para não colidir).
+  useEffect(() => {
+    if (!show || showTaskModal) return;
+
+    const onKeyDown = (e) => {
+      const tag = document.activeElement?.tagName;
+      const typing = tag === "INPUT" || tag === "TEXTAREA";
+
+      // Enter → aciona o botão primário do modal
+      if (e.key === "Enter" && !typing) {
+        e.preventDefault();
+        const root = document.querySelector(".presets-modal");
+        const primaryBtn = root?.querySelector(".btn-primary");
+        primaryBtn?.click();
+      }
+
+      // Esc → fecha
+      if (e.key === "Escape") {
+        e.preventDefault();
+        handleClose();
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [show, showTaskModal, handleClose]);
+
 
   // 🔹 Carregar presets do utilizador autenticado
   const fetchPresets = async () => {
