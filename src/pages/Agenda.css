@@ -266,10 +266,11 @@
 }
 
 /* Sugestão: cursor de "move/copy" ao passar por cima do evento arrastável */
-.event-info-agenda[draggable="true"] {
+.agenda-cell-agenda[draggable="true"] {
   cursor: grab;
 }
-.event-info-agenda[draggable="true"]:active {
+.agenda-cell-agenda[draggable="true"]:active {
   cursor: grabbing;
 }
+
 
