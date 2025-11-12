@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -11,64 +11,8 @@ import Agenda from "./pages/Agenda";
 import Atividade from "./pages/Atividade";
 import ProjetosPage from "./pages/ProjetosPage";
 import ProfilePage from "./pages/ProfilePage";
-import "./globalAlerts.css"; // 🔹 importa o CSS dos alerts globais
 
 function App() {
-  useEffect(() => {
-    // 🔹 cria container global uma única vez
-    const containerId = "global-alert-container";
-    if (!document.getElementById(containerId)) {
-      const container = document.createElement("div");
-      container.id = containerId;
-      document.body.appendChild(container);
-    }
-
-    // 🔹 redefine alert() global
-    window.confirm = async function (message) {
-    return new Promise((resolve) => {
-      const container = document.getElementById("global-alert-container");
-      if (!container) return resolve(false);
-
-      const overlay = document.createElement("div");
-      overlay.className = "confirm-overlay";
-
-      const box = document.createElement("div");
-      box.className = "confirm-box";
-
-      const text = document.createElement("p");
-      text.innerText = message;
-
-      const btns = document.createElement("div");
-      btns.className = "confirm-buttons";
-
-      const okBtn = document.createElement("button");
-      okBtn.className = "confirm-ok";
-      okBtn.textContent = "Sim";
-
-      const cancelBtn = document.createElement("button");
-      cancelBtn.className = "confirm-cancel";
-      cancelBtn.textContent = "Cancelar";
-
-      okBtn.onclick = () => {
-        overlay.remove();
-        resolve(true);
-      };
-      cancelBtn.onclick = () => {
-        overlay.remove();
-        resolve(false);
-      };
-
-      btns.appendChild(okBtn);
-      btns.appendChild(cancelBtn);
-      box.appendChild(text);
-      box.appendChild(btns);
-      overlay.appendChild(box);
-      document.body.appendChild(overlay);
-    });
-  };
-
-  }, []);
-
   return (
     <Router>
       <Routes>
