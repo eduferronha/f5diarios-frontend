@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback} from "react";
 import "./Agenda.css";
 import api from "../services/api";
 import { ArrowUp } from "lucide-react";
@@ -24,6 +24,62 @@ export default function Agenda() {
   // 🧩 Obter utilizador logado
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const loggedUsername = storedUser?.username?.toLowerCase() || "";
+
+  // ✅ Fechar modal com confirmação se houver alterações (mesma ideia do TaskModal)
+  const handleCloseAgenda = useCallback(() => {
+    // Consideramos alterações típicas da Agenda:
+    const hasChanges =
+      (descricao && descricao.trim() !== "") ||
+      (inicio && inicio !== "09:00") ||
+      (fim && fim !== "18:00") ||
+      (endDate && endDate !== "") ||
+      (selectedUser && selectedUser !== "") ||
+      (editingEvent &&
+        (
+          descricao !== (editingEvent.descricao || "") ||
+          inicio !== (editingEvent.hora_inicio || "09:00") ||
+          fim !== (editingEvent.hora_fim || "18:00") ||
+          selectedDate !== (editingEvent.data || selectedDate)
+        )
+      );
+
+    if (hasChanges) {
+      const confirmExit = window.confirm(
+        "Existem dados preenchidos. Tens a certeza que queres sair sem guardar?"
+      );
+      if (!confirmExit) return; // ❌ não fecha se cancelar
+    }
+
+    setShowModal(false); // ✅ fecha
+  }, [descricao, inicio, fim, endDate, selectedUser, selectedDate, editingEvent]);
+
+    useEffect(() => {
+      if (!showModal) return;
+
+      const handleKeyDown = (e) => {
+        // ENTER: submeter se NÃO estivermos num TEXTAREA
+        if (e.key === "Enter" && document.activeElement?.tagName !== "TEXTAREA") {
+          e.preventDefault();
+          const form = document.getElementById("form-agenda");
+          if (form) {
+            form.requestSubmit(); // chama o onSubmit do form
+          } else {
+            // fallback: chama diretamente o save
+            handleSave();
+          }
+        }
+
+        // ESC: fecha com confirmação
+        if (e.key === "Escape") {
+          e.preventDefault();
+          handleCloseAgenda();
+        }
+      };
+
+      window.addEventListener("keydown", handleKeyDown);
+      return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [showModal, handleSave, handleCloseAgenda]);
+
 
   useEffect(() => {
     const table = tableRef.current;
@@ -387,80 +443,91 @@ export default function Agenda() {
       )}
 
       {showModal && (
-  <div className="agenda-modal-overlay" onClick={() => setShowModal(false)}>
-    <div className="agenda-modal" onClick={(e) => e.stopPropagation()}>
-      <h3>{editingEvent ? "Editar Marcação" : "Nova Marcação"}</h3>
+        <div className="agenda-modal-overlay" onClick={handleCloseAgenda}>
+          <div className="agenda-modal" onClick={(e) => e.stopPropagation()}>
+            <h3>{editingEvent ? "Editar Marcação" : "Nova Marcação"}</h3>
 
-            <div className="form-group">
-              <label>Início Marcação:</label>
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-              />
-            </div>
+            <form
+              id="form-agenda"
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSave();
+              }}
+            >
+              <div className="form-group">
+                <label>Início Marcação:</label>
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                />
+              </div>
 
-            <div className="form-group">
-              <label>Fim Marcação:</label>
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-              />
-            </div>
+              <div className="form-group">
+                <label>Fim Marcação:</label>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
+              </div>
 
-            <div className="form-group">
-              <label>Início:</label>
-              <input
-                type="time"
-                value={inicio}
-                onChange={(e) => setInicio(e.target.value)}
-              />
-            </div>
+              <div className="form-group">
+                <label>Início:</label>
+                <input
+                  type="time"
+                  value={inicio}
+                  onChange={(e) => setInicio(e.target.value)}
+                />
+              </div>
 
-            <div className="form-group">
-              <label>Fim:</label>
-              <input
-                type="time"
-                value={fim}
-                onChange={(e) => setFim(e.target.value)}
-              />
-            </div>
+              <div className="form-group">
+                <label>Fim:</label>
+                <input
+                  type="time"
+                  value={fim}
+                  onChange={(e) => setFim(e.target.value)}
+                />
+              </div>
 
-            <div className="form-group">
-              <label>Descrição:</label>
-              <input
-                type="text"
-                placeholder="Descrição do evento"
-                value={descricao}
-                onChange={(e) => setDescricao(e.target.value)}
-              />
-            </div>
+              <div className="form-group">
+                <label>Descrição:</label>
+                <input
+                  type="text"
+                  placeholder="Descrição do evento"
+                  value={descricao}
+                  onChange={(e) => setDescricao(e.target.value)}
+                />
+              </div>
 
+              <div className="modal-buttons-agenda">
+                <button type="submit" className="btn-agenda btn-primary-agenda">
+                  {editingEvent ? "Guardar Alterações" : "Guardar"}
+                </button>
 
+                {editingEvent && (
+                  <button
+                    type="button"
+                    className="btn-agenda btn-danger-agenda"
+                    onClick={handleDelete}
+                  >
+                    Eliminar
+                  </button>
+                )}
 
-      <div className="modal-buttons-agenda">
-        <button className="btn-agenda btn-primary-agenda" onClick={handleSave}>
-          {editingEvent ? "Guardar Alterações" : "Guardar"}
-        </button>
+                <button
+                  type="button"
+                  className="btn-agenda btn-secondary-agenda"
+                  onClick={handleCloseAgenda}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
-        {editingEvent && (
-          <button className="btn-agenda btn-danger-agenda" onClick={handleDelete}>
-            Eliminar
-          </button>
-        )}
-
-        <button
-          className="btn-agenda btn-secondary-agenda"
-          onClick={() => setShowModal(false)}
-        >
-          Cancelar
-        </button>
-      </div>
-
-    </div>
-  </div>
-)}
 
     </div>
   );
