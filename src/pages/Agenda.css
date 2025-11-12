@@ -333,3 +333,59 @@
   justify-content: space-between;
   margin-top: 1rem;
 }
+
+
+/* === Botões (baseado em .btn-add) === */
+.btn {
+  background-color: #237c9b;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1.1rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 120, 215, 0.2);
+  font-family: 'Poppins', sans-serif;
+}
+
+.btn:hover {
+  background-color: #005fa3;
+  box-shadow: 0 3px 8px rgba(0, 120, 215, 0.3);
+}
+
+/* Variantes */
+.btn-primary { /* Guardar */
+  background-color: #237c9b;
+}
+.btn-primary:hover {
+  background-color: #1b6b81;
+}
+
+.btn-secondary { /* Cancelar */
+  background-color: #6b7280; /* cinza */
+  box-shadow: 0 2px 6px rgba(107, 114, 128, 0.25);
+}
+.btn-secondary:hover {
+  background-color: #4b5563;
+  box-shadow: 0 3px 8px rgba(75, 85, 99, 0.35);
+}
+
+.btn-danger { /* Eliminar */
+  background-color: #dc2626; /* vermelho */
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25);
+}
+.btn-danger:hover {
+  background-color: #b91c1c;
+  box-shadow: 0 3px 8px rgba(185, 28, 28, 0.35);
+}
+
+/* Layout dos botões na modal */
+.modal-buttons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
