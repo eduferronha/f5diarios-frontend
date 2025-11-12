@@ -1,10 +1,11 @@
-.agenda-container {
+/* Contêiner e controlos */
+.agenda-container-agenda {
   padding: 1.5rem 2rem;
   font-family: "Poppins", sans-serif;
   color: #333;
 }
 
-.agenda-controls {
+.agenda-controls-agenda {
   display: flex;
   align-items: center;
   gap: 0.6rem;
@@ -12,7 +13,7 @@
   flex-wrap: wrap;
 }
 
-.agenda-controls select {
+.agenda-controls-agenda select {
   padding: 0.35rem 0.7rem;
   border-radius: 8px;
   border: 1px solid #ccc;
@@ -21,62 +22,55 @@
   transition: all 0.2s ease;
 }
 
-.agenda-table-container {
-  position: relative;
-  border-radius: 14px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-  background: #ffffff;
-  overflow: hidden;
-}
-
-/* Header fixo */
-.agenda-table-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  overflow-x: auto;
-  background-color: #f3f4f6;
-}
-
-.agenda-table-header table {
+/* Tabela da agenda */
+.agenda-table-wrapper-agenda {
   width: 100%;
-  border-collapse: collapse;
-}
-
-.agenda-table-header th {
-  padding: 6px 8px;
-  border: 1px solid #ccc;
-  font-weight: 600;
-  font-size: 14px;
-  background-color: #f3f4f6;
-  text-align: center;
-}
-
-/* Corpo scrollável */
-.agenda-table-body {
   max-height: 75vh;
-  overflow-y: auto;
-  overflow-x: auto;
+  overflow: auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
-.agenda-table-body table {
+.agenda-table-agenda {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
 }
 
-.agenda-table-body td {
+.agenda-table-agenda th,
+.agenda-table-agenda td {
   border: 1px solid #e5e7eb;
   text-align: center;
   padding: 0.5rem;
   min-width: 100px;
   height: 70px;
   vertical-align: top;
-  background-color: #fff;
-  transition: all 0.2s ease;
 }
 
-.agenda-cell {
+.agenda-table-agenda th {
+  position: sticky;
+  top: 0;
+  background-color: #f3f4f6;
+  z-index: 5;
+  font-weight: 600;
+  font-size: 14px;
+  text-align: center;
+}
+
+.header-active-agenda {
+  background-color: #d4ebf2 !important;
+  color: #0b4f6c;
+  font-weight: 700;
+  border-bottom: 2px solid #0b4f6c;
+  transition: all 0.3s ease;
+}
+
+.agenda-date-agenda {
+  font-weight: 500;
+}
+
+.agenda-cell-agenda {
   cursor: pointer;
   transition: background-color 0.25s, transform 0.1s;
   border-radius: 6px;
@@ -85,13 +79,13 @@
   white-space: nowrap;
 }
 
-.agenda-cell:hover {
+.agenda-cell-agenda:hover {
   background-color: #e8f2ff !important;
   transform: scale(1.03);
   box-shadow: 0 2px 8px rgba(0, 120, 215, 0.15);
 }
 
-.event-info {
+.event-info-agenda {
   font-size: 0.8rem;
   color: #1f2937;
   overflow: hidden;
@@ -100,42 +94,11 @@
   padding: 0.3rem 0.2rem;
 }
 
-.scroll-top-btn {
+/* Spinner de carregamento */
+.spinner-container-agenda {
   position: fixed;
-  bottom: 30px;
-  right: 30px;
-  background-color: #237c9b;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-  transition: all 0.3s ease;
-  z-index: 2000;
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-.scroll-top-btn.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.scroll-top-btn:hover {
-  background-color: #1b5f73;
-  transform: translateY(-3px);
-}
-
-.spinner-container {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  inset: 0;
+  transform: translate(0, 0);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -149,109 +112,29 @@
   background-color: white;
 }
 
-.spinner {
+.spinner-agenda {
   border: 4px solid #e3f2fd;
   border-top: 4px solid #237c9b;
   border-radius: 50%;
   width: 45px;
   height: 45px;
-  animation: spin 1s linear infinite;
+  animation: spin-agenda 1s linear infinite;
   margin-bottom: 12px;
 }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+@keyframes spin-agenda {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-.agenda-table-header table,
-.agenda-table-body table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-}
-
-/*sss*/
-.agenda-container {
-  padding: 1.5rem 2rem;
-  font-family: "Poppins", sans-serif;
-  color: #333;
-}
-
-.agenda-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  margin-bottom: 1rem;
-}
-
-.agenda-table-wrapper {
-  width: 100%;
-  max-height: 75vh;
-  overflow: auto;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-}
-
-.agenda-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-}
-
-.agenda-table th,
-.agenda-table td {
-  border: 1px solid #e5e7eb;
-  text-align: center;
-  padding: 0.5rem;
-  min-width: 100px;
-  height: 70px;
-  vertical-align: top;
-}
-
-.agenda-table th {
-  position: sticky;
-  top: 0;
-  background-color: #f3f4f6;
-  z-index: 5;
-  font-weight: 600;
-  font-size: 14px;
-  text-align: center;
-}
-
-.agenda-date {
-  font-weight: 500;
-}
-
-.agenda-cell {
-  cursor: pointer;
-  transition: background-color 0.25s, transform 0.1s;
-}
-
-.agenda-cell:hover {
-  background-color: #e8f2ff !important;
-  transform: scale(1.03);
-  box-shadow: 0 2px 8px rgba(0, 120, 215, 0.15);
-}
-
-.event-info {
-  font-size: 0.8rem;
-  color: #1f2937;
-}
-
-/* === Botão de Scroll para o Topo === */
-.scroll-btn-container {
+/* Botão de scroll para o topo */
+.scroll-btn-container-agenda {
   display: flex;
   justify-content: center;
   margin-top: 1rem;
 }
 
-.scroll-top-btn {
+.scroll-top-btn-agenda {
   background-color: #237c9b;
   color: white;
   border: none;
@@ -266,32 +149,23 @@
   transition: all 0.3s ease;
   opacity: 0;
   transform: translateY(10px);
-  animation: fadeInUp 0.3s forwards;
+  animation: fadeInUp-agenda 0.3s forwards;
 }
 
-.scroll-top-btn:hover {
+.scroll-top-btn-agenda:hover {
   background-color: #1b5f73;
   transform: translateY(-2px);
 }
 
-@keyframes fadeInUp {
+@keyframes fadeInUp-agenda {
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-/* === Destaque do utilizador logado === */
-.agenda-table th.header-active {
-  background-color: #d4ebf2 !important; /* azul suave */
-  color: #0b4f6c; /* azul mais escuro para contraste */
-  font-weight: 700;
-  border-bottom: 2px solid #0b4f6c;
-  transition: all 0.3s ease;
-}
-
-
-.agenda-modal-overlay {
+/* Modal */
+.agenda-modal-overlay-agenda {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
@@ -301,26 +175,31 @@
   z-index: 1000;
 }
 
-.agenda-modal {
+.agenda-modal-agenda {
   background: #fff;
   padding: 1.5rem;
   border-radius: 10px;
   min-width: 320px;
+  max-width: 520px;
+  width: 92%;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
 }
 
-.agenda-modal h3 {
+.agenda-modal-agenda h3 {
   margin-top: 0;
   text-align: center;
 }
 
-.agenda-modal label {
-  display: block;
+.form-group-agenda {
   margin-top: 0.5rem;
+}
+
+.form-group-agenda label {
+  display: block;
   font-weight: 600;
 }
 
-.agenda-modal input {
+.form-group-agenda input {
   width: 100%;
   margin-top: 0.25rem;
   padding: 0.35rem;
@@ -328,14 +207,7 @@
   border-radius: 5px;
 }
 
-.modal-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 1rem;
-}
-
-
-/* === Botões (versão única para Agenda) === */
+/* Botões (baseado em .btn-add) com classes únicas */
 .btn-agenda {
   background-color: #237c9b;
   color: #fff;
@@ -355,15 +227,11 @@
   box-shadow: 0 3px 8px rgba(0, 120, 215, 0.3);
 }
 
-/* Variantes (Agenda) */
-.btn-primary-agenda { /* Guardar */
-  background-color: #237c9b;
-}
-.btn-primary-agenda:hover {
-  background-color: #1b6b81;
-}
+/* Variantes */
+.btn-primary-agenda { background-color: #237c9b; }
+.btn-primary-agenda:hover { background-color: #1b6b81; }
 
-.btn-secondary-agenda { /* Cancelar */
+.btn-secondary-agenda {
   background-color: #6b7280;
   box-shadow: 0 2px 6px rgba(107, 114, 128, 0.25);
 }
@@ -372,7 +240,7 @@
   box-shadow: 0 3px 8px rgba(75, 85, 99, 0.35);
 }
 
-.btn-danger-agenda { /* Eliminar */
+.btn-danger-agenda {
   background-color: #dc2626;
   box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25);
 }
@@ -381,7 +249,7 @@
   box-shadow: 0 3px 8px rgba(185, 28, 28, 0.35);
 }
 
-/* Layout dos botões na modal (Agenda) */
+/* Layout dos botões na modal */
 .modal-buttons-agenda {
   display: flex;
   gap: 0.5rem;

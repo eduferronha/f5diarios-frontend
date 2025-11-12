@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback} from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import "./Agenda.css";
 import api from "../services/api";
 import { ArrowUp } from "lucide-react";
@@ -21,65 +21,15 @@ export default function Agenda() {
   const tableRef = useRef(null);
   const token = localStorage.getItem("token");
 
-  // 🧩 Obter utilizador logado
-  const storedUser = JSON.parse(localStorage.getItem("user"));
-  const loggedUsername = storedUser?.username?.toLowerCase() || "";
-
-  // ✅ Fechar modal com confirmação se houver alterações (mesma ideia do TaskModal)
-  const handleCloseAgenda = useCallback(() => {
-    // Consideramos alterações típicas da Agenda:
-    const hasChanges =
-      (descricao && descricao.trim() !== "") ||
-      (inicio && inicio !== "09:00") ||
-      (fim && fim !== "18:00") ||
-      (endDate && endDate !== "") ||
-      (selectedUser && selectedUser !== "") ||
-      (editingEvent &&
-        (
-          descricao !== (editingEvent.descricao || "") ||
-          inicio !== (editingEvent.hora_inicio || "09:00") ||
-          fim !== (editingEvent.hora_fim || "18:00") ||
-          selectedDate !== (editingEvent.data || selectedDate)
-        )
-      );
-
-    if (hasChanges) {
-      const confirmExit = window.confirm(
-        "Existem dados preenchidos. Tens a certeza que queres sair sem guardar?"
-      );
-      if (!confirmExit) return; // ❌ não fecha se cancelar
-    }
-
-    setShowModal(false); // ✅ fecha
-  }, [descricao, inicio, fim, endDate, selectedUser, selectedDate, editingEvent]);
-
-    useEffect(() => {
-      if (!showModal) return;
-
-      const handleKeyDown = (e) => {
-        // ENTER: submeter se NÃO estivermos num TEXTAREA
-        if (e.key === "Enter" && document.activeElement?.tagName !== "TEXTAREA") {
-          e.preventDefault();
-          const form = document.getElementById("form-agenda");
-          if (form) {
-            form.requestSubmit(); // chama o onSubmit do form
-          } else {
-            // fallback: chama diretamente o save
-            handleSave();
-          }
-        }
-
-        // ESC: fecha com confirmação
-        if (e.key === "Escape") {
-          e.preventDefault();
-          handleCloseAgenda();
-        }
-      };
-
-      window.addEventListener("keydown", handleKeyDown);
-      return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [showModal, handleSave, handleCloseAgenda]);
-
+  // 🧩 Obter utilizador logado (parse seguro, evita ecrã branco)
+  let storedUser = null;
+  try {
+    const raw = localStorage.getItem("user");
+    storedUser = raw ? JSON.parse(raw) : null;
+  } catch {
+    storedUser = null;
+  }
+  const loggedUsername = storedUser?.username?.toLowerCase?.() || "";
 
   useEffect(() => {
     const table = tableRef.current;
@@ -103,8 +53,8 @@ export default function Agenda() {
           api.get("/users/", { headers: { Authorization: `Bearer ${token}` } }),
           api.get("/agenda/", { headers: { Authorization: `Bearer ${token}` } }),
         ]);
-        setUsers(usersRes.data);
-        setEvents(agendaRes.data);
+        setUsers(usersRes.data || []);
+        setEvents(agendaRes.data || []);
       } catch (err) {
         console.error("Erro ao carregar dados:", err);
       } finally {
@@ -112,7 +62,7 @@ export default function Agenda() {
       }
     };
     fetchData();
-  }, []);
+  }, [token]);
 
   // === Gerar lista de dias ===
   const getDias = () => {
@@ -134,7 +84,7 @@ export default function Agenda() {
   const getEvent = (data, user) =>
     events.find(
       (e) =>
-        e.data === data && e.utilizador?.toLowerCase() === user?.toLowerCase()
+        e.data === data && e.utilizador?.toLowerCase?.() === user?.toLowerCase?.()
     );
 
   const handleCellClick = (data, user) => {
@@ -147,7 +97,7 @@ export default function Agenda() {
       setInicio(existing.hora_inicio || "09:00");
       setFim(existing.hora_fim || "18:00");
       setSelectedDate(existing.data);
-      setSelectedUser(existing.utilizador || user);
+      setSelectedUser(existing.utilizador || user || "");
     } else {
       // --- Criar nova marcação ---
       setEditingEvent(null);
@@ -155,13 +105,13 @@ export default function Agenda() {
       setInicio("09:00");
       setFim("18:00");
       setSelectedDate(data);
-      setSelectedUser(user); // 👈 preenche automaticamente com o nome da coluna
+      setSelectedUser(user || ""); // 👈 preenche automaticamente com o nome da coluna
     }
 
     setShowModal(true);
   };
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     if (!selectedUser || !selectedDate || !descricao) {
       alert("Preencha todos os campos obrigatórios.");
       return;
@@ -175,81 +125,99 @@ export default function Agenda() {
       return;
     }
 
-    const diasNoIntervalo = [];
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      diasNoIntervalo.push(d.toISOString().split("T")[0]);
-    }
-
     try {
       if (editingEvent) {
-      // Verifica se há intervalo
-      if (end > start) {
-        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-          const dataDia = d.toISOString().split("T")[0];
-          // Procura se há evento para esse utilizador e data
-          const eventoExistente = events.find(
-            (e) =>
-              e.utilizador?.toLowerCase() === selectedUser.toLowerCase() &&
-              e.data === dataDia
-          );
+        // Intervalo de dias
+        if (end > start) {
+          for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+            const dataDia = d.toISOString().split("T")[0];
+            const eventoExistente = events.find(
+              (e) =>
+                e.utilizador?.toLowerCase?.() === selectedUser.toLowerCase() &&
+                e.data === dataDia
+            );
 
-          if (eventoExistente) {
-            // Atualiza evento existente
-            await api.patch(
-              `/agenda/${eventoExistente.id}`,
-              {
-                utilizador: selectedUser,
-                data: dataDia,
-                hora_inicio: inicio,
-                hora_fim: fim,
-                descricao,
-              },
-              { headers: { Authorization: `Bearer ${token}` } }
-            );
-          } else {
-            // Cria novo se não existir
-            await api.post(
-              "/agenda/",
-              {
-                utilizador: selectedUser,
-                data: dataDia,
-                hora_inicio: inicio,
-                hora_fim: fim,
-                descricao,
-              },
-              { headers: { Authorization: `Bearer ${token}` } }
-            );
+            if (eventoExistente) {
+              await api.patch(
+                `/agenda/${eventoExistente.id}`,
+                {
+                  utilizador: selectedUser,
+                  data: dataDia,
+                  hora_inicio: inicio,
+                  hora_fim: fim,
+                  descricao,
+                },
+                { headers: { Authorization: `Bearer ${token}` } }
+              );
+            } else {
+              await api.post(
+                "/agenda/",
+                {
+                  utilizador: selectedUser,
+                  data: dataDia,
+                  hora_inicio: inicio,
+                  hora_fim: fim,
+                  descricao,
+                },
+                { headers: { Authorization: `Bearer ${token}` } }
+              );
+            }
           }
+        } else {
+          // Um único dia
+          await api.patch(
+            `/agenda/${editingEvent.id}`,
+            {
+              utilizador: selectedUser,
+              data: selectedDate,
+              hora_inicio: inicio,
+              hora_fim: fim,
+              descricao,
+            },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
         }
       } else {
-        // Caso normal: apenas um evento
-        await api.patch(
-          `/agenda/${editingEvent.id}`,
-          {
-            utilizador: selectedUser,
-            data: selectedDate,
-            hora_inicio: inicio,
-            hora_fim: fim,
-            descricao,
-          },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        // Criar nova marcação (pode ser intervalo)
+        const endEff = endDate ? new Date(endDate) : start;
+        for (let d = new Date(start); d <= endEff; d.setDate(d.getDate() + 1)) {
+          const dataDia = d.toISOString().split("T")[0];
+          await api.post(
+            "/agenda/",
+            {
+              utilizador: selectedUser,
+              data: dataDia,
+              hora_inicio: inicio,
+              hora_fim: fim,
+              descricao,
+            },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+        }
       }
-    }
-
 
       const res = await api.get("/agenda/", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setEvents(res.data);
+      setEvents(res.data || []);
       setShowModal(false);
     } catch (err) {
       console.error("Erro ao guardar marcação:", err);
       alert("Erro ao guardar marcação.");
     }
-  };
+  }, [
+    descricao,
+    inicio,
+    fim,
+    endDate,
+    selectedUser,
+    selectedDate,
+    editingEvent,
+    events,
+    token,
+  ]);
 
-  const handleDelete = async () => {
+  const handleDelete = useCallback(async () => {
     if (!editingEvent) return;
 
     if (!window.confirm("Tens a certeza que queres eliminar esta(s) marcação(ões)?"))
@@ -259,23 +227,18 @@ export default function Agenda() {
       const start = new Date(selectedDate);
       const end = endDate ? new Date(endDate) : start;
 
-      // Se só há um dia → elimina apenas um
       if (end <= start) {
         await api.delete(`/agenda/${editingEvent.id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
       } else {
-        // Caso haja um intervalo (ex: 11–13)
         for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
           const dataDia = d.toISOString().split("T")[0];
-
-          // Verifica se existe evento nesse dia para o utilizador
           const eventoExistente = events.find(
             (e) =>
-              e.utilizador?.toLowerCase() === selectedUser.toLowerCase() &&
+              e.utilizador?.toLowerCase?.() === selectedUser.toLowerCase() &&
               e.data === dataDia
           );
-
           if (eventoExistente) {
             await api.delete(`/agenda/${eventoExistente.id}`, {
               headers: { Authorization: `Bearer ${token}` },
@@ -284,18 +247,69 @@ export default function Agenda() {
         }
       }
 
-      // Recarrega lista atualizada
       const res = await api.get("/agenda/", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setEvents(res.data);
+      setEvents(res.data || []);
       setShowModal(false);
     } catch (err) {
       console.error("Erro ao eliminar marcação:", err);
       alert("Erro ao eliminar marcação.");
     }
-  };
+  }, [editingEvent, selectedDate, endDate, events, selectedUser, token]);
 
+  // ✅ Fechar modal com confirmação se houver alterações (mesma ideia do TaskModal)
+  const handleCloseAgenda = useCallback(() => {
+    const hasChanges =
+      (descricao && descricao.trim() !== "") ||
+      (inicio && inicio !== "09:00") ||
+      (fim && fim !== "18:00") ||
+      (endDate && endDate !== "") ||
+      (selectedUser && selectedUser !== "") ||
+      (editingEvent &&
+        (
+          descricao !== (editingEvent.descricao || "") ||
+          inicio !== (editingEvent.hora_inicio || "09:00") ||
+          fim !== (editingEvent.hora_fim || "18:00") ||
+          selectedDate !== (editingEvent.data || selectedDate)
+        ));
+
+    if (hasChanges) {
+      const confirmExit = window.confirm(
+        "Existem dados preenchidos. Tens a certeza que queres sair sem guardar?"
+      );
+      if (!confirmExit) return;
+    }
+
+    setShowModal(false);
+  }, [descricao, inicio, fim, endDate, selectedUser, selectedDate, editingEvent]);
+
+  // ⌨️ Enter/ESC quando a modal está aberta
+  useEffect(() => {
+    if (!showModal) return;
+
+    const handleKeyDown = (e) => {
+      // ENTER: submeter se NÃO estivermos num TEXTAREA
+      if (e.key === "Enter" && document.activeElement?.tagName !== "TEXTAREA") {
+        e.preventDefault();
+        const form = document.getElementById("form-agenda");
+        if (form) {
+          form.requestSubmit();
+        } else {
+          handleSave();
+        }
+      }
+
+      // ESC: fecha com confirmação
+      if (e.key === "Escape") {
+        e.preventDefault();
+        handleCloseAgenda();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showModal, handleSave, handleCloseAgenda]);
 
   const isHoliday = (dateString) => {
     const date = new Date(dateString);
@@ -327,11 +341,9 @@ export default function Agenda() {
     (a.nome || "").localeCompare(b.nome || "", "pt", { sensitivity: "base" })
   );
 
-
-
   return (
-    <div className="agenda-container">
-      <div className="agenda-controls">
+    <div className="agenda-container-agenda">
+      <div className="agenda-controls-agenda">
         <label>Nº Dias:</label>
         <select value={dias} onChange={(e) => setDias(Number(e.target.value))}>
           <option value={7}>7</option>
@@ -343,14 +355,14 @@ export default function Agenda() {
       </div>
 
       {loading ? (
-        <div className="spinner-container">
-          <div className="spinner"></div>
+        <div className="spinner-container-agenda">
+          <div className="spinner-agenda"></div>
           <p>A carregar agenda...</p>
         </div>
       ) : (
         <>
-          <div className="agenda-table-wrapper" ref={tableRef}>
-            <table className="agenda-table">
+          <div className="agenda-table-wrapper-agenda" ref={tableRef}>
+            <table className="agenda-table-agenda">
               <thead>
                 <tr>
                   <th>Data</th>
@@ -358,8 +370,8 @@ export default function Agenda() {
                     <th
                       key={u.id}
                       className={
-                        u.username.toLowerCase() === loggedUsername
-                          ? "header-active"
+                        u.username?.toLowerCase?.() === loggedUsername
+                          ? "header-active-agenda"
                           : ""
                       }
                     >
@@ -375,7 +387,7 @@ export default function Agenda() {
                   return (
                     <tr key={data}>
                       <td
-                        className="agenda-date"
+                        className="agenda-date-agenda"
                         style={{
                           backgroundColor: isToday ? "#f3e5f5" : "transparent",
                           fontWeight: isToday ? "bold" : "normal",
@@ -387,12 +399,9 @@ export default function Agenda() {
                         const evento = getEvent(data, u.username);
                         let bgColor = "transparent";
 
-                        if (isWeekend(data) || isHoliday(data))
-                          bgColor = "#d6d6d6";
+                        if (isWeekend(data) || isHoliday(data)) bgColor = "#d6d6d6";
                         else if (evento) {
-                          bgColor = evento.descricao
-                            ?.toLowerCase()
-                            .includes("férias")
+                          bgColor = evento.descricao?.toLowerCase?.().includes("férias")
                             ? "#fff59d"
                             : "#c8e6c9";
                         }
@@ -400,7 +409,7 @@ export default function Agenda() {
                         return (
                           <td
                             key={u.id}
-                            className="agenda-cell"
+                            className="agenda-cell-agenda"
                             style={{ backgroundColor: bgColor }}
                             onClick={() => handleCellClick(data, u.username)}
                             title={
@@ -410,7 +419,7 @@ export default function Agenda() {
                             }
                           >
                             {evento && (
-                              <div className="event-info">
+                              <div className="event-info-agenda">
                                 <strong>{evento.descricao}</strong>
                                 <div>
                                   {evento.hora_inicio} - {evento.hora_fim}
@@ -429,9 +438,9 @@ export default function Agenda() {
 
           {/* 👇 Botão agora por DEBAIXO da tabela */}
           {showScroll && (
-            <div className="scroll-btn-container">
+            <div className="scroll-btn-container-agenda">
               <button
-                className="scroll-top-btn"
+                className="scroll-top-btn-agenda"
                 onClick={scrollToTop}
                 aria-label="Voltar ao topo"
               >
@@ -443,8 +452,8 @@ export default function Agenda() {
       )}
 
       {showModal && (
-        <div className="agenda-modal-overlay" onClick={handleCloseAgenda}>
-          <div className="agenda-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="agenda-modal-overlay-agenda" onClick={handleCloseAgenda}>
+          <div className="agenda-modal-agenda" onClick={(e) => e.stopPropagation()}>
             <h3>{editingEvent ? "Editar Marcação" : "Nova Marcação"}</h3>
 
             <form
@@ -454,7 +463,7 @@ export default function Agenda() {
                 handleSave();
               }}
             >
-              <div className="form-group">
+              <div className="form-group-agenda">
                 <label>Início Marcação:</label>
                 <input
                   type="date"
@@ -463,7 +472,7 @@ export default function Agenda() {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="form-group-agenda">
                 <label>Fim Marcação:</label>
                 <input
                   type="date"
@@ -472,7 +481,7 @@ export default function Agenda() {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="form-group-agenda">
                 <label>Início:</label>
                 <input
                   type="time"
@@ -481,7 +490,7 @@ export default function Agenda() {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="form-group-agenda">
                 <label>Fim:</label>
                 <input
                   type="time"
@@ -490,7 +499,7 @@ export default function Agenda() {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="form-group-agenda">
                 <label>Descrição:</label>
                 <input
                   type="text"
@@ -527,8 +536,6 @@ export default function Agenda() {
           </div>
         </div>
       )}
-
-
     </div>
   );
 }
