@@ -437,6 +437,8 @@ export default function Agenda() {
               />
             </div>
 
+
+
       <div className="modal-buttons-agenda">
         <button className="btn-agenda btn-primary-agenda" onClick={handleSave}>
           {editingEvent ? "Guardar Alterações" : "Guardar"}
