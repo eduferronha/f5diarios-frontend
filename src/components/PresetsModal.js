@@ -10,6 +10,35 @@ const PresetsModal = ({ show, onClose }) => {
   const [presetToApply, setPresetToApply] = useState(null);
   const token = localStorage.getItem("token");
 
+  const handleClose = useCallback(() => {
+      onClose();
+    }, [onClose]);
+
+    useEffect(() => {
+      if (!show || showTaskModal) return;
+
+      const onKeyDown = (e) => {
+        const tag = document.activeElement?.tagName;
+        const isTyping = tag === "INPUT" || tag === "TEXTAREA";
+
+        if (e.key === "Enter" && !isTyping) {
+          e.preventDefault();
+          const modalRoot = document.querySelector(".presets-modal");
+          const primary = modalRoot?.querySelector(".btn-primary");
+          primary?.click();
+        }
+
+        if (e.key === "Escape") {
+          e.preventDefault();
+          handleClose();
+        }
+      };
+
+      window.addEventListener("keydown", onKeyDown);
+      return () => window.removeEventListener("keydown", onKeyDown);
+    }, [show, showTaskModal, handleClose]);
+
+
   // 🔹 Carregar presets do utilizador autenticado
   const fetchPresets = async () => {
     try {
