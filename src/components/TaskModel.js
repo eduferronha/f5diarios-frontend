@@ -43,6 +43,42 @@ const TaskModal = ({
   const [datasDuplicadas, setDatasDuplicadas] = useState([]);
   const [showCalendar, setShowCalendar] = useState(true);
 
+    const handleClose = useCallback(async () => {
+  const hasChanges =
+    descricao ||
+    cliente ||
+    parceiro ||
+    produto ||
+    contrato ||
+    atividade ||
+    tempoAtividade !== "00:00" ||
+    tempoFaturado !== "00:00" ||
+    distanciaViagem > 0 ||
+    valorEuro > 0;
+
+  if (hasChanges) {
+    const confirmExit = window.confirm(
+      "Existem dados preenchidos. Tens a certeza que queres sair sem guardar?"
+    );
+    if (!confirmExit) return;
+  }
+  onClose();
+}, [
+  descricao,
+  cliente,
+  parceiro,
+  produto,
+  contrato,
+  atividade,
+  tempoAtividade,
+  tempoFaturado,
+  distanciaViagem,
+  valorEuro,
+  onClose,
+]);
+
+
+
 
     useEffect(() => {
     if (!show) return;
@@ -374,40 +410,6 @@ const TaskModal = ({
   //   onClose(); // ✅ fecha apenas se confirmou
   // };
 
-
-  const handleClose = useCallback(async () => {
-  const hasChanges =
-    descricao ||
-    cliente ||
-    parceiro ||
-    produto ||
-    contrato ||
-    atividade ||
-    tempoAtividade !== "00:00" ||
-    tempoFaturado !== "00:00" ||
-    distanciaViagem > 0 ||
-    valorEuro > 0;
-
-  if (hasChanges) {
-    const confirmExit = window.confirm(
-      "Existem dados preenchidos. Tens a certeza que queres sair sem guardar?"
-    );
-    if (!confirmExit) return;
-  }
-  onClose();
-}, [
-  descricao,
-  cliente,
-  parceiro,
-  produto,
-  contrato,
-  atividade,
-  tempoAtividade,
-  tempoFaturado,
-  distanciaViagem,
-  valorEuro,
-  onClose,
-]);
 
 
 
