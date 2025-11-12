@@ -11,33 +11,41 @@ const PresetsModal = ({ show, onClose }) => {
   const token = localStorage.getItem("token");
 
   const handleClose = useCallback(() => {
-      onClose();
-    }, [onClose]);
+    onClose();
+  }, [onClose]);
 
-    useEffect(() => {
-      if (!show || showTaskModal) return;
+  useEffect(() => {
+    if (!show || showTaskModal) return;
 
-      const onKeyDown = (e) => {
-        const tag = document.activeElement?.tagName;
-        const isTyping = tag === "INPUT" || tag === "TEXTAREA";
+    const onKeyDown = (e) => {
+      const tag = document.activeElement?.tagName;
+      const isTyping = tag === "INPUT" || tag === "TEXTAREA";
 
-        if (e.key === "Enter" && !isTyping) {
-          e.preventDefault();
-          const modalRoot = document.querySelector(".presets-modal");
-          const primary = modalRoot?.querySelector(".btn-primary");
-          primary?.click();
-        }
+      if (e.key === "Enter" && !isTyping) {
+        e.preventDefault();
+        const modalRoot = document.querySelector(".presets-modal");
+        const primary = modalRoot?.querySelector(".btn-primary");
+        primary?.click();
+      }
 
-        if (e.key === "Escape") {
-          e.preventDefault();
-          handleClose();
-        }
-      };
+      if (e.key === "Escape") {
+        e.preventDefault();
+        handleClose();
+      }
+    };
 
-      window.addEventListener("keydown", onKeyDown);
-      return () => window.removeEventListener("keydown", onKeyDown);
-    }, [show, showTaskModal, handleClose]);
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [show, showTaskModal, handleClose]);
 
+  // Util
+  const normalizeName = (s) =>
+    (s || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .replace(/\s+/g, " ")
+      .trim();
 
   // 🔹 Carregar presets do utilizador autenticado
   const fetchPresets = async () => {
@@ -45,10 +53,18 @@ const PresetsModal = ({ show, onClose }) => {
       const res = await api.get("/presets/", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setPresets(res.data);
+      setPresets(res.data || []);
     } catch (err) {
       console.error("❌ Erro ao carregar presets:", err);
     }
+  };
+
+  // Versão “fresh” para validação antes de criar
+  const fetchPresetsFresh = async () => {
+    const res = await api.get("/presets/", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data || [];
   };
 
   // 🔹 Executar apenas quando o modal abre
@@ -76,13 +92,34 @@ const PresetsModal = ({ show, onClose }) => {
     setShowTaskModal(true);
   };
 
-  // 🔹 Guardar novo preset
+  // 🔹 Guardar novo preset — BLOQUEIA nomes duplicados
   const handleSavePreset = async (presetData) => {
     try {
-      // ✅ Limpa campos undefined
+      const nomeBruto = presetData?.nome ?? "";
+      const nomeNormalizado = normalizeName(nomeBruto);
+
+      if (!nomeNormalizado) {
+        alert("O campo 'Nome do Preset' é obrigatório.");
+        return;
+      }
+
+      // ✅ validação contra a lista mais recente do backend
+      const current = await fetchPresetsFresh();
+      const existe = current.some(
+        (p) => normalizeName(p?.nome) === nomeNormalizado
+      );
+      if (existe) {
+        alert("Já existe um preset com esse nome. Por favor escolhe outro nome.");
+        return; // não cria
+      }
+
+      // ✅ Limpa campos undefined antes de enviar
       const cleanData = Object.fromEntries(
         Object.entries(presetData).filter(([_, v]) => v !== undefined)
       );
+
+      // Força o nome limpo (sem espaços duplicados)
+      cleanData.nome = nomeBruto.replace(/\s+/g, " ").trim();
 
       await api.post("/presets/", cleanData, {
         headers: { Authorization: `Bearer ${token}` },
