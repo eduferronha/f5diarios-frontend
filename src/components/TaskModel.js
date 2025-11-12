@@ -349,6 +349,30 @@ const TaskModal = ({
   };
 
 
+  useEffect(() => {
+    if (!show) return;
+
+    const handleKeyDown = (e) => {
+      // Evita o comportamento padrão quando o foco não está num textarea
+      if (e.key === "Enter" && document.activeElement.tagName !== "TEXTAREA") {
+        e.preventDefault();
+        // Simula clique no botão de submit
+        const form = document.getElementById("form-task");
+        if (form) {
+          form.requestSubmit(); // executa o onSubmit do form
+        }
+      }
+
+      // Fecha o modal com Esc
+      if (e.key === "Escape") {
+        e.preventDefault();
+        handleClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [show, handleClose]);
 
 
   return (
