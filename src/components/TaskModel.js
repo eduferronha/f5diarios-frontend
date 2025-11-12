@@ -69,16 +69,16 @@ const TaskModal = ({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [show, handleClose]);
   
-  useEffect(() => {
-  const handleKeyDown = (e) => {
-    // impede o Enter enquanto o alert/confirm está aberto
-    if (e.key === "Enter" && document.activeElement.tagName !== "TEXTAREA") {
-      e.preventDefault();
-    }
-  };
-  window.addEventListener("keydown", handleKeyDown);
-  return () => window.removeEventListener("keydown", handleKeyDown);
-}, []);
+//   useEffect(() => {
+//   const handleKeyDown = (e) => {
+//     // impede o Enter enquanto o alert/confirm está aberto
+//     if (e.key === "Enter" && document.activeElement.tagName !== "TEXTAREA") {
+//       e.preventDefault();
+//     }
+//   };
+//   window.addEventListener("keydown", handleKeyDown);
+//   return () => window.removeEventListener("keydown", handleKeyDown);
+// }, []);
 
 
   const token = localStorage.getItem("token");
@@ -351,30 +351,63 @@ const TaskModal = ({
       : "Guardar";
 
   
-  const handleClose = async () => {
-    const hasChanges =
-      descricao ||
-      cliente ||
-      parceiro ||
-      produto ||
-      contrato ||
-      atividade ||
-      tempoAtividade !== "00:00" ||
-      tempoFaturado !== "00:00" ||
-      distanciaViagem > 0 ||
-      valorEuro > 0;
+  // const handleClose = async () => {
+  //   const hasChanges =
+  //     descricao ||
+  //     cliente ||
+  //     parceiro ||
+  //     produto ||
+  //     contrato ||
+  //     atividade ||
+  //     tempoAtividade !== "00:00" ||
+  //     tempoFaturado !== "00:00" ||
+  //     distanciaViagem > 0 ||
+  //     valorEuro > 0;
 
-    if (hasChanges) {
-      const confirmExit = await window.confirm(
-        "Existem dados preenchidos. Tens a certeza que queres sair sem guardar?"
-      );
-      if (!confirmExit) return; // ❌ não fecha se escolher "Cancelar"
-    }
+  //   if (hasChanges) {
+  //     const confirmExit = await window.confirm(
+  //       "Existem dados preenchidos. Tens a certeza que queres sair sem guardar?"
+  //     );
+  //     if (!confirmExit) return; // ❌ não fecha se escolher "Cancelar"
+  //   }
 
-    onClose(); // ✅ fecha apenas se confirmou
-  };
+  //   onClose(); // ✅ fecha apenas se confirmou
+  // };
 
 
+  const handleClose = useCallback(async () => {
+  const hasChanges =
+    descricao ||
+    cliente ||
+    parceiro ||
+    produto ||
+    contrato ||
+    atividade ||
+    tempoAtividade !== "00:00" ||
+    tempoFaturado !== "00:00" ||
+    distanciaViagem > 0 ||
+    valorEuro > 0;
+
+  if (hasChanges) {
+    const confirmExit = window.confirm(
+      "Existem dados preenchidos. Tens a certeza que queres sair sem guardar?"
+    );
+    if (!confirmExit) return;
+  }
+  onClose();
+}, [
+  descricao,
+  cliente,
+  parceiro,
+  produto,
+  contrato,
+  atividade,
+  tempoAtividade,
+  tempoFaturado,
+  distanciaViagem,
+  valorEuro,
+  onClose,
+]);
 
 
 
