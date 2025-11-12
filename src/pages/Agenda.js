@@ -606,7 +606,7 @@ export default function Agenda() {
 
               <div className="modal-buttons-agenda">
                 <button type="submit" className="btn-agenda btn-primary-agenda">
-                  {editingEvent ? "Guardar Alterações" : "Guardar"}
+                  {editingEvent ? "Guardar" : "Guardar"}
                 </button>
 
                 {editingEvent && (
