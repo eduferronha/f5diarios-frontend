@@ -135,7 +135,7 @@ const PresetsModal = ({ show, onClose }) => {
         <h2>Presets</h2>
 
         <button className="btn-primary" onClick={() => setShowTaskModal(true)}>
-          ➕ Criar Novo Preset
+          Novo Preset
         </button>
 
         {/* --- Presets Ativos --- */}
