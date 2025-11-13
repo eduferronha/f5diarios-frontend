@@ -100,6 +100,7 @@ function Dashboard() {
   };
 
   const handleEdit = (task) => {
+    setPresetToApply(null);   // ← limpar preset
     setEditingTask(task);
     setIsDuplicate(false);
     setShowModal(true);
@@ -119,9 +120,11 @@ function Dashboard() {
 
   const handleCloseModal = () => {
     setEditingTask(null);
+    setPresetToApply(null);  // ← limpar sempre
     setShowModal(false);
     setIsDuplicate(false);
   };
+
 
   // 🔹 Aplicar preset ativo (abre o modal já preenchido)
   const handleApplyPreset = (preset) => {
