@@ -359,9 +359,11 @@ const TaskModal = ({
       } 
       // 🔹 Validação para tarefa normal
       else {
-        if (!data) {
-          alert("Seleciona uma data.");
-          return;
+        if (!isPresetMode) {
+          if (!data) {
+            alert("Seleciona uma data.");
+            return;
+          }
         }
       }
 
