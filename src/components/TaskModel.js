@@ -342,10 +342,12 @@ const TaskModal = ({
         return;
       }
       
-      // 🔹 Validação Geral
-      if (!descricao || !cliente || !produto || !contrato || !atividade) {
-        alert("Preenche todos os campos obrigatórios.");
-        return;
+      if (!isPresetMode) {
+        // 🔹 Validação Geral
+        if (!descricao || !cliente || !produto || !contrato || !atividade) {
+          alert("Preenche todos os campos obrigatórios.");
+          return;
+        }
       }
 
       // 🔹 Validação para duplicação
