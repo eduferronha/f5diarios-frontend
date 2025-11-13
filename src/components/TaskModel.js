@@ -235,6 +235,13 @@ const TaskModal = ({
     }
   }, [show, editingTask, isPresetMode, presetData, preselectedDate]);
 
+  useEffect(() => {
+    if (isEditingPreset && presetData) {
+      setNomePreset(presetData.nome || "");
+    }
+  }, [isEditingPreset, presetData]);
+
+
   if (!show) return null;
 
   // 🔹 Guardar tarefa ou preset
@@ -462,7 +469,7 @@ const TaskModal = ({
         <h2>{titulo}</h2>
 
         <form id="form-task" onSubmit={handleSubmit} className="form-grid">
-          {isPresetMode && !presetData && (
+          {isPresetMode && (
             <div className="form-group full-width">
               <label>Nome do Preset</label>
               <input
@@ -470,7 +477,7 @@ const TaskModal = ({
                 placeholder="Ex: Cliente X - Instalação"
                 value={nomePreset}
                 onChange={(e) => setNomePreset(e.target.value)}
-                required={isPresetMode}
+                required={true}
               />
             </div>
           )}
