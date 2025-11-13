@@ -123,12 +123,12 @@ useEffect(() => {
 
   return (
     <div className="atividade-main">
-      {loading ? (
-        <div className="spinner-container">
-          <div className="spinner"></div>
-          <p>A carregar atividades...</p>
-        </div>
-      ) : (
+     {loading ? (
+      <div className="spinner-container">
+        <div className="spinner"></div>
+        <p>A carregar atividades...</p>
+      </div>
+    ) : (
         <>
           {/* === Filtros === */}
           <div className="filtros-container">
