@@ -186,7 +186,7 @@ textarea:focus {
   justify-content: center;
   align-items: center;
   gap: 0.8rem; /* 🔹 menor */
-  margin-top: 1rem; /* 🔹 menor */
+  margin-top: 2rem; /* 🔹 menor */
   grid-column: 1 / -1;
 }
 

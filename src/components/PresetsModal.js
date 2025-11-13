@@ -2,12 +2,13 @@ import React, { useState, useEffect, useCallback } from "react";
 import api from "../services/api";
 import TaskModal from "./TaskModel";
 import "../components/PresetsModel.css";
-import { Trash2 } from "lucide-react"; // 👈 ícone de lixo moderno
+import { Trash2, Edit3 } from "lucide-react"; // 👈 adiciona ícone de editar
 
 const PresetsModal = ({ show, onClose }) => {
   const [presets, setPresets] = useState([]);
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [presetToApply, setPresetToApply] = useState(null);
+  const [editingPreset, setEditingPreset] = useState(null); // 👈 novo estado
   const token = localStorage.getItem("token");
 
   const handleClose = useCallback(() => {
@@ -89,6 +90,14 @@ const PresetsModal = ({ show, onClose }) => {
   // 🔹 Aplicar preset (abre o TaskModal)
   const handleApply = (preset) => {
     setPresetToApply(preset);
+    setEditingPreset(null); // garante que não é modo edição
+    setShowTaskModal(true);
+  };
+
+  // 🔹 Editar preset existente
+  const handleEdit = (preset) => {
+    setEditingPreset(preset); // 👈 define o preset a editar
+    setPresetToApply(null);
     setShowTaskModal(true);
   };
 
@@ -106,34 +115,42 @@ const PresetsModal = ({ show, onClose }) => {
       // ✅ validação contra a lista mais recente do backend
       const current = await fetchPresetsFresh();
       const existe = current.some(
-        (p) => normalizeName(p?.nome) === nomeNormalizado
+        (p) =>
+          normalizeName(p?.nome) === nomeNormalizado &&
+          (!editingPreset || p.id !== editingPreset.id)
       );
       if (existe) {
         alert("Já existe um preset com esse nome. Por favor escolhe outro nome.");
-        return; // não cria
+        return;
       }
 
-      // ✅ Limpa campos undefined antes de enviar
       const cleanData = Object.fromEntries(
         Object.entries(presetData).filter(([_, v]) => v !== undefined)
       );
-
-      // Força o nome limpo (sem espaços duplicados)
       cleanData.nome = nomeBruto.replace(/\s+/g, " ").trim();
 
-      await api.post("/presets/", cleanData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      if (editingPreset) {
+        // ✏️ Atualizar existente
+        await api.put(`/presets/${editingPreset.id}`, cleanData, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else {
+        // 🆕 Criar novo
+        await api.post("/presets/", cleanData, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
 
       await fetchPresets();
       setShowTaskModal(false);
+      setEditingPreset(null);
     } catch (err) {
       console.error("Erro ao guardar preset:", err);
       alert("Erro ao guardar preset");
     }
   };
 
-  // 🔹 Alternar ativo/inativo (com limite de 4 ativos)
+  // 🔹 Alternar ativo/inativo (máx. 4 ativos)
   const toggleAtivo = async (preset) => {
     try {
       if (preset.ativo) {
@@ -191,6 +208,13 @@ const PresetsModal = ({ show, onClose }) => {
                   <button onClick={() => handleApply(p)}>Aplicar</button>
                   <button onClick={() => toggleAtivo(p)}>Desativar</button>
                   <button
+                    className="btn-edit"
+                    title="Editar"
+                    onClick={() => handleEdit(p)}
+                  >
+                    <Edit3 size={16} />
+                  </button>
+                  <button
                     className="btn-trash"
                     title="Eliminar"
                     onClick={() => handleDelete(p.id)}
@@ -218,6 +242,13 @@ const PresetsModal = ({ show, onClose }) => {
                 <div className="preset-actions">
                   <button onClick={() => toggleAtivo(p)}>Ativar</button>
                   <button
+                    className="btn-edit"
+                    title="Editar"
+                    onClick={() => handleEdit(p)}
+                  >
+                    <Edit3 size={16} />
+                  </button>
+                  <button
                     className="btn-trash"
                     title="Eliminar"
                     onClick={() => handleDelete(p.id)}
@@ -237,14 +268,18 @@ const PresetsModal = ({ show, onClose }) => {
         </div>
       </div>
 
-      {/* 🔹 Modal de criação de preset */}
+      {/* 🔹 Modal de criação/edição de preset */}
       {showTaskModal && (
         <TaskModal
           show={showTaskModal}
-          onClose={() => setShowTaskModal(false)}
-          presetData={presetToApply}
+          onClose={() => {
+            setShowTaskModal(false);
+            setEditingPreset(null);
+          }}
+          presetData={editingPreset || presetToApply}
           onPresetSaved={handleSavePreset}
           isPresetMode={true}
+          editingPreset={!!editingPreset} // 👈 podes usar isto dentro do TaskModal se quiseres mostrar "Editar Preset"
         />
       )}
     </div>
