@@ -217,57 +217,74 @@ export default function Agenda() {
 
     try {
       if (editingEvent) {
-        // Intervalo de dias
-        if (end > start) {
-          for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-            const dataDia = d.toISOString().split("T")[0];
-            const eventoExistente = events.find(
-              (e) =>
-                e.utilizador?.toLowerCase?.() === selectedUser.toLowerCase() &&
-                e.data === dataDia
-            );
+  // Intervalo de dias
+  if (end > start) {
+    // 🧹 Primeiro elimina todas as marcações antigas do utilizador nesse intervalo
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      const dataDia = d.toISOString().split("T")[0];
+      const eventoExistente = events.find(
+        (e) =>
+          e.utilizador?.toLowerCase?.() === selectedUser.toLowerCase() &&
+          e.data === dataDia
+      );
+      if (eventoExistente) {
+        await api.delete(`/agenda/${eventoExistente.id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+    }
 
-            if (eventoExistente) {
-              await api.patch(
-                `/agenda/${eventoExistente.id}`,
-                {
-                  utilizador: selectedUser,
-                  data: dataDia,
-                  hora_inicio: inicio,
-                  hora_fim: fim,
-                  descricao,
-                },
-                { headers: { Authorization: `Bearer ${token}` } }
-              );
-            } else {
-              await api.post(
-                "/agenda/",
-                {
-                  utilizador: selectedUser,
-                  data: dataDia,
-                  hora_inicio: inicio,
-                  hora_fim: fim,
-                  descricao,
-                },
-                { headers: { Authorization: `Bearer ${token}` } }
-              );
-            }
-          }
-        } else {
-          // Um único dia
-          await api.patch(
-            `/agenda/${editingEvent.id}`,
-            {
-              utilizador: selectedUser,
-              data: selectedDate,
-              hora_inicio: inicio,
-              hora_fim: fim,
-              descricao,
-            },
-            { headers: { Authorization: `Bearer ${token}` } }
-          );
-        }
-      } else {
+    // ✏️ Depois cria as novas marcações no intervalo
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      const dataDia = d.toISOString().split("T")[0];
+      await api.post(
+        "/agenda/",
+        {
+          utilizador: selectedUser,
+          data: dataDia,
+          hora_inicio: inicio,
+          hora_fim: fim,
+          descricao,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    }
+  } else {
+    // Um único dia → atualiza ou cria
+    const eventoExistente = events.find(
+      (e) =>
+        e.utilizador?.toLowerCase?.() === selectedUser.toLowerCase() &&
+        e.data === selectedDate
+    );
+
+    if (eventoExistente) {
+      await api.patch(
+        `/agenda/${eventoExistente.id}`,
+        {
+          utilizador: selectedUser,
+          data: selectedDate,
+          hora_inicio: inicio,
+          hora_fim: fim,
+          descricao,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    } else {
+      await api.post(
+        "/agenda/",
+        {
+          utilizador: selectedUser,
+          data: selectedDate,
+          hora_inicio: inicio,
+          hora_fim: fim,
+          descricao,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    }
+  }
+}
+else {
         // Criar nova marcação (pode ser intervalo)
         const endEff = endDate ? new Date(endDate) : start;
         for (let d = new Date(start); d <= endEff; d.setDate(d.getDate() + 1)) {
