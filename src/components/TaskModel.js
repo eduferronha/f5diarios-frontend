@@ -397,12 +397,13 @@ const TaskModal = ({
     presetData
       ? "Criar Tarefa"
       : isPresetMode
-      ? "Guardar Preset"
+      ? "Guardar"
       : editingTask
       ? isDuplicate
         ? "Guardar Cópias"
-        : "Guardar Alterações"
+        : "Guardar"
       : "Guardar";
+
 
   
   // const handleClose = async () => {
