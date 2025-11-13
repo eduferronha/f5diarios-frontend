@@ -95,11 +95,13 @@ const PresetsModal = ({ show, onClose }) => {
   };
 
   // 🔹 Editar preset existente
-  const handleEdit = (preset) => {
-    setEditingPreset(preset); // 👈 define o preset a editar
-    setPresetToApply(null);
-    setShowTaskModal(true);
+  const handleEdit = (task) => {
+    setPresetToApply(null); // ✅ limpa o preset
+    setEditingTask(task);
+    setIsDuplicate(false);
+    setShowModal(true);
   };
+
 
   // 🔹 Guardar novo preset — BLOQUEIA nomes duplicados
   const handleSavePreset = async (presetData) => {
