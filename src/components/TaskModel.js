@@ -30,7 +30,7 @@ const TaskModal = ({
   const [tempoFaturado, setTempoFaturado] = useState("00:00");
   const [valorEuro, setValorEuro] = useState(0);
   const [local, setLocal] = useState("Employee House");
-  const [faturavel, setFaturavel] = useState("No");
+  const [faturavel, setFaturavel] = useState("Yes");
   const [viagemFaturavel, setViagemFaturavel] = useState("No");
 
   const [clientes, setClientes] = useState([]);
@@ -315,10 +315,27 @@ const TaskModal = ({
         return;
       }
 
-      if (!descricao || !cliente || !produto || !contrato || !atividade || !data) {
+      // 🔹 Validação Geral
+      if (!descricao || !cliente || !produto || !contrato || !atividade) {
         alert("Preenche todos os campos obrigatórios.");
         return;
       }
+
+      // 🔹 Validação para duplicação
+      if (isDuplicate) {
+        if (datasDuplicadas.length === 0) {
+          alert("Seleciona pelo menos uma data.");
+          return;
+        }
+      } 
+      // 🔹 Validação para tarefa normal
+      else {
+        if (!data) {
+          alert("Seleciona uma data.");
+          return;
+        }
+      }
+
 
       if (editingTask && !isDuplicate) {
         await api.put(`/tasks/${editingTask.id}`, { ...baseTaskData, data }, {
