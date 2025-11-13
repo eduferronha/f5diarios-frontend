@@ -274,21 +274,20 @@ const TaskModal = ({
 
     // 🔹 Caso esteja a CRIAR / EDITAR uma TAREFA normal
     // ⚠️ Estas validações só se aplicam a TAREFAS, não a presets
+    // 🔹 Validações apenas para tarefas (NÃO para presets)
     if (!isPresetMode) {
+
       if (!cliente || !produto || !contrato || !atividade || !tempoAtividade || !tempoFaturado || !faturavel) {
         alert("Preenche todos os campos obrigatórios: Cliente, Produto, Contrato, Atividade, Tempo Atividade, Tempo Faturado e Faturável.");
         return;
       }
 
-      // ❗ Esta validação NÃO se aplica a presets
-    if (!isPresetMode) {
       if (tempoAtividade === "00:00" || tempoFaturado === "00:00") {
         alert("O Tempo de Atividade e o Tempo Faturado não podem ser 00:00. Por favor, introduz valores válidos.");
         return;
       }
     }
 
-    }
 
 
     // 🔸 Bloqueia submissão se tempos forem "00:00"
