@@ -15,6 +15,7 @@ const TaskModal = ({
   onPresetSaved,
   presetData,
   preselectedDate,
+  isEditingPreset,   
 }) => {
   const [nomePreset, setNomePreset] = useState("");
   const [descricao, setDescricao] = useState("");
@@ -42,7 +43,8 @@ const TaskModal = ({
 
   const [datasDuplicadas, setDatasDuplicadas] = useState([]);
   const [showCalendar, setShowCalendar] = useState(true);
-  const isEditingPreset = isPresetMode && presetData;
+  // const isEditingPreset = isPresetMode && presetData && presetData.id;
+
 
 
     const handleClose = useCallback(async () => {

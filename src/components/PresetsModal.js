@@ -270,17 +270,22 @@ const PresetsModal = ({ show, onClose }) => {
 
       {/* 🔹 Modal de criação/edição de preset */}
       {showTaskModal && (
-        <TaskModal
-          show={showTaskModal}
-          onClose={() => {
-            setShowTaskModal(false);
-            setEditingPreset(null);
-          }}
-          presetData={editingPreset || presetToApply}
-          onPresetSaved={handleSavePreset}
-          isPresetMode={true}
-          editingPreset={!!editingPreset} // 👈 podes usar isto dentro do TaskModal se quiseres mostrar "Editar Preset"
-        />
+      <TaskModal
+        show={showTaskModal}
+        onClose={() => {
+          setShowTaskModal(false);
+          setEditingPreset(null);
+        }}
+
+        presetData={editingPreset ? editingPreset : presetToApply}
+
+        isPresetMode={true}
+
+        isEditingPreset={!!editingPreset}
+
+        onPresetSaved={handleSavePreset}
+      />
+
       )}
     </div>
   );
