@@ -651,7 +651,7 @@ const TaskModal = ({
           </div>
 
           {/* Tempos */}
-          <div className="form-group-time">
+          <div className="form-group-time radio-btn-two">
             <div>
               <label>Tempo Atividade</label>
               <input
@@ -684,7 +684,7 @@ const TaskModal = ({
           
 
           {/* 🔹 Secção de Local / Faturável / Viagem Faturável + Distância e Valor */}
-          <div className="form-group full-width"> 
+          <div className="form-group full-width radio-btn-one"> 
             {/* 3 linhas de toggles */}
             <div className="form-row-toggle">
               <div className="form-group">
