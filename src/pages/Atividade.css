@@ -222,3 +222,41 @@
     max-width: 100%;
   }
 }
+
+/* === Spinner (centralizado no ecrã) === */
+.spinner-container {
+  position: fixed; /* ocupa o ecrã todo */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* centra verticalmente */
+  align-items: center; /* centra horizontalmente */
+  background: rgba(255, 255, 255, 0.9);
+  z-index: 9999;
+}
+
+/* Animação do spinner */
+.spinner {
+  border: 4px solid #e0e0e0;
+  border-top: 4px solid #237c9b;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner-container p {
+  font-size: 0.9rem;
+  color: #333;
+  font-weight: 500;
+}
