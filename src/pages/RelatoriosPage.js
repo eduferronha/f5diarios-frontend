@@ -90,16 +90,36 @@ const RelatoriosPage = () => {
         const response = await api.get("/tasks/all", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setDados(response.data);
-        setDadosOriginais(response.data);
+
+        // Espera até termos a lista de utilizadores carregada
+        const usersRes = await api.get("/users/", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const users = usersRes.data;
+
+        // Junta username -> nome
+        const tarefasComNome = response.data.map((tarefa) => {
+          const user = users.find((u) => u.username === tarefa.username);
+          return {
+            ...tarefa,
+            username: user ? user.nome : tarefa.username, // substitui username pelo nome
+          };
+        });
+
+        setUtilizadores(users);
+        setDados(tarefasComNome);
+        setDadosOriginais(tarefasComNome);
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
       } finally {
         setLoading(false);
       }
     };
+
     carregarDados();
   }, [token]);
+
 
   // 🔹 Carregar listas
   useEffect(() => {
