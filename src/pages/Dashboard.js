@@ -126,9 +126,11 @@ function Dashboard() {
   // 🔹 Aplicar preset ativo (abre o modal já preenchido)
   const handleApplyPreset = (preset) => {
     setPresetToApply(preset);
-    setEditingTask(preset);
+    setEditingTask(null);   // ← MUITO IMPORTANTE
+    setIsDuplicate(false);
     setShowModal(true);
   };
+
 
   return (
     <div className="dashboard-layout">

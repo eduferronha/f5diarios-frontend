@@ -410,28 +410,25 @@ const TaskModal = ({
   const contratoOptions = contratosFiltrados.map((c) => ({ value: c.contrato, label: c.contrato }));
   const atividadeOptions = atividades.map((a) => ({ value: a.atividade, label: a.atividade }));
 
-  const titulo =
-    isPresetMode
-      ? presetData
+  const titulo = isPresetMode
+    ? isEditingPreset
         ? "Editar Preset"
-        : "Criar Preset"
-      : editingTask
-      ? isDuplicate
-        ? "Duplicar Tarefa"
-        : "Editar Tarefa"
-      : "Nova Tarefa";
+        : "Aplicar Preset"
+    : editingTask
+        ? (isDuplicate ? "Duplicar Tarefa" : "Editar Tarefa")
+        : "Nova Tarefa";
 
 
-  const textoBotao =
-    isPresetMode
-      ? presetData
-        ? "Guardar Alterações"  
-        : "Guardar Preset"      
-      : editingTask
-      ? isDuplicate
-        ? "Guardar Cópias"
-        : "Guardar Alterações"
-      : "Guardar";
+
+  const textoBotao = isPresetMode
+    ? isEditingPreset
+        ? "Guardar Alterações"
+        : "Criar Tarefa"
+    : editingTask
+        ? isDuplicate
+            ? "Guardar Cópias"
+            : "Guardar Alterações"
+        : "Guardar";
 
 
 
