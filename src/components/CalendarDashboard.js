@@ -121,8 +121,8 @@ function CalendarDashboard({ tasks = [], onAddTask }) {
     if (dayOfWeek === 0 || dayOfWeek === 6) return "#ef5350"; // Fim de semana
     if (!hours) return "#e0e0e0"; // sem tarefas
     if (hours < 8) return "#b3e5fc";
-    if (hours === 8) return "#81c784";
-    if (hours > 8) return "#388e3c";
+    if (hours >= 8) return "#81c784";
+    // if (hours >= 8) return "#388e3c";
   };
 
   // === Navegação entre meses ===

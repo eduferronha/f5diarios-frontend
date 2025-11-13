@@ -188,7 +188,8 @@ const TaskModal = ({
 
   // 🔹 Preencher automaticamente ao editar uma tarefa
   useEffect(() => {
-    if (editingTask && !isDuplicate) {
+    if (editingTask) {
+    // if (editingTask && !isDuplicate) {
       setDescricao(editingTask.descricao || "");
       setCliente(editingTask.cliente || "");
       setParceiro(editingTask.parceiro || "");
