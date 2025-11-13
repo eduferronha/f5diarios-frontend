@@ -290,11 +290,11 @@ const TaskModal = ({
 
 
 
-    // 🔸 Bloqueia submissão se tempos forem "00:00"
-    if (tempoAtividade === "00:00" || tempoFaturado === "00:00") {
-      alert("O Tempo de Atividade e o Tempo Faturado não podem ser 00:00. Por favor, introduz valores válidos.");
-      return;
-    }
+    // // 🔸 Bloqueia submissão se tempos forem "00:00"
+    // if (tempoAtividade === "00:00" || tempoFaturado === "00:00") {
+    //   alert("O Tempo de Atividade e o Tempo Faturado não podem ser 00:00. Por favor, introduz valores válidos.");
+    //   return;
+    // }
 
     const baseTaskData = {
       descricao,
