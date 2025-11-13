@@ -354,3 +354,45 @@
 .btn-preset:hover {
   background-color: #574bdb;
 }
+
+
+/* === Linha de data com botões === */
+.data-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.data-inline input[type="date"] {
+  flex: 1;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.78rem;
+  background: #fafafa;
+  transition: all 0.2s ease;
+}
+
+.data-inline input[type="date"]:focus {
+  border-color: #237c9b;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(35, 124, 155, 0.2);
+}
+
+/* Botões “Hoje” e “Ontem” */
+.btn-data {
+  background-color: #237c9b;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+  font-family: "Poppins", sans-serif;
+}
+
+.btn-data:hover {
+  background-color: #1c657e;
+  transform: translateY(-1px);
+}

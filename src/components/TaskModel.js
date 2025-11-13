@@ -434,15 +434,41 @@ const TaskModal = ({
           )}
 
           {!isDuplicate ? (
-              <div className="form-group full-width">
-                <label>Data</label>
+            <div className="form-group full-width">
+              <label>Data</label>
+              <div className="data-inline">
                 <input
                   type="date"
                   value={data}
                   onChange={(e) => setData(e.target.value)}
                   required={!isPresetMode}
                 />
+
+                <button
+                  type="button"
+                  className="btn-data"
+                  onClick={() => {
+                    const hoje = new Date().toISOString().split("T")[0];
+                    setData(hoje);
+                  }}
+                >
+                  Hoje
+                </button>
+
+                <button
+                  type="button"
+                  className="btn-data"
+                  onClick={() => {
+                    const ontem = new Date();
+                    ontem.setDate(ontem.getDate() - 1);
+                    const dataOntem = ontem.toISOString().split("T")[0];
+                    setData(dataOntem);
+                  }}
+                >
+                  Ontem
+                </button>
               </div>
+            </div>
             ) : (
               <div className="calendar-duplicate-container full-width">
                 <div className="calendar-box">
