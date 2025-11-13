@@ -280,10 +280,14 @@ const TaskModal = ({
         return;
       }
 
+      // ❗ Esta validação NÃO se aplica a presets
+    if (!isPresetMode) {
       if (tempoAtividade === "00:00" || tempoFaturado === "00:00") {
-        alert("O Tempo de Atividade e o Tempo Faturado não podem ser 00:00.");
+        alert("O Tempo de Atividade e o Tempo Faturado não podem ser 00:00. Por favor, introduz valores válidos.");
         return;
       }
+    }
+
     }
 
 
