@@ -315,18 +315,23 @@ const TaskModal = ({
 
     // 🔹 Continua a lógica normal (tarefas ou duplicação)
     try {
-      if (presetData) {
+      // 🔹 Aplicar preset → criar tarefa
+      if (!isPresetMode && presetData) {
         if (!data) {
           alert("Seleciona uma data para a nova tarefa.");
           return;
         }
+
         await api.post("/tasks", { ...baseTaskData, data }, {
           headers: { Authorization: `Bearer ${token}` },
         });
+
         onTaskAdded && onTaskAdded();
         onClose();
         return;
       }
+      
+
 
       // 🔹 Validação Geral
       if (!descricao || !cliente || !produto || !contrato || !atividade) {
