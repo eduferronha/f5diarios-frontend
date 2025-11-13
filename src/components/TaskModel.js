@@ -273,10 +273,19 @@ const TaskModal = ({
     }
 
     // 🔹 Caso esteja a CRIAR / EDITAR uma TAREFA normal
-    if (!cliente || !produto || !contrato || !atividade || !tempoAtividade || !tempoFaturado || !faturavel) {
-      alert("Preenche todos os campos obrigatórios: Cliente, Produto, Contrato, Atividade, Tempo Atividade, Tempo Faturado e Faturável.");
-      return;
+    // ⚠️ Estas validações só se aplicam a TAREFAS, não a presets
+    if (!isPresetMode) {
+      if (!cliente || !produto || !contrato || !atividade || !tempoAtividade || !tempoFaturado || !faturavel) {
+        alert("Preenche todos os campos obrigatórios: Cliente, Produto, Contrato, Atividade, Tempo Atividade, Tempo Faturado e Faturável.");
+        return;
+      }
+
+      if (tempoAtividade === "00:00" || tempoFaturado === "00:00") {
+        alert("O Tempo de Atividade e o Tempo Faturado não podem ser 00:00.");
+        return;
+      }
     }
+
 
     // 🔸 Bloqueia submissão se tempos forem "00:00"
     if (tempoAtividade === "00:00" || tempoFaturado === "00:00") {
@@ -383,26 +392,28 @@ const TaskModal = ({
   const atividadeOptions = atividades.map((a) => ({ value: a.atividade, label: a.atividade }));
 
   const titulo =
-    presetData
-      ? "Aplicar Preset"
-      : isPresetMode
-      ? "Criar Preset"
+    isPresetMode
+      ? presetData
+        ? "Editar Preset"
+        : "Criar Preset"
       : editingTask
       ? isDuplicate
         ? "Duplicar Tarefa"
         : "Editar Tarefa"
       : "Nova Tarefa";
 
+
   const textoBotao =
-    presetData
-      ? "Criar Tarefa"
-      : isPresetMode
-      ? "Guardar"
+    isPresetMode
+      ? presetData
+        ? "Guardar Alterações"  
+        : "Guardar Preset"      
       : editingTask
       ? isDuplicate
         ? "Guardar Cópias"
-        : "Guardar"
+        : "Guardar Alterações"
       : "Guardar";
+
 
 
   
