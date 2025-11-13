@@ -42,40 +42,42 @@ const TaskModal = ({
 
   const [datasDuplicadas, setDatasDuplicadas] = useState([]);
   const [showCalendar, setShowCalendar] = useState(true);
+  const isEditingPreset = isPresetMode && presetData;
+
 
     const handleClose = useCallback(async () => {
-  const hasChanges =
-    descricao ||
-    cliente ||
-    parceiro ||
-    produto ||
-    contrato ||
-    atividade ||
-    tempoAtividade !== "00:00" ||
-    tempoFaturado !== "00:00" ||
-    distanciaViagem > 0 ||
-    valorEuro > 0;
+    const hasChanges =
+      descricao ||
+      cliente ||
+      parceiro ||
+      produto ||
+      contrato ||
+      atividade ||
+      tempoAtividade !== "00:00" ||
+      tempoFaturado !== "00:00" ||
+      distanciaViagem > 0 ||
+      valorEuro > 0;
 
-  if (hasChanges) {
-    const confirmExit = window.confirm(
-      "Existem dados preenchidos. Tens a certeza que queres sair sem guardar?"
-    );
-    if (!confirmExit) return;
-  }
-  onClose();
-}, [
-  descricao,
-  cliente,
-  parceiro,
-  produto,
-  contrato,
-  atividade,
-  tempoAtividade,
-  tempoFaturado,
-  distanciaViagem,
-  valorEuro,
-  onClose,
-]);
+    if (hasChanges) {
+      const confirmExit = window.confirm(
+        "Existem dados preenchidos. Tens a certeza que queres sair sem guardar?"
+      );
+      if (!confirmExit) return;
+    }
+    onClose();
+  }, [
+    descricao,
+    cliente,
+    parceiro,
+    produto,
+    contrato,
+    atividade,
+    tempoAtividade,
+    tempoFaturado,
+    distanciaViagem,
+    valorEuro,
+    onClose,
+  ]);
 
 
 
@@ -275,7 +277,7 @@ const TaskModal = ({
     // 🔹 Caso esteja a CRIAR / EDITAR uma TAREFA normal
     // ⚠️ Estas validações só se aplicam a TAREFAS, não a presets
     // 🔹 Validações apenas para tarefas (NÃO para presets)
-    if (!isPresetMode) {
+    if (!isPresetMode && !isEditingPreset) {
 
       if (!cliente || !produto || !contrato || !atividade || !tempoAtividade || !tempoFaturado || !faturavel) {
         alert("Preenche todos os campos obrigatórios: Cliente, Produto, Contrato, Atividade, Tempo Atividade, Tempo Faturado e Faturável.");
@@ -316,7 +318,7 @@ const TaskModal = ({
     // 🔹 Continua a lógica normal (tarefas ou duplicação)
     try {
       // 🔹 Aplicar preset → criar tarefa
-      if (!isPresetMode && presetData) {
+      if (!isPresetMode && presetData && !editingTask) {
         if (!data) {
           alert("Seleciona uma data para a nova tarefa.");
           return;
@@ -479,7 +481,8 @@ const TaskModal = ({
                   type="date"
                   value={data}
                   onChange={(e) => setData(e.target.value)}
-                  required={!isPresetMode}
+                  required={!isPresetMode && !isEditingPreset}
+
                 />
 
                 <button
@@ -556,7 +559,8 @@ const TaskModal = ({
               placeholder="Descreve a tarefa..."
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
-              required={!isPresetMode}
+              required={!isPresetMode && !isEditingPreset}
+
             />
           </div>
 
@@ -570,7 +574,8 @@ const TaskModal = ({
               placeholder="Seleciona um cliente..."
               isClearable
               isSearchable
-              required={!isPresetMode}
+              required={!isPresetMode && !isEditingPreset}
+
 
             />
           </div>
@@ -598,7 +603,8 @@ const TaskModal = ({
               placeholder="Seleciona um produto..."
               isClearable
               isSearchable
-              required={!isPresetMode}
+              required={!isPresetMode && !isEditingPreset}
+
 
             />
           </div>
@@ -614,7 +620,8 @@ const TaskModal = ({
               isDisabled={!cliente}
               isClearable
               isSearchable
-              required={!isPresetMode}
+              required={!isPresetMode && !isEditingPreset}
+
 
             />
           </div>
@@ -629,7 +636,8 @@ const TaskModal = ({
               placeholder="Seleciona uma atividade..."
               isClearable
               isSearchable
-              required={!isPresetMode}
+              required={!isPresetMode && !isEditingPreset}
+
 
             />
           </div>
@@ -650,7 +658,8 @@ const TaskModal = ({
                 type="time"
                 value={tempoFaturado}
                 onChange={(e) => setTempoFaturado(e.target.value)}
-                required={!isPresetMode}
+                required={!isPresetMode && !isEditingPreset}
+
  
               />
             </div>
