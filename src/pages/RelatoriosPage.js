@@ -7,6 +7,8 @@ import "./RelatoriosPage.css";
 import TaskModal from "../components/TaskModel";
 import { Edit3 } from "lucide-react";
 import Select from "react-select";
+import Swal from "sweetalert2";
+import toast, { Toaster } from "react-hot-toast";
 
 const RelatoriosPage = () => {
   const token = localStorage.getItem("token");
@@ -38,7 +40,6 @@ const RelatoriosPage = () => {
 
   const [itemsPorPagina, setItemsPorPagina] = useState(50);
   const dadosVisiveis = dados.slice(0, itemsPorPagina);
-
 
   // ✅ Estilo igual ao TaskModal
   const customSelectStyles = {
@@ -87,23 +88,17 @@ const RelatoriosPage = () => {
     const carregarDados = async () => {
       try {
         setLoading(true);
-        const response = await api.get("/tasks/all", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        // Espera até termos a lista de utilizadores carregada
-        const usersRes = await api.get("/users/", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const [tasksRes, usersRes] = await Promise.all([
+          api.get("/tasks/all", { headers: { Authorization: `Bearer ${token}` } }),
+          api.get("/users/", { headers: { Authorization: `Bearer ${token}` } }),
+        ]);
 
         const users = usersRes.data;
-
-        // Junta username -> nome
-        const tarefasComNome = response.data.map((tarefa) => {
+        const tarefasComNome = tasksRes.data.map((tarefa) => {
           const user = users.find((u) => u.username === tarefa.username);
           return {
             ...tarefa,
-            username: user ? user.nome : tarefa.username, // substitui username pelo nome
+            username: user ? user.nome : tarefa.username,
           };
         });
 
@@ -112,6 +107,7 @@ const RelatoriosPage = () => {
         setDadosOriginais(tarefasComNome);
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
+        toast.error("Erro ao carregar relatórios.");
       } finally {
         setLoading(false);
       }
@@ -120,8 +116,7 @@ const RelatoriosPage = () => {
     carregarDados();
   }, [token]);
 
-
-  // 🔹 Carregar listas
+  // 🔹 Carregar listas auxiliares
   useEffect(() => {
     const carregarListas = async () => {
       try {
@@ -139,6 +134,7 @@ const RelatoriosPage = () => {
         setUtilizadores(utilizadoresRes.data);
       } catch (error) {
         console.error("Erro ao carregar listas:", error);
+        toast.error("Erro ao carregar listas auxiliares.");
       }
     };
     carregarListas();
@@ -178,88 +174,75 @@ const RelatoriosPage = () => {
 
   // 🔹 Aplicar filtros
   const aplicarFiltros = () => {
-    let filtrados = [...dadosOriginais];
+    try {
+      let filtrados = [...dadosOriginais];
 
-    // Filtros principais
-    // 🔹 Filtros principais
-if (cliente !== "-Todos-")
-  filtrados = filtrados.filter((d) => d.cliente === cliente);
-if (contrato !== "-Todos-")
-  filtrados = filtrados.filter((d) => d.contrato === contrato);
-if (parceiro !== "-Todos-")
-  filtrados = filtrados.filter((d) => d.parceiro === parceiro);
-if (utilizador !== "-Todos-")
-  filtrados = filtrados.filter((d) => d.username === utilizador);
+      if (cliente !== "-Todos-") filtrados = filtrados.filter((d) => d.cliente === cliente);
+      if (contrato !== "-Todos-") filtrados = filtrados.filter((d) => d.contrato === contrato);
+      if (parceiro !== "-Todos-") filtrados = filtrados.filter((d) => d.parceiro === parceiro);
+      if (utilizador !== "-Todos-") filtrados = filtrados.filter((d) => d.username === utilizador);
 
-// 🔹 Filtro "Faturar"
-if (faturar !== "Todos") {
-  filtrados = filtrados.filter((d) => {
-    const valor = String(d.faturavel || "").toLowerCase();
-    if (faturar === "Sim") return valor === "yes" || valor === "for analysis";
-    if (faturar === "Não") return valor === "no";
-    return true;
-  });
-}
+      if (faturar !== "Todos") {
+        filtrados = filtrados.filter((d) => {
+          const valor = String(d.faturavel || "").toLowerCase();
+          if (faturar === "Sim") return valor === "yes" || valor === "for analysis";
+          if (faturar === "Não") return valor === "no";
+          return true;
+        });
+      }
 
-// 🔹 Filtro "Faturar Deslocações"
-if (faturarDesloc !== "Todos") {
-  filtrados = filtrados.filter((d) => {
-    const valor = String(d.viagem_faturavel || "").toLowerCase();
-    if (faturarDesloc === "Sim") return valor === "yes";
-    if (faturarDesloc === "Não") return valor === "no";
-    return true;
-  });
-}
+      if (faturarDesloc !== "Todos") {
+        filtrados = filtrados.filter((d) => {
+          const valor = String(d.viagem_faturavel || "").toLowerCase();
+          if (faturarDesloc === "Sim") return valor === "yes";
+          if (faturarDesloc === "Não") return valor === "no";
+          return true;
+        });
+      }
 
-    // 🔹 Filtro por intervalo de datas (ano/mês)
-    // 🔹 Filtro por intervalo de datas (ano/mês)
-      // 🔹 Filtro por intervalo de datas (ano/mês)
-const mesesLista = [
-  "janeiro", "fevereiro", "março", "abril", "maio", "junho",
-  "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
-];
+      const mesesLista = [
+        "janeiro",
+        "fevereiro",
+        "março",
+        "abril",
+        "maio",
+        "junho",
+        "julho",
+        "agosto",
+        "setembro",
+        "outubro",
+        "novembro",
+        "dezembro",
+      ];
 
-const inicio = new Date(
-  Number(anoInicio),
-  mesesLista.indexOf(mesInicio.toLowerCase()),
-  1
-);
-const fim = new Date(
-  Number(anoFim),
-  mesesLista.indexOf(mesFim.toLowerCase()) + 1,
-  0,
-  23, 59, 59 // último dia, até o fim do dia
-);
+      const inicio = new Date(Number(anoInicio), mesesLista.indexOf(mesInicio.toLowerCase()), 1);
+      const fim = new Date(
+        Number(anoFim),
+        mesesLista.indexOf(mesFim.toLowerCase()) + 1,
+        0,
+        23,
+        59,
+        59
+      );
 
-filtrados = filtrados.filter((d) => {
-  if (!d.data) return false;
+      filtrados = filtrados.filter((d) => {
+        if (!d.data) return false;
+        const partes = d.data.trim().replace(/-/g, "/").split("/");
+        if (partes.length !== 3) return false;
+        let dia, mes, ano;
+        if (partes[0].length === 4) [ano, mes, dia] = partes.map(Number);
+        else [dia, mes, ano] = partes.map(Number);
+        if (isNaN(dia) || isNaN(mes) || isNaN(ano)) return false;
+        const dataObj = new Date(ano, mes - 1, dia);
+        return dataObj >= inicio && dataObj <= fim;
+      });
 
-  // Remove espaços e aceita tanto "/" como "-"
-  const partes = d.data.trim().replace(/-/g, "/").split("/");
-  if (partes.length !== 3) return false;
-
-  // Lida com formatos "dd/mm/yyyy" e "yyyy/mm/dd"
-  let dia, mes, ano;
-  if (partes[0].length === 4) {
-    // formato "yyyy/mm/dd"
-    [ano, mes, dia] = partes.map(Number);
-  } else {
-    // formato "dd/mm/yyyy"
-    [dia, mes, ano] = partes.map(Number);
-  }
-
-  if (isNaN(dia) || isNaN(mes) || isNaN(ano)) return false;
-
-  const dataObj = new Date(ano, mes - 1, dia);
-  if (isNaN(dataObj)) return false; // ainda não é data válida
-
-  return dataObj >= inicio && dataObj <= fim;
-});
-
-
-
-    setDados(filtrados);
-    setFiltroAtivo(true);
+      setDados(filtrados);
+      setFiltroAtivo(true);
+      toast.success("Filtros aplicados com sucesso!");
+    } catch {
+      toast.error("Erro ao aplicar filtros.");
+    }
   };
 
   const handleFiltroChange = (setter) => (selected) => {
@@ -280,159 +263,137 @@ filtrados = filtrados.filter((d) => {
     setAnoFim("2025");
     setMesFim("Outubro");
     setFiltroAtivo(false);
+    toast("Filtros limpos.", { icon: "🧹", duration: 2000 });
   };
 
   // 🔹 Exportar Excel
-  const exportarExcel = () => {
-    const colunas = [
-      "Data",
-      "Utilizador",
-      "Local",
-      "Cliente",
-      "Parceiro",
-      "Produto",
-      "Contrato",
-      "Atividade",
-      "Tempo Atividade",
-      "Tempo Faturado",
-      "Faturável",
-      "Viagem Faturável",
-      "Valor (€)",
-    ];
+  const exportarExcel = async () => {
+    if (dados.length === 0)
+      return Swal.fire("Sem dados", "Não há dados para exportar.", "info");
+    try {
+      const colunas = [
+        "Data",
+        "Utilizador",
+        "Local",
+        "Cliente",
+        "Parceiro",
+        "Produto",
+        "Contrato",
+        "Atividade",
+        "Tempo Atividade",
+        "Tempo Faturado",
+        "Faturável",
+        "Viagem Faturável",
+        "Valor (€)",
+      ];
 
-    const linhas = dados.map((d) => ({
-      Data: d.data || "",
-      Utilizador: d.username || "",
-      Local: d.local || "",
-      Cliente: d.cliente || "",
-      Parceiro: d.parceiro || "",
-      Produto: d.produto || "",
-      Contrato: d.contrato || "",
-      Atividade: d.atividade || "",
-      "Tempo Atividade": d.tempo_atividade || "00:00",
-      "Tempo Faturado": d.tempo_faturado || "00:00",
-      Faturável: d.faturavel || "",
-      "Viagem Faturável": d.viagem_faturavel || "",
-      "Valor (€)": Number(d.valor_euro) || 0,
-    }));
+      const linhas = dados.map((d) => ({
+        Data: d.data || "",
+        Utilizador: d.username || "",
+        Local: d.local || "",
+        Cliente: d.cliente || "",
+        Parceiro: d.parceiro || "",
+        Produto: d.produto || "",
+        Contrato: d.contrato || "",
+        Atividade: d.atividade || "",
+        "Tempo Atividade": d.tempo_atividade || "00:00",
+        "Tempo Faturado": d.tempo_faturado || "00:00",
+        Faturável: d.faturavel || "",
+        "Viagem Faturável": d.viagem_faturavel || "",
+        "Valor (€)": Number(d.valor_euro) || 0,
+      }));
 
-    const somarTempos = (tempos) => {
-      let totalMinutos = 0;
-      tempos.forEach((t) => {
-        if (typeof t === "string" && t.includes(":")) {
-          const [h, m] = t.split(":").map(Number);
-          totalMinutos += h * 60 + m;
-        }
-      });
-      const horas = Math.floor(totalMinutos / 60);
-      const minutos = totalMinutos % 60;
-      return `${String(horas).padStart(2, "0")}:${String(minutos).padStart(
-        2,
-        "0"
-      )}`;
-    };
+      const ws = XLSX.utils.json_to_sheet(linhas, { header: colunas });
+      ws["!cols"] = colunas.map(() => ({ wch: 15 }));
 
-    const totalTempoAtividade = somarTempos(linhas.map((l) => l["Tempo Atividade"]));
-    const totalTempoFaturado = somarTempos(linhas.map((l) => l["Tempo Faturado"]));
-    const totalValor = linhas.reduce(
-      (acc, row) => acc + (Number(row["Valor (€)"]) || 0),
-      0
-    );
-
-    linhas.push({
-      Data: "",
-      Local: "",
-      Cliente: "",
-      Parceiro: "",
-      Produto: "",
-      Contrato: "",
-      Atividade: "Total",
-      "Tempo Atividade": totalTempoAtividade,
-      "Tempo Faturado": totalTempoFaturado,
-      Faturável: "",
-      "Viagem Faturável": "",
-      "Valor (€)": totalValor.toFixed(2),
-    });
-
-    const ws = XLSX.utils.json_to_sheet(linhas, { header: colunas });
-    ws["!cols"] = colunas.map(() => ({ wch: 15 }));
-
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Relatórios");
-    XLSX.writeFile(wb, "Relatorio_Atividades.xlsx");
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Relatórios");
+      XLSX.writeFile(wb, "Relatorio_Atividades.xlsx");
+      toast.success("Exportado para Excel!");
+    } catch (err) {
+      toast.error("Erro ao exportar Excel.");
+    }
   };
 
   // 🔹 Exportar PDF
-  const exportarPDF = () => {
-    const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "A4" });
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(14);
-    doc.text("Relatório de Atividades", 40, 40);
+  const exportarPDF = async () => {
+    if (dados.length === 0)
+      return Swal.fire("Sem dados", "Não há dados para exportar.", "info");
+    try {
+      const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "A4" });
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(14);
+      doc.text("Relatório de Atividades", 40, 40);
 
-    const colunas = [
-      "Data",
-      "Utilizador",
-      "Local",
-      "Cliente",
-      "Parceiro",
-      "Produto",
-      "Contrato",
-      "Atividade",
-      "Faturável",
-      "Viagem Faturável",
-      "Tempo Atividade",
-      "Tempo Faturado",
-      "Valor (€)",
-    ];
+      const colunas = [
+        "Data",
+        "Utilizador",
+        "Local",
+        "Cliente",
+        "Parceiro",
+        "Produto",
+        "Contrato",
+        "Atividade",
+        "Faturável",
+        "Viagem Faturável",
+        "Tempo Atividade",
+        "Tempo Faturado",
+        "Valor (€)",
+      ];
 
-    const linhas = dados.map((d) => [
-      d.data || "",
-      d.username || "",
-      d.local || "",
-      d.cliente || "",
-      d.parceiro || "",
-      d.produto || "",
-      d.contrato || "",
-      d.atividade || "",
-      d.faturavel || "",
-      d.viagem_faturavel || "",
-      d.tempo_atividade || "00:00",
-      d.tempo_faturado || "00:00",
-      d.valor_euro ? Number(d.valor_euro).toFixed(2) : "0.00",
-    ]);
+      const linhas = dados.map((d) => [
+        d.data || "",
+        d.username || "",
+        d.local || "",
+        d.cliente || "",
+        d.parceiro || "",
+        d.produto || "",
+        d.contrato || "",
+        d.atividade || "",
+        d.faturavel || "",
+        d.viagem_faturavel || "",
+        d.tempo_atividade || "00:00",
+        d.tempo_faturado || "00:00",
+        d.valor_euro ? Number(d.valor_euro).toFixed(2) : "0.00",
+      ]);
 
-    autoTable(doc, {
-      head: [colunas],
-      body: linhas,
-      startY: 60,
-      theme: "striped",
-      styles: { fontSize: 8, cellPadding: 4 },
-      headStyles: { fillColor: [0, 120, 215], textColor: 255, fontStyle: "bold" },
-      alternateRowStyles: { fillColor: [245, 247, 250] },
-    });
+      autoTable(doc, {
+        head: [colunas],
+        body: linhas,
+        startY: 60,
+        theme: "striped",
+        styles: { fontSize: 8, cellPadding: 4 },
+        headStyles: { fillColor: [35, 124, 155], textColor: 255, fontStyle: "bold" },
+        alternateRowStyles: { fillColor: [245, 247, 250] },
+      });
 
-    doc.save("Relatorio_Atividades.pdf");
+      doc.save("Relatorio_Atividades.pdf");
+      toast.success("PDF gerado com sucesso!");
+    } catch (err) {
+      toast.error("Erro ao gerar PDF.");
+    }
   };
 
   return (
     <div className="relatorios-container">
+      <Toaster position="top-center" toastOptions={{ duration: 4000 }} />
+
       <div className="relatorios-actions">
-      <button onClick={exportarExcel}>Exportar para Excel</button>
-      <button onClick={exportarPDF}>Exportar para PDF</button>
+        <button onClick={exportarExcel}>Exportar para Excel</button>
+        <button onClick={exportarPDF}>Exportar para PDF</button>
 
-      <div className="items-control">
-        <label>Mostrar</label>
-        <input
-          type="number"
-          min="1"
-          value={itemsPorPagina}
-          onChange={(e) => setItemsPorPagina(Number(e.target.value))}
-        />
-        <span>itens</span>
-        <button onClick={() => setItemsPorPagina(dados.length)}>Ver Todos</button>
+        <div className="items-control">
+          <label>Mostrar</label>
+          <input
+            type="number"
+            min="1"
+            value={itemsPorPagina}
+            onChange={(e) => setItemsPorPagina(Number(e.target.value))}
+          />
+          <span>itens</span>
+          <button onClick={() => setItemsPorPagina(dados.length)}>Ver Todos</button>
+        </div>
       </div>
-    </div>
-
 
       {loading ? (
         <div className="spinner-container">
@@ -441,6 +402,7 @@ filtrados = filtrados.filter((d) => {
         </div>
       ) : (
         <div className="relatorios-main">
+          {/* === FILTROS === */}
           <div className="filtros-container-relatorios">
             <h3>Pesquisar</h3>
 
@@ -522,19 +484,6 @@ filtrados = filtrados.filter((d) => {
               menuPortalTarget={document.body}
             />
 
-            {/* <label>Parceiro</label>
-            <Select
-              options={[
-                { value: "-Todos-", label: "-Todos-" },
-                ...parceiros.map((p) => ({ value: p.nome, label: p.nome })),
-              ]}
-              value={{ value: parceiro, label: parceiro }}
-              onChange={handleFiltroChange(setParceiro)}
-              styles={customSelectStyles}
-              isSearchable
-              menuPortalTarget={document.body}
-            /> */}
-
             <label>Faturar</label>
             <Select
               options={[
@@ -548,19 +497,6 @@ filtrados = filtrados.filter((d) => {
               menuPortalTarget={document.body}
             />
 
-            {/* <label>Faturar Deslocações</label>
-            <Select
-              options={[
-                { value: "Todos", label: "Todos" },
-                { value: "Sim", label: "Sim" },
-                { value: "Não", label: "Não" },
-              ]}
-              value={{ value: faturarDesloc, label: faturarDesloc }}
-              onChange={handleFiltroChange(setFaturarDesloc)}
-              styles={customSelectStyles}
-              menuPortalTarget={document.body}
-            /> */}
-
             <div className="filtro-botoes-relatorios">
               <button
                 onClick={aplicarFiltros}
@@ -572,6 +508,7 @@ filtrados = filtrados.filter((d) => {
             </div>
           </div>
 
+          {/* === TABELA === */}
           <div className="relatorios-table">
             <table>
               <thead>
@@ -595,7 +532,14 @@ filtrados = filtrados.filter((d) => {
               <tbody>
                 {dados.length === 0 ? (
                   <tr>
-                    <td colSpan="13" style={{ textAlign: "center", padding: "20px", color: "#666" }}>
+                    <td
+                      colSpan="13"
+                      style={{
+                        textAlign: "center",
+                        padding: "20px",
+                        color: "#666",
+                      }}
+                    >
                       Nenhum resultado encontrado com os filtros aplicados.
                     </td>
                   </tr>
@@ -643,7 +587,7 @@ filtrados = filtrados.filter((d) => {
           api
             .get("/tasks/all", { headers: { Authorization: `Bearer ${token}` } })
             .then((res) => setDados(res.data))
-            .catch((err) => console.error("Erro ao recarregar tarefas:", err));
+            .catch(() => toast.error("Erro ao recarregar tarefas."));
         }}
         editingTask={editingTask}
         isDuplicate={isDuplicate}
