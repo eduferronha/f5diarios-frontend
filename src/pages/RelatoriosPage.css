@@ -352,3 +352,13 @@ body {
 .items-control button:hover {
   background: #005fa3;
 }
+
+
+.spinner-local {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  color: #237c9b;
+}

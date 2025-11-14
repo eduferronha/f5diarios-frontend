@@ -36,12 +36,11 @@ const RelatoriosPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [isDuplicate, setIsDuplicate] = useState(false);
-  const [filtroAtivo, setFiltroAtivo] = useState(false);
 
   const [itemsPorPagina, setItemsPorPagina] = useState(50);
   const dadosVisiveis = dados.slice(0, itemsPorPagina);
 
-  // ✅ Estilo igual ao TaskModal
+  // ✅ Estilo igual ao Atividade
   const customSelectStyles = {
     control: (provided, state) => ({
       ...provided,
@@ -71,6 +70,7 @@ const RelatoriosPage = () => {
     menuPortal: (base) => ({ ...base, zIndex: 9999 }),
   };
 
+  // 🔹 Editar tarefa
   const handleEdit = (task) => {
     setEditingTask(task);
     setIsDuplicate(false);
@@ -83,7 +83,7 @@ const RelatoriosPage = () => {
     setIsDuplicate(false);
   };
 
-  // 🔹 Carregar dados
+  // 🔹 Carregar dados iniciais
   useEffect(() => {
     const carregarDados = async () => {
       try {
@@ -96,10 +96,7 @@ const RelatoriosPage = () => {
         const users = usersRes.data;
         const tarefasComNome = tasksRes.data.map((tarefa) => {
           const user = users.find((u) => u.username === tarefa.username);
-          return {
-            ...tarefa,
-            username: user ? user.nome : tarefa.username,
-          };
+          return { ...tarefa, username: user ? user.nome : tarefa.username };
         });
 
         setUtilizadores(users);
@@ -142,116 +139,72 @@ const RelatoriosPage = () => {
 
   // 🔹 Filtrar contratos conforme cliente
   useEffect(() => {
-    if (cliente === "-Todos-") {
-      setContratosFiltrados(contratos);
-    } else {
-      const filtrados = contratos.filter(
-        (c) => c.cliente_nome === cliente || c.cliente === cliente
-      );
-      setContratosFiltrados(filtrados);
-    }
+    if (cliente === "-Todos-") setContratosFiltrados(contratos);
+    else setContratosFiltrados(contratos.filter((c) => c.cliente_nome === cliente || c.cliente === cliente));
   }, [cliente, contratos]);
 
   // 🔹 Opções de meses e anos
-  const anos = ["2023", "2024", "2025", "2026", "2027"].map((a) => ({
-    value: a,
-    label: a,
-  }));
+  const anos = ["2023", "2024", "2025", "2026", "2027"].map((a) => ({ value: a, label: a }));
   const meses = [
-    "Janeiro",
-    "Fevereiro",
-    "Março",
-    "Abril",
-    "Maio",
-    "Junho",
-    "Julho",
-    "Agosto",
-    "Setembro",
-    "Outubro",
-    "Novembro",
-    "Dezembro",
+    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
   ].map((m) => ({ value: m, label: m }));
 
-  // 🔹 Aplicar filtros
-  const aplicarFiltros = () => {
-    try {
-      let filtrados = [...dadosOriginais];
+  // 🔹 Atualiza automaticamente ao mudar qualquer filtro
+  useEffect(() => {
+    if (dadosOriginais.length === 0) return;
 
-      if (cliente !== "-Todos-") filtrados = filtrados.filter((d) => d.cliente === cliente);
-      if (contrato !== "-Todos-") filtrados = filtrados.filter((d) => d.contrato === contrato);
-      if (parceiro !== "-Todos-") filtrados = filtrados.filter((d) => d.parceiro === parceiro);
-      if (utilizador !== "-Todos-") filtrados = filtrados.filter((d) => d.username === utilizador);
+    let filtrados = [...dadosOriginais];
 
-      if (faturar !== "Todos") {
-        filtrados = filtrados.filter((d) => {
-          const valor = String(d.faturavel || "").toLowerCase();
-          if (faturar === "Sim") return valor === "yes" || valor === "for analysis";
-          if (faturar === "Não") return valor === "no";
-          return true;
-        });
-      }
+    if (cliente !== "-Todos-") filtrados = filtrados.filter((d) => d.cliente === cliente);
+    if (contrato !== "-Todos-") filtrados = filtrados.filter((d) => d.contrato === contrato);
+    if (parceiro !== "-Todos-") filtrados = filtrados.filter((d) => d.parceiro === parceiro);
+    if (utilizador !== "-Todos-") filtrados = filtrados.filter((d) => d.username === utilizador);
 
-      if (faturarDesloc !== "Todos") {
-        filtrados = filtrados.filter((d) => {
-          const valor = String(d.viagem_faturavel || "").toLowerCase();
-          if (faturarDesloc === "Sim") return valor === "yes";
-          if (faturarDesloc === "Não") return valor === "no";
-          return true;
-        });
-      }
-
-      const mesesLista = [
-        "janeiro",
-        "fevereiro",
-        "março",
-        "abril",
-        "maio",
-        "junho",
-        "julho",
-        "agosto",
-        "setembro",
-        "outubro",
-        "novembro",
-        "dezembro",
-      ];
-
-      const inicio = new Date(Number(anoInicio), mesesLista.indexOf(mesInicio.toLowerCase()), 1);
-      const fim = new Date(
-        Number(anoFim),
-        mesesLista.indexOf(mesFim.toLowerCase()) + 1,
-        0,
-        23,
-        59,
-        59
-      );
-
+    if (faturar !== "Todos") {
       filtrados = filtrados.filter((d) => {
-        if (!d.data) return false;
-        const partes = d.data.trim().replace(/-/g, "/").split("/");
-        if (partes.length !== 3) return false;
-        let dia, mes, ano;
-        if (partes[0].length === 4) [ano, mes, dia] = partes.map(Number);
-        else [dia, mes, ano] = partes.map(Number);
-        if (isNaN(dia) || isNaN(mes) || isNaN(ano)) return false;
-        const dataObj = new Date(ano, mes - 1, dia);
-        return dataObj >= inicio && dataObj <= fim;
+        const valor = String(d.faturavel || "").toLowerCase();
+        if (faturar === "Sim") return valor === "yes" || valor === "for analysis";
+        if (faturar === "Não") return valor === "no";
+        return true;
       });
-
-      setDados(filtrados);
-      setFiltroAtivo(true);
-      toast.success("Filtros aplicados com sucesso!");
-    } catch {
-      toast.error("Erro ao aplicar filtros.");
     }
-  };
 
-  const handleFiltroChange = (setter) => (selected) => {
-    setter(selected ? selected.value : "");
-    setFiltroAtivo(false);
-  };
+    if (faturarDesloc !== "Todos") {
+      filtrados = filtrados.filter((d) => {
+        const valor = String(d.viagem_faturavel || "").toLowerCase();
+        if (faturarDesloc === "Sim") return valor === "yes";
+        if (faturarDesloc === "Não") return valor === "no";
+        return true;
+      });
+    }
 
+    const mesesLista = [
+      "janeiro","fevereiro","março","abril","maio","junho",
+      "julho","agosto","setembro","outubro","novembro","dezembro",
+    ];
+    const inicio = new Date(Number(anoInicio), mesesLista.indexOf(mesInicio.toLowerCase()), 1);
+    const fim = new Date(Number(anoFim), mesesLista.indexOf(mesFim.toLowerCase()) + 1, 0, 23, 59, 59);
+
+    filtrados = filtrados.filter((d) => {
+      if (!d.data) return false;
+      const partes = d.data.trim().replace(/-/g, "/").split("/");
+      if (partes.length !== 3) return false;
+      let dia, mes, ano;
+      if (partes[0].length === 4) [ano, mes, dia] = partes.map(Number);
+      else [dia, mes, ano] = partes.map(Number);
+      const dataObj = new Date(ano, mes - 1, dia);
+      return dataObj >= inicio && dataObj <= fim;
+    });
+
+    setDados(filtrados);
+  }, [
+    cliente, contrato, parceiro, utilizador,
+    faturar, faturarDesloc, anoInicio, mesInicio, anoFim, mesFim
+  ]);
+
+  // 🔹 Limpar filtros
   const limparFiltros = () => {
-    setDados(dadosOriginais);
     setCliente("-Todos-");
     setContrato("-Todos-");
     setUtilizador("-Todos-");
@@ -262,116 +215,8 @@ const RelatoriosPage = () => {
     setMesInicio("Outubro");
     setAnoFim("2025");
     setMesFim("Outubro");
-    setFiltroAtivo(false);
+    setDados(dadosOriginais);
     toast("Filtros limpos.", { icon: "🧹", duration: 2000 });
-  };
-
-  // 🔹 Exportar Excel
-  const exportarExcel = async () => {
-    if (dados.length === 0)
-      return Swal.fire("Sem dados", "Não há dados para exportar.", "info");
-    try {
-      const colunas = [
-        "Data",
-        "Utilizador",
-        "Local",
-        "Cliente",
-        "Parceiro",
-        "Produto",
-        "Contrato",
-        "Atividade",
-        "Tempo Atividade",
-        "Tempo Faturado",
-        "Faturável",
-        "Viagem Faturável",
-        "Valor (€)",
-      ];
-
-      const linhas = dados.map((d) => ({
-        Data: d.data || "",
-        Utilizador: d.username || "",
-        Local: d.local || "",
-        Cliente: d.cliente || "",
-        Parceiro: d.parceiro || "",
-        Produto: d.produto || "",
-        Contrato: d.contrato || "",
-        Atividade: d.atividade || "",
-        "Tempo Atividade": d.tempo_atividade || "00:00",
-        "Tempo Faturado": d.tempo_faturado || "00:00",
-        Faturável: d.faturavel || "",
-        "Viagem Faturável": d.viagem_faturavel || "",
-        "Valor (€)": Number(d.valor_euro) || 0,
-      }));
-
-      const ws = XLSX.utils.json_to_sheet(linhas, { header: colunas });
-      ws["!cols"] = colunas.map(() => ({ wch: 15 }));
-
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Relatórios");
-      XLSX.writeFile(wb, "Relatorio_Atividades.xlsx");
-      toast.success("Exportado para Excel!");
-    } catch (err) {
-      toast.error("Erro ao exportar Excel.");
-    }
-  };
-
-  // 🔹 Exportar PDF
-  const exportarPDF = async () => {
-    if (dados.length === 0)
-      return Swal.fire("Sem dados", "Não há dados para exportar.", "info");
-    try {
-      const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "A4" });
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(14);
-      doc.text("Relatório de Atividades", 40, 40);
-
-      const colunas = [
-        "Data",
-        "Utilizador",
-        "Local",
-        "Cliente",
-        "Parceiro",
-        "Produto",
-        "Contrato",
-        "Atividade",
-        "Faturável",
-        "Viagem Faturável",
-        "Tempo Atividade",
-        "Tempo Faturado",
-        "Valor (€)",
-      ];
-
-      const linhas = dados.map((d) => [
-        d.data || "",
-        d.username || "",
-        d.local || "",
-        d.cliente || "",
-        d.parceiro || "",
-        d.produto || "",
-        d.contrato || "",
-        d.atividade || "",
-        d.faturavel || "",
-        d.viagem_faturavel || "",
-        d.tempo_atividade || "00:00",
-        d.tempo_faturado || "00:00",
-        d.valor_euro ? Number(d.valor_euro).toFixed(2) : "0.00",
-      ]);
-
-      autoTable(doc, {
-        head: [colunas],
-        body: linhas,
-        startY: 60,
-        theme: "striped",
-        styles: { fontSize: 8, cellPadding: 4 },
-        headStyles: { fillColor: [35, 124, 155], textColor: 255, fontStyle: "bold" },
-        alternateRowStyles: { fillColor: [245, 247, 250] },
-      });
-
-      doc.save("Relatorio_Atividades.pdf");
-      toast.success("PDF gerado com sucesso!");
-    } catch (err) {
-      toast.error("Erro ao gerar PDF.");
-    }
   };
 
   return (
@@ -379,137 +224,108 @@ const RelatoriosPage = () => {
       <Toaster position="top-center" toastOptions={{ duration: 4000 }} />
 
       <div className="relatorios-actions">
-        <button onClick={exportarExcel}>Exportar para Excel</button>
-        <button onClick={exportarPDF}>Exportar para PDF</button>
-
-        <div className="items-control">
-          <label>Mostrar</label>
-          <input
-            type="number"
-            min="1"
-            value={itemsPorPagina}
-            onChange={(e) => setItemsPorPagina(Number(e.target.value))}
-          />
-          <span>itens</span>
-          <button onClick={() => setItemsPorPagina(dados.length)}>Ver Todos</button>
-        </div>
+        <button onClick={limparFiltros}>Limpar Filtros</button>
       </div>
 
-      {loading ? (
-        <div className="spinner-container">
-          <div className="spinner"></div>
-          <p>A carregar relatórios...</p>
+      <div className="relatorios-main">
+        {/* === FILTROS === */}
+        <div className="filtros-container-relatorios">
+          <h3>Filtros</h3>
+
+          <label>Ano Início</label>
+          <Select
+            options={anos}
+            value={{ value: anoInicio, label: anoInicio }}
+            onChange={(opt) => setAnoInicio(opt ? opt.value : "2025")}
+            styles={customSelectStyles}
+            isClearable
+            menuPortalTarget={document.body}
+          />
+
+          <label>Mês Início</label>
+          <Select
+            options={meses}
+            value={{ value: mesInicio, label: mesInicio }}
+            onChange={(opt) => setMesInicio(opt ? opt.value : "Outubro")}
+            styles={customSelectStyles}
+            isClearable
+            menuPortalTarget={document.body}
+          />
+
+          <label>Ano Fim</label>
+          <Select
+            options={anos}
+            value={{ value: anoFim, label: anoFim }}
+            onChange={(opt) => setAnoFim(opt ? opt.value : "2025")}
+            styles={customSelectStyles}
+            isClearable
+            menuPortalTarget={document.body}
+          />
+
+          <label>Mês Fim</label>
+          <Select
+            options={meses}
+            value={{ value: mesFim, label: mesFim }}
+            onChange={(opt) => setMesFim(opt ? opt.value : "Outubro")}
+            styles={customSelectStyles}
+            isClearable
+            menuPortalTarget={document.body}
+          />
+
+          <label>Utilizador</label>
+          <Select
+            options={[{ value: "-Todos-", label: "-Todos-" }, ...utilizadores.map((u) => ({ value: u.nome, label: u.nome }))]}
+            value={{ value: utilizador, label: utilizador }}
+            onChange={(opt) => setUtilizador(opt ? opt.value : "-Todos-")}
+            styles={customSelectStyles}
+            isClearable
+            menuPortalTarget={document.body}
+          />
+
+          <label>Cliente</label>
+          <Select
+            options={[{ value: "-Todos-", label: "-Todos-" }, ...clientes.map((c) => ({ value: c.nome, label: c.nome }))]}
+            value={{ value: cliente, label: cliente }}
+            onChange={(opt) => setCliente(opt ? opt.value : "-Todos-")}
+            styles={customSelectStyles}
+            isClearable
+            isSearchable
+            menuPortalTarget={document.body}
+          />
+
+          <label>Contrato</label>
+          <Select
+            options={[{ value: "-Todos-", label: "-Todos-" }, ...contratosFiltrados.map((c) => ({ value: c.contrato, label: c.contrato }))]}
+            value={{ value: contrato, label: contrato }}
+            onChange={(opt) => setContrato(opt ? opt.value : "-Todos-")}
+            styles={customSelectStyles}
+            isClearable
+            menuPortalTarget={document.body}
+          />
+
+          <label>Faturar</label>
+          <Select
+            options={[
+              { value: "Todos", label: "Todos" },
+              { value: "Sim", label: "Sim" },
+              { value: "Não", label: "Não" },
+            ]}
+            value={{ value: faturar, label: faturar }}
+            onChange={(opt) => setFaturar(opt ? opt.value : "Todos")}
+            styles={customSelectStyles}
+            isClearable
+            menuPortalTarget={document.body}
+          />
         </div>
-      ) : (
-        <div className="relatorios-main">
-          {/* === FILTROS === */}
-          <div className="filtros-container-relatorios">
-            <h3>Pesquisar</h3>
 
-            <label>Ano Início</label>
-            <Select
-              options={anos}
-              value={{ value: anoInicio, label: anoInicio }}
-              onChange={handleFiltroChange(setAnoInicio)}
-              styles={customSelectStyles}
-              menuPortalTarget={document.body}
-            />
-
-            <label>Mês Início</label>
-            <Select
-              options={meses}
-              value={{ value: mesInicio, label: mesInicio }}
-              onChange={handleFiltroChange(setMesInicio)}
-              styles={customSelectStyles}
-              menuPortalTarget={document.body}
-            />
-
-            <label>Ano Fim</label>
-            <Select
-              options={anos}
-              value={{ value: anoFim, label: anoFim }}
-              onChange={handleFiltroChange(setAnoFim)}
-              styles={customSelectStyles}
-              menuPortalTarget={document.body}
-            />
-
-            <label>Mês Fim</label>
-            <Select
-              options={meses}
-              value={{ value: mesFim, label: mesFim }}
-              onChange={handleFiltroChange(setMesFim)}
-              styles={customSelectStyles}
-              menuPortalTarget={document.body}
-            />
-
-            <label>Utilizador</label>
-            <Select
-              options={[
-                { value: "-Todos-", label: "-Todos-" },
-                ...utilizadores.map((u) => ({ value: u.nome, label: u.nome })),
-              ]}
-              value={{ value: utilizador, label: utilizador }}
-              onChange={handleFiltroChange(setUtilizador)}
-              styles={customSelectStyles}
-              isSearchable
-              menuPortalTarget={document.body}
-            />
-
-            <label>Cliente</label>
-            <Select
-              options={[
-                { value: "-Todos-", label: "-Todos-" },
-                ...clientes.map((c) => ({ value: c.nome, label: c.nome })),
-              ]}
-              value={{ value: cliente, label: cliente }}
-              onChange={handleFiltroChange(setCliente)}
-              styles={customSelectStyles}
-              isSearchable
-              menuPortalTarget={document.body}
-            />
-
-            <label>Contrato</label>
-            <Select
-              options={[
-                { value: "-Todos-", label: "-Todos-" },
-                ...contratosFiltrados.map((c) => ({
-                  value: c.contrato,
-                  label: c.contrato,
-                })),
-              ]}
-              value={{ value: contrato, label: contrato }}
-              onChange={handleFiltroChange(setContrato)}
-              styles={customSelectStyles}
-              isSearchable
-              menuPortalTarget={document.body}
-            />
-
-            <label>Faturar</label>
-            <Select
-              options={[
-                { value: "Todos", label: "Todos" },
-                { value: "Sim", label: "Sim" },
-                { value: "Não", label: "Não" },
-              ]}
-              value={{ value: faturar, label: faturar }}
-              onChange={handleFiltroChange(setFaturar)}
-              styles={customSelectStyles}
-              menuPortalTarget={document.body}
-            />
-
-            <div className="filtro-botoes-relatorios">
-              <button
-                onClick={aplicarFiltros}
-                className={filtroAtivo ? "filtro-ativo" : ""}
-              >
-                Filtrar
-              </button>
-              <button onClick={limparFiltros}>Limpar</button>
+        {/* === TABELA === */}
+        <div className="relatorios-table">
+          {loading ? (
+            <div className="spinner-local">
+              <div className="spinner"></div>
+              <p>A carregar relatórios...</p>
             </div>
-          </div>
-
-          {/* === TABELA === */}
-          <div className="relatorios-table">
+          ) : (
             <table>
               <thead>
                 <tr>
@@ -532,14 +348,7 @@ const RelatoriosPage = () => {
               <tbody>
                 {dados.length === 0 ? (
                   <tr>
-                    <td
-                      colSpan="13"
-                      style={{
-                        textAlign: "center",
-                        padding: "20px",
-                        color: "#666",
-                      }}
-                    >
+                    <td colSpan="13" style={{ textAlign: "center", padding: "20px", color: "#666" }}>
                       Nenhum resultado encontrado com os filtros aplicados.
                     </td>
                   </tr>
@@ -573,17 +382,15 @@ const RelatoriosPage = () => {
                 )}
               </tbody>
             </table>
-          </div>
+          )}
         </div>
-      )}
+      </div>
 
       <TaskModal
         show={showModal}
         onClose={handleCloseModal}
         onTaskAdded={() => {
           setShowModal(false);
-          setEditingTask(null);
-          setIsDuplicate(false);
           api
             .get("/tasks/all", { headers: { Authorization: `Bearer ${token}` } })
             .then((res) => setDados(res.data))
