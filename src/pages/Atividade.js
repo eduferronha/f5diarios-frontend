@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import api from "../services/api";
 import "./Atividade.css";
+import Swal from "sweetalert2";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function Atividade() {
   const [dadosOriginais, setDadosOriginais] = useState([]);
@@ -14,57 +16,88 @@ export default function Atividade() {
   const [listaUsers, setListaUsers] = useState([]);
   const [listaClientes, setListaClientes] = useState([]);
 
-  const [loading, setLoading] = useState(true); // 🌀 estado do spinner
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-  const filtrarOuCarregar = async () => {
-    await fetchAtividades();
+  // ✅ Estilo igual ao resto da aplicação (TaskModal, Dashboard, etc.)
+  const customSelectStyles = {
+    control: (provided, state) => ({
+      ...provided,
+      backgroundColor: "#fafafa",
+      border: state.isFocused ? "1px solid #237c9b" : "1px solid #ccc",
+      boxShadow: state.isFocused ? "0 0 0 2px rgba(35,124,155,0.2)" : "none",
+      borderRadius: 6,
+      minHeight: 32,
+      fontSize: "0.75rem",
+      transition: "all 0.2s ease",
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isSelected
+        ? "#237c9b"
+        : state.isFocused
+        ? "#e3f2fd"
+        : "white",
+      color: state.isSelected ? "white" : "#333",
+      fontSize: "0.75rem",
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      color: "#333",
+      fontWeight: 500,
+    }),
+    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
   };
 
-  filtrarOuCarregar();
-}, [mesSelecionado]);
+  // 🔹 Carregar atividades sempre que muda o mês
+  useEffect(() => {
+    const filtrarOuCarregar = async () => {
+      await fetchAtividades();
+    };
+    filtrarOuCarregar();
+  }, [mesSelecionado]);
 
-useEffect(() => {
-  // só aplicar filtros locais (sem recarregar do servidor)
-  if (dadosOriginais.length > 0) {
-    let filtrados = [...dadosOriginais];
+  // 🔹 Aplicar filtros locais (sem recarregar do servidor)
+  useEffect(() => {
+    if (dadosOriginais.length > 0) {
+      let filtrados = [...dadosOriginais];
 
-    if (filtroUser !== "todos") {
-      filtrados = filtrados.filter((a) => a.username === filtroUser);
+      if (filtroUser !== "todos") filtrados = filtrados.filter((a) => a.username === filtroUser);
+      if (filtroCliente !== "todos") filtrados = filtrados.filter((a) => a.cliente === filtroCliente);
+
+      construirPivot(filtrados);
     }
+  }, [filtroUser, filtroCliente]);
 
-    if (filtroCliente !== "todos") {
-      filtrados = filtrados.filter((a) => a.cliente === filtroCliente);
-    }
-
-    construirPivot(filtrados);
-  }
-}, [filtroUser, filtroCliente]);
-
-
+  // 🔹 Buscar dados do backend
   const fetchAtividades = async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
+
       const res = await api.get(`/tasks/atividade?mes=${mesSelecionado}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       const dados = res.data || [];
-      setDadosOriginais(dados);
 
-      // Atualizar listas únicas de utilizadores e clientes
+      if (dados.length === 0) {
+        Swal.fire("Sem dados", "Não foram encontradas atividades para este mês.", "info");
+      }
+
+      setDadosOriginais(dados);
       setListaUsers([...new Set(dados.map((a) => a.username))]);
       setListaClientes([...new Set(dados.map((a) => a.cliente))]);
-
       construirPivot(dados);
+      toast.success("Atividades carregadas com sucesso!");
     } catch (err) {
       console.error("Erro ao carregar atividades:", err);
+      toast.error("Erro ao carregar atividades.");
     } finally {
       setLoading(false);
     }
   };
 
+  // 🔹 Construir tabela dinâmica (pivot)
   const construirPivot = (dados) => {
     if (!dados || dados.length === 0) {
       setAtividadesPorUser({});
@@ -89,48 +122,68 @@ useEffect(() => {
     setAtividadesPorUser(dadosPorUser);
   };
 
+  // 🔹 Aplicar filtros manuais
   const aplicarFiltros = () => {
+    if (dadosOriginais.length === 0) {
+      Swal.fire("Sem dados", "Não há dados para filtrar.", "info");
+      return;
+    }
+
     let filtrados = [...dadosOriginais];
 
-    if (filtroUser !== "todos") {
-      filtrados = filtrados.filter((a) => a.username === filtroUser);
-    }
-
-    if (filtroCliente !== "todos") {
-      filtrados = filtrados.filter((a) => a.cliente === filtroCliente);
-    }
+    if (filtroUser !== "todos") filtrados = filtrados.filter((a) => a.username === filtroUser);
+    if (filtroCliente !== "todos") filtrados = filtrados.filter((a) => a.cliente === filtroCliente);
 
     construirPivot(filtrados);
+    toast.success("Filtros aplicados!");
   };
 
+  // 🔹 Limpar filtros
   const limparFiltros = () => {
+    if (dadosOriginais.length === 0) {
+      toast("Nada para limpar.", { icon: "ℹ️", duration: 2000 });
+      return;
+    }
+
     setFiltroUser("todos");
     setFiltroCliente("todos");
     construirPivot(dadosOriginais);
+    toast("Filtros limpos.", { icon: "🧹", duration: 2000 });
   };
 
+  // 🔹 Listas auxiliares
   const meses = [
-    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
+    "Janeiro",
+    "Fevereiro",
+    "Março",
+    "Abril",
+    "Maio",
+    "Junho",
+    "Julho",
+    "Agosto",
+    "Setembro",
+    "Outubro",
+    "Novembro",
+    "Dezembro",
   ];
 
   const diasNoMes = new Date(2025, mesSelecionado, 0).getDate();
-
-  // --- Opções para react-select ---
   const mesOptions = meses.map((m, i) => ({ value: i + 1, label: m }));
   const userOptions = listaUsers.map((u) => ({ value: u, label: u }));
   const clienteOptions = listaClientes.map((c) => ({ value: c, label: c }));
 
   return (
     <div className="atividade-main">
-     {loading ? (
-      <div className="spinner-container">
-        <div className="spinner"></div>
-        <p>A carregar atividades...</p>
-      </div>
-    ) : (
+      <Toaster position="top-center" toastOptions={{ duration: 4000 }} />
+
+      {loading ? (
+        <div className="spinner-container">
+          <div className="spinner"></div>
+          <p>A carregar atividades...</p>
+        </div>
+      ) : (
         <>
-          {/* === Filtros === */}
+          {/* === FILTROS === */}
           <div className="filtros-container">
             <h3>Filtros</h3>
 
@@ -138,10 +191,14 @@ useEffect(() => {
             <Select
               options={mesOptions}
               value={mesOptions.find((opt) => opt.value === mesSelecionado) || null}
-              onChange={(selected) => setMesSelecionado(selected ? selected.value : new Date().getMonth() + 1)}
+              onChange={(selected) =>
+                setMesSelecionado(selected ? selected.value : new Date().getMonth() + 1)
+              }
+              styles={customSelectStyles}
               placeholder="Seleciona o mês..."
               isSearchable={false}
               classNamePrefix="react-select"
+              menuPortalTarget={document.body}
             />
 
             <label>Utilizador</label>
@@ -153,10 +210,12 @@ useEffect(() => {
                   : userOptions.find((opt) => opt.value === filtroUser) || null
               }
               onChange={(selected) => setFiltroUser(selected ? selected.value : "todos")}
+              styles={customSelectStyles}
               placeholder="Seleciona um utilizador..."
               isClearable
               isSearchable
               classNamePrefix="react-select"
+              menuPortalTarget={document.body}
             />
 
             <label>Cliente</label>
@@ -168,19 +227,21 @@ useEffect(() => {
                   : clienteOptions.find((opt) => opt.value === filtroCliente) || null
               }
               onChange={(selected) => setFiltroCliente(selected ? selected.value : "todos")}
+              styles={customSelectStyles}
               placeholder="Seleciona um cliente..."
               isClearable
               isSearchable
               classNamePrefix="react-select"
+              menuPortalTarget={document.body}
             />
 
             <div className="filtro-botoes">
-              {/* <button onClick={aplicarFiltros}>Filtrar</button> */}
+              <button onClick={aplicarFiltros}>Filtrar</button>
               <button onClick={limparFiltros}>Limpar</button>
             </div>
           </div>
 
-          {/* === Tabela === */}
+          {/* === TABELA === */}
           <div className="atividade-container">
             <h2>Relatório de Atividade Mensal</h2>
 
