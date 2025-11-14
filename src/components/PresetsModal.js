@@ -2,13 +2,15 @@ import React, { useState, useEffect, useCallback } from "react";
 import api from "../services/api";
 import TaskModal from "./TaskModel";
 import "../components/PresetsModel.css";
-import { Trash2, Edit3 } from "lucide-react"; // 👈 adiciona ícone de editar
+import { Trash2, Edit3 } from "lucide-react";
+import Swal from "sweetalert2";
+import toast, { Toaster } from "react-hot-toast";
 
 const PresetsModal = ({ show, onClose }) => {
   const [presets, setPresets] = useState([]);
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [presetToApply, setPresetToApply] = useState(null);
-  const [editingPreset, setEditingPreset] = useState(null); // 👈 novo estado
+  const [editingPreset, setEditingPreset] = useState(null);
   const token = localStorage.getItem("token");
 
   const handleClose = useCallback(() => {
@@ -39,7 +41,6 @@ const PresetsModal = ({ show, onClose }) => {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [show, showTaskModal, handleClose]);
 
-  // Util
   const normalizeName = (s) =>
     (s || "")
       .toLowerCase()
@@ -48,7 +49,6 @@ const PresetsModal = ({ show, onClose }) => {
       .replace(/\s+/g, " ")
       .trim();
 
-  // 🔹 Carregar presets do utilizador autenticado
   const fetchPresets = async () => {
     try {
       const res = await api.get("/presets/", {
@@ -57,10 +57,10 @@ const PresetsModal = ({ show, onClose }) => {
       setPresets(res.data || []);
     } catch (err) {
       console.error("❌ Erro ao carregar presets:", err);
+      toast.error("Erro ao carregar presets.");
     }
   };
 
-  // Versão “fresh” para validação antes de criar
   const fetchPresetsFresh = async () => {
     const res = await api.get("/presets/", {
       headers: { Authorization: `Bearer ${token}` },
@@ -68,51 +68,63 @@ const PresetsModal = ({ show, onClose }) => {
     return res.data || [];
   };
 
-  // 🔹 Executar apenas quando o modal abre
   useEffect(() => {
     if (show) fetchPresets();
   }, [show]);
 
-  // 🔹 Eliminar preset
   const handleDelete = async (id) => {
-    if (!window.confirm("Queres mesmo eliminar este preset?")) return;
+    const result = await Swal.fire({
+      title: "Eliminar preset?",
+      text: "Esta ação não pode ser revertida.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#237c9b",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sim, eliminar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
       await api.delete(`/presets/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       await fetchPresets();
+      toast.success("Preset eliminado com sucesso!");
     } catch (err) {
       console.error("Erro ao eliminar preset:", err);
-      alert("Erro ao eliminar preset");
+      toast.error("Erro ao eliminar preset.");
     }
   };
 
-  // 🔹 Aplicar preset (abre o TaskModal)
   const handleApply = (preset) => {
     setPresetToApply(preset);
-    setEditingPreset(null); // garante que não é modo edição
+    setEditingPreset(null);
     setShowTaskModal(true);
   };
 
-  // 🔹 Editar preset existente
   const handleEdit = (preset) => {
-    setEditingPreset(preset); // 👈 define o preset a editar
+    setEditingPreset(preset);
     setPresetToApply(null);
     setShowTaskModal(true);
   };
 
-  // 🔹 Guardar novo preset — BLOQUEIA nomes duplicados
   const handleSavePreset = async (presetData) => {
     try {
       const nomeBruto = presetData?.nome ?? "";
       const nomeNormalizado = normalizeName(nomeBruto);
 
       if (!nomeNormalizado) {
-        alert("O campo 'Nome do Preset' é obrigatório.");
+        await Swal.fire({
+          icon: "warning",
+          title: "Campo obrigatório",
+          text: "O campo 'Nome do Preset' é obrigatório.",
+          confirmButtonColor: "#237c9b",
+        });
         return;
       }
 
-      // ✅ validação contra a lista mais recente do backend
       const current = await fetchPresetsFresh();
       const existe = current.some(
         (p) =>
@@ -120,7 +132,12 @@ const PresetsModal = ({ show, onClose }) => {
           (!editingPreset || p.id !== editingPreset.id)
       );
       if (existe) {
-        alert("Já existe um preset com esse nome. Por favor escolhe outro nome.");
+        await Swal.fire({
+          icon: "error",
+          title: "Nome duplicado",
+          text: "Já existe um preset com esse nome. Escolhe outro nome.",
+          confirmButtonColor: "#237c9b",
+        });
         return;
       }
 
@@ -130,15 +147,15 @@ const PresetsModal = ({ show, onClose }) => {
       cleanData.nome = nomeBruto.replace(/\s+/g, " ").trim();
 
       if (editingPreset) {
-        // ✏️ Atualizar existente
         await api.put(`/presets/${editingPreset.id}`, cleanData, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        toast.success("Preset atualizado com sucesso!");
       } else {
-        // 🆕 Criar novo
         await api.post("/presets/", cleanData, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        toast.success("Preset criado com sucesso!");
       }
 
       await fetchPresets();
@@ -146,11 +163,10 @@ const PresetsModal = ({ show, onClose }) => {
       setEditingPreset(null);
     } catch (err) {
       console.error("Erro ao guardar preset:", err);
-      alert("Erro ao guardar preset");
+      toast.error("Erro ao guardar preset.");
     }
   };
 
-  // 🔹 Alternar ativo/inativo (máx. 4 ativos)
   const toggleAtivo = async (preset) => {
     try {
       if (preset.ativo) {
@@ -159,10 +175,16 @@ const PresetsModal = ({ show, onClose }) => {
           { ativo: false },
           { headers: { Authorization: `Bearer ${token}` } }
         );
+        toast("Preset desativado.", { icon: "🟡", duration: 2000 });
       } else {
         const ativos = presets.filter((p) => p.ativo);
         if (ativos.length >= 4) {
-          alert("Só podes ter no máximo 4 presets ativos.");
+          await Swal.fire({
+            icon: "info",
+            title: "Limite atingido",
+            text: "Só podes ter no máximo 4 presets ativos.",
+            confirmButtonColor: "#237c9b",
+          });
           return;
         }
         await api.patch(
@@ -170,11 +192,12 @@ const PresetsModal = ({ show, onClose }) => {
           { ativo: true },
           { headers: { Authorization: `Bearer ${token}` } }
         );
+        toast.success("Preset ativado com sucesso!", { duration: 2500 });
       }
       await fetchPresets();
     } catch (err) {
       console.error("Erro ao atualizar estado do preset:", err);
-      alert("Erro ao alterar estado do preset");
+      toast.error("Erro ao alterar estado do preset.");
     }
   };
 
@@ -185,6 +208,15 @@ const PresetsModal = ({ show, onClose }) => {
 
   return (
     <div className="modal-overlay">
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 4000,
+          success: { duration: 2500 },
+          error: { duration: 5000 },
+        }}
+      />
+
       <div className="modal presets-modal">
         <h2>Presets</h2>
 
@@ -268,24 +300,18 @@ const PresetsModal = ({ show, onClose }) => {
         </div>
       </div>
 
-      {/* 🔹 Modal de criação/edição de preset */}
       {showTaskModal && (
-      <TaskModal
-        show={showTaskModal}
-        onClose={() => {
-          setShowTaskModal(false);
-          setEditingPreset(null);
-        }}
-
-        presetData={editingPreset ? editingPreset : presetToApply}
-
-        isPresetMode={true}
-
-        isEditingPreset={!!editingPreset}
-
-        onPresetSaved={handleSavePreset}
-      />
-
+        <TaskModal
+          show={showTaskModal}
+          onClose={() => {
+            setShowTaskModal(false);
+            setEditingPreset(null);
+          }}
+          presetData={editingPreset ? editingPreset : presetToApply}
+          isPresetMode={true}
+          isEditingPreset={!!editingPreset}
+          onPresetSaved={handleSavePreset}
+        />
       )}
     </div>
   );

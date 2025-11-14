@@ -44,7 +44,7 @@ function Dashboard() {
     } catch (error) {
       console.error("Erro ao carregar tarefas:", error);
       if (error.response?.status === 401) {
-        toast.error("Sessão expirada. Faça login novamente.");
+        toast.error("Sessão expirada. Faça login novamente.", { duration: 8000 });
       } else {
         toast.error("Erro ao carregar tarefas.");
       }
