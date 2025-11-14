@@ -141,7 +141,7 @@ export default function Atividade() {
 
   return (
     <div className="atividade-main">
-      <Toaster position="top-center" toastOptions={{ duration: 4000 }} />
+      {/* <Toaster position="top-center" toastOptions={{ duration: 4000 }} /> */}
 
       {/* === FILTROS === */}
       <div className="filtros-container">
