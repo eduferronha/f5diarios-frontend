@@ -261,134 +261,191 @@ const RelatoriosPage = () => {
   };
 
   // 🔹 Exportar Excel (botão no topo)
-  const exportarExcel = () => {
-    const colunas = [
-      "Data",
-      "Utilizador",
-      "Local",
-      "Cliente",
-      "Parceiro",
-      "Produto",
-      "Contrato",
-      "Atividade",
-      "Tempo Atividade",
-      "Tempo Faturado",
-      "Faturável",
-      "Viagem Faturável",
-      "Valor (€)",
-    ];
+const exportarExcel = () => {
+  const colunas = [
+    "Data",
+    "Utilizador",
+    "Local",
+    "Cliente",
+    "Parceiro",
+    "Produto",
+    "Contrato",
+    "Atividade",
+    "Tempo Atividade",
+    "Tempo Faturado",
+    "Faturável",
+    "Viagem Faturável",
+    "Valor (€)",
+  ];
 
-    const linhas = dados.map((d) => ({
-      Data: d.data || "",
-      Utilizador: d.username || "",
-      Local: d.local || "",
-      Cliente: d.cliente || "",
-      Parceiro: d.parceiro || "",
-      Produto: d.produto || "",
-      Contrato: d.contrato || "",
-      Atividade: d.atividade || "",
-      "Tempo Atividade": d.tempo_atividade || "00:00",
-      "Tempo Faturado": d.tempo_faturado || "00:00",
-      Faturável: d.faturavel || "",
-      "Viagem Faturável": d.viagem_faturavel || "",
-      "Valor (€)": Number(d.valor_euro) || 0,
-    }));
+  const linhas = dados.map((d) => ({
+    Data: d.data || "",
+    Utilizador: d.username || "",
+    Local: d.local || "",
+    Cliente: d.cliente || "",
+    Parceiro: d.parceiro || "",
+    Produto: d.produto || "",
+    Contrato: d.contrato || "",
+    Atividade: d.atividade || "",
+    "Tempo Atividade": d.tempo_atividade || "00:00",
+    "Tempo Faturado": d.tempo_faturado || "00:00",
+    Faturável: d.faturavel || "",
+    "Viagem Faturável": d.viagem_faturavel || "",
+    "Valor (€)": Number(d.valor_euro) || 0,
+  }));
 
-    const somarTempos = (tempos) => {
-      let totalMinutos = 0;
-      tempos.forEach((t) => {
-        if (typeof t === "string" && t.includes(":")) {
-          const [h, m] = t.split(":").map(Number);
-          totalMinutos += h * 60 + m;
-        }
-      });
-      const horas = Math.floor(totalMinutos / 60);
-      const minutos = totalMinutos % 60;
-      return `${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}`;
+  // Somatórios
+  const somarTempos = (tempos) => {
+    let totalMinutos = 0;
+    tempos.forEach((t) => {
+      if (typeof t === "string" && t.includes(":")) {
+        const [h, m] = t.split(":").map(Number);
+        totalMinutos += h * 60 + m;
+      }
+    });
+    const h = Math.floor(totalMinutos / 60);
+    const m = totalMinutos % 60;
+    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+  };
+
+  const totalTempoAtividade = somarTempos(linhas.map(l => l["Tempo Atividade"]));
+  const totalTempoFaturado = somarTempos(linhas.map(l => l["Tempo Faturado"]));
+  const totalValor = linhas.reduce((a, r) => a + (Number(r["Valor (€)"]) || 0), 0);
+
+  // Linha total com cor especial
+  linhas.push({
+    Data: "",
+    Local: "",
+    Cliente: "",
+    Parceiro: "",
+    Produto: "",
+    Contrato: "",
+    Atividade: "TOTAL GERAL",
+    "Tempo Atividade": totalTempoAtividade,
+    "Tempo Faturado": totalTempoFaturado,
+    Faturável: "",
+    "Viagem Faturável": "",
+    "Valor (€)": totalValor.toFixed(2),
+  });
+
+  const ws = XLSX.utils.json_to_sheet(linhas, { header: colunas });
+
+  // Estilo cabeçalho
+  colunas.forEach((col, idx) => {
+    const cell = ws[XLSX.utils.encode_cell({ r: 0, c: idx })];
+    cell.s = {
+      font: { bold: true, color: { rgb: "FFFFFF" } },
+      fill: { fgColor: { rgb: "237C9B" } }, // Azul petróleo da tua app
+      alignment: { horizontal: "center" }
     };
+  });
 
-    const totalTempoAtividade = somarTempos(linhas.map((l) => l["Tempo Atividade"]));
-    const totalTempoFaturado = somarTempos(linhas.map((l) => l["Tempo Faturado"]));
-    const totalValor = linhas.reduce(
-      (acc, row) => acc + (Number(row["Valor (€)"]) || 0),
-      0
-    );
+  // Estilo linha total
+  const totalRowIndex = linhas.length;
+  colunas.forEach((col, idx) => {
+    const cell = ws[XLSX.utils.encode_cell({ r: totalRowIndex, c: idx })];
+    if (!cell) return;
 
-    linhas.push({
-      Data: "",
-      Local: "",
-      Cliente: "",
-      Parceiro: "",
-      Produto: "",
-      Contrato: "",
-      Atividade: "Total",
-      "Tempo Atividade": totalTempoAtividade,
-      "Tempo Faturado": totalTempoFaturado,
-      Faturável: "",
-      "Viagem Faturável": "",
-      "Valor (€)": totalValor.toFixed(2),
-    });
+    cell.s = {
+      font: { bold: true, color: { rgb: "000000" } },
+      fill: { fgColor: { rgb: "C9F7A1" } }, // Verde claro para destacar TOTAL
+      alignment: { horizontal: idx === 7 ? "center" : "right" }
+    };
+  });
 
-    const ws = XLSX.utils.json_to_sheet(linhas, { header: colunas });
-    ws["!cols"] = colunas.map(() => ({ wch: 15 }));
+  ws["!cols"] = colunas.map(() => ({ wch: 15 }));
 
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Relatórios");
-    XLSX.writeFile(wb, "Relatorio_Atividades.xlsx");
-  };
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Relatórios");
+  XLSX.writeFile(wb, "Relatorio_Atividades.xlsx");
+};
 
 
-  // 🔹 Exportar PDF (botão no topo)
-  const exportarPDF = () => {
-    const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "A4" });
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(14);
-    doc.text("Relatório de Atividades", 40, 40);
+const exportarPDF = () => {
+  const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "A4" });
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(14);
+  doc.text("Relatório de Atividades", 40, 40);
 
-    const colunas = [
-      "Data",
-      "Utilizador",
-      "Local",
-      "Cliente",
-      "Parceiro",
-      "Produto",
-      "Contrato",
-      "Atividade",
-      "Faturável",
-      "Viagem Faturável",
-      "Tempo Atividade",
-      "Tempo Faturado",
-      "Valor (€)",
-    ];
+  const colunas = [
+    "Data",
+    "Utilizador",
+    "Local",
+    "Cliente",
+    "Parceiro",
+    "Produto",
+    "Contrato",
+    "Atividade",
+    "Faturável",
+    "Viagem Faturável",
+    "Tempo Atividade",
+    "Tempo Faturado",
+    "Valor (€)",
+  ];
 
-    const linhas = dados.map((d) => [
-      d.data || "",
-      d.username || "",
-      d.local || "",
-      d.cliente || "",
-      d.parceiro || "",
-      d.produto || "",
-      d.contrato || "",
-      d.atividade || "",
-      d.faturavel || "",
-      d.viagem_faturavel || "",
-      d.tempo_atividade || "00:00",
-      d.tempo_faturado || "00:00",
-      d.valor_euro ? Number(d.valor_euro).toFixed(2) : "0.00",
-    ]);
+  const linhas = dados.map((d) => [
+    d.data || "",
+    d.username || "",
+    d.local || "",
+    d.cliente || "",
+    d.parceiro || "",
+    d.produto || "",
+    d.contrato || "",
+    d.atividade || "",
+    d.faturavel || "",
+    d.viagem_faturavel || "",
+    d.tempo_atividade || "00:00",
+    d.tempo_faturado || "00:00",
+    d.valor_euro ? Number(d.valor_euro).toFixed(2) : "0.00",
+  ]);
 
-    autoTable(doc, {
-      head: [colunas],
-      body: linhas,
-      startY: 60,
-      theme: "striped",
-      styles: { fontSize: 8, cellPadding: 4 },
-      headStyles: { fillColor: [0, 120, 215], textColor: 255, fontStyle: "bold" },
-      alternateRowStyles: { fillColor: [245, 247, 250] },
-    });
+  // Linha TOTAL com cor
+  linhas.push([
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "TOTAL GERAL",
+    "",
+    "",
+    dados.reduce((acc, d) => acc + (d.tempo_atividade || 0), 0),
+    dados.reduce((acc, d) => acc + (d.tempo_faturado || 0), 0),
+    dados.reduce((acc, d) => acc + (Number(d.valor_euro) || 0), 0).toFixed(2)
+  ]);
 
-    doc.save("Relatorio_Atividades.pdf");
-  };
+  autoTable(doc, {
+    head: [colunas],
+    body: linhas,
+    startY: 60,
+    theme: "striped",
+
+    headStyles: {
+      fillColor: [35, 124, 155],  // Azul petróleo
+      textColor: 255,
+      fontStyle: "bold"
+    },
+
+    styles: { fontSize: 8, cellPadding: 4 },
+
+    alternateRowStyles: {
+      fillColor: [245, 247, 250]
+    },
+
+    didParseCell: (data) => {
+      // Última linha = TOTAL
+      if (data.row.index === linhas.length - 1) {
+        data.cell.styles.fillColor = [201, 247, 161]; // Verde claro
+        data.cell.styles.fontStyle = "bold";
+        data.cell.styles.textColor = [0, 0, 0];
+      }
+    }
+  });
+
+  doc.save("Relatorio_Atividades.pdf");
+};
 
 
   return (
