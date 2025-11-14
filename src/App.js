@@ -11,9 +11,21 @@ import Agenda from "./pages/Agenda";
 import Atividade from "./pages/Atividade";
 import ProjetosPage from "./pages/ProjetosPage";
 import ProfilePage from "./pages/ProfilePage";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
+    <>
+      <Toaster
+        position="top-center"
+        gutter={12}
+        // toastOptions={{
+        //   duration: 4000,
+        // }}
+        containerStyle={{
+          top: "90px", // distância abaixo do navbar
+        }}
+      />
     <Router>
       <Routes>
         {/* Página de login */}
@@ -111,6 +123,7 @@ function App() {
         />
       </Routes>
     </Router>
+    </>
   );
 }
 
