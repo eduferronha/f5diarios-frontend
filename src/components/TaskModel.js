@@ -4,6 +4,8 @@ import "react-calendar/dist/Calendar.css";
 import "../components/TaskModel.css";
 import api from "../services/api";
 import Select from "react-select";
+import Swal from "sweetalert2";
+import toast, { Toaster } from "react-hot-toast";
 
 const TaskModal = ({
   show,
@@ -15,7 +17,7 @@ const TaskModal = ({
   onPresetSaved,
   presetData,
   preselectedDate,
-  isEditingPreset,   
+  isEditingPreset,
 }) => {
   const [nomePreset, setNomePreset] = useState("");
   const [descricao, setDescricao] = useState("");
@@ -43,11 +45,10 @@ const TaskModal = ({
 
   const [datasDuplicadas, setDatasDuplicadas] = useState([]);
   const [showCalendar, setShowCalendar] = useState(true);
-  // const isEditingPreset = isPresetMode && presetData && presetData.id;
 
+  const token = localStorage.getItem("token");
 
-
-    const handleClose = useCallback(async () => {
+  const handleClose = useCallback(async () => {
     const hasChanges =
       descricao ||
       cliente ||
@@ -61,11 +62,21 @@ const TaskModal = ({
       valorEuro > 0;
 
     if (hasChanges) {
-      const confirmExit = window.confirm(
-        "Existem dados preenchidos. Tens a certeza que queres sair sem guardar?"
-      );
-      if (!confirmExit) return;
+      const result = await Swal.fire({
+        title: "Tens a certeza?",
+        text: "Existem dados preenchidos. Queres sair sem guardar?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#237c9b",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Sim, sair",
+        cancelButtonText: "Cancelar",
+        backdrop: true,
+      });
+
+      if (!result.isConfirmed) return;
     }
+
     onClose();
   }, [
     descricao,
@@ -81,24 +92,18 @@ const TaskModal = ({
     onClose,
   ]);
 
-
-
-
-    useEffect(() => {
+  useEffect(() => {
     if (!show) return;
 
     const handleKeyDown = (e) => {
-      // Evita o comportamento padrão quando o foco não está num textarea
       if (e.key === "Enter" && document.activeElement.tagName !== "TEXTAREA") {
         e.preventDefault();
-        // Simula clique no botão de submit
         const form = document.getElementById("form-task");
         if (form) {
-          form.requestSubmit(); // executa o onSubmit do form
+          form.requestSubmit();
         }
       }
 
-      // Fecha o modal com Esc
       if (e.key === "Escape") {
         e.preventDefault();
         handleClose();
@@ -108,25 +113,10 @@ const TaskModal = ({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [show, handleClose]);
-  
-//   useEffect(() => {
-//   const handleKeyDown = (e) => {
-//     // impede o Enter enquanto o alert/confirm está aberto
-//     if (e.key === "Enter" && document.activeElement.tagName !== "TEXTAREA") {
-//       e.preventDefault();
-//     }
-//   };
-//   window.addEventListener("keydown", handleKeyDown);
-//   return () => window.removeEventListener("keydown", handleKeyDown);
-// }, []);
-
-
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (isDuplicate) setShowCalendar(true);
   }, [isDuplicate]);
-
 
   useEffect(() => {
     if (preselectedDate) {
@@ -137,19 +127,23 @@ const TaskModal = ({
     }
   }, [preselectedDate]);
 
-  // 🔹 Carregar listas
   useEffect(() => {
     if (!show) return;
     const fetchData = async () => {
       try {
-        const [clientesRes, produtosRes, contratosRes, atividadesRes, parceirosRes] =
-          await Promise.all([
-            api.get("/clients/", { headers: { Authorization: `Bearer ${token}` } }),
-            api.get("/products/", { headers: { Authorization: `Bearer ${token}` } }),
-            api.get("/contracts/", { headers: { Authorization: `Bearer ${token}` } }),
-            api.get("/activities/", { headers: { Authorization: `Bearer ${token}` } }),
-            api.get("/partners/", { headers: { Authorization: `Bearer ${token}` } }),
-          ]);
+        const [
+          clientesRes,
+          produtosRes,
+          contratosRes,
+          atividadesRes,
+          parceirosRes,
+        ] = await Promise.all([
+          api.get("/clients/", { headers: { Authorization: `Bearer ${token}` } }),
+          api.get("/products/", { headers: { Authorization: `Bearer ${token}` } }),
+          api.get("/contracts/", { headers: { Authorization: `Bearer ${token}` } }),
+          api.get("/activities/", { headers: { Authorization: `Bearer ${token}` } }),
+          api.get("/partners/", { headers: { Authorization: `Bearer ${token}` } }),
+        ]);
         setClientes(clientesRes.data);
         setProdutos(produtosRes.data);
         setContratos(contratosRes.data);
@@ -157,12 +151,12 @@ const TaskModal = ({
         setParceiros(parceirosRes.data);
       } catch (error) {
         console.error("Erro ao carregar listas:", error);
+        toast.error("Erro ao carregar listas.");
       }
     };
     fetchData();
-  }, [show]);
+  }, [show, token]);
 
-  // 🔹 Filtrar contratos pelo cliente
   useEffect(() => {
     if (!cliente) {
       setContratosFiltrados([]);
@@ -174,7 +168,6 @@ const TaskModal = ({
     setContratosFiltrados(filtrados);
   }, [cliente, contratos]);
 
-  // 🔹 Preencher automaticamente ao aplicar preset
   useEffect(() => {
     if (isPresetMode && presetData) {
       setDescricao(presetData.descricao || "");
@@ -190,10 +183,8 @@ const TaskModal = ({
     }
   }, [isPresetMode, presetData]);
 
-  // 🔹 Preencher automaticamente ao editar uma tarefa
   useEffect(() => {
     if (editingTask) {
-    // if (editingTask && !isDuplicate) {
       setDescricao(editingTask.descricao || "");
       setCliente(editingTask.cliente || "");
       setParceiro(editingTask.parceiro || "");
@@ -212,7 +203,6 @@ const TaskModal = ({
     }
   }, [editingTask, isDuplicate]);
 
-  // 🔹 Limpar campos quando abrir para Nova Tarefa
   useEffect(() => {
     if (show && !editingTask && !isPresetMode && !presetData) {
       setNomePreset("");
@@ -241,17 +231,19 @@ const TaskModal = ({
     }
   }, [isEditingPreset, presetData]);
 
-
   if (!show) return null;
 
-  // 🔹 Guardar tarefa ou preset
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 🔹 Caso esteja a criar um PRESET
     if (isPresetMode && !presetData) {
       if (!nomePreset.trim()) {
-        alert("O campo 'Nome do Preset' é obrigatório.");
+        await Swal.fire({
+          icon: "warning",
+          title: "Campo obrigatório",
+          text: "O campo 'Nome do Preset' é obrigatório.",
+          confirmButtonColor: "#237c9b",
+        });
         return;
       }
 
@@ -275,37 +267,36 @@ const TaskModal = ({
       const presetPayload = { ...baseTaskData, nome: nomePreset.trim() };
       try {
         await onPresetSaved(presetPayload);
+        toast.success("Preset guardado com sucesso!");
         onClose();
       } catch (error) {
         console.error("Task - Erro ao guardar preset:", error);
-        alert("Task - Erro ao guardar preset.");
+        toast.error("Erro ao guardar preset.");
       }
-      return; // ✅ encerra aqui, sem continuar com as validações de tarefa
+      return;
     }
 
-    // 🔹 Caso esteja a CRIAR / EDITAR uma TAREFA normal
-    // ⚠️ Estas validações só se aplicam a TAREFAS, não a presets
-    // 🔹 Validações apenas para tarefas (NÃO para presets)
     if (!isPresetMode && !isEditingPreset) {
-
       if (!cliente || !produto || !contrato || !atividade || !tempoAtividade || !tempoFaturado || !faturavel) {
-        alert("Preenche todos os campos obrigatórios: Cliente, Produto, Contrato, Atividade, Tempo Atividade, Tempo Faturado e Faturável.");
+        await Swal.fire({
+          icon: "warning",
+          title: "Campos obrigatórios em falta",
+          text: "Preenche todos os campos obrigatórios: Cliente, Produto, Contrato, Atividade, Tempo Atividade, Tempo Faturado e Faturável.",
+          confirmButtonColor: "#237c9b",
+        });
         return;
       }
 
       if (tempoAtividade === "00:00" || tempoFaturado === "00:00") {
-        alert("O Tempo de Atividade e o Tempo Faturado não podem ser 00:00. Por favor, introduz valores válidos.");
+        await Swal.fire({
+          icon: "warning",
+          title: "Tempos inválidos",
+          text: "O Tempo de Atividade e o Tempo Faturado não podem ser 00:00.",
+          confirmButtonColor: "#237c9b",
+        });
         return;
       }
     }
-
-
-
-    // // 🔸 Bloqueia submissão se tempos forem "00:00"
-    // if (tempoAtividade === "00:00" || tempoFaturado === "00:00") {
-    //   alert("O Tempo de Atividade e o Tempo Faturado não podem ser 00:00. Por favor, introduz valores válidos.");
-    //   return;
-    // }
 
     const baseTaskData = {
       descricao,
@@ -324,12 +315,15 @@ const TaskModal = ({
       viagem_faturavel: viagemFaturavel,
     };
 
-    // 🔹 Continua a lógica normal (tarefas ou duplicação)
     try {
-      // 🔹 Aplicar preset → criar tarefa
       if (!isPresetMode && presetData && !editingTask) {
         if (!data) {
-          alert("Seleciona uma data para a nova tarefa.");
+          await Swal.fire({
+            icon: "warning",
+            title: "Data em falta",
+            text: "Seleciona uma data para a nova tarefa.",
+            confirmButtonColor: "#237c9b",
+          });
           return;
         }
 
@@ -337,41 +331,49 @@ const TaskModal = ({
           headers: { Authorization: `Bearer ${token}` },
         });
 
+        toast.success("Tarefa criada com sucesso!");
         onTaskAdded && onTaskAdded();
         onClose();
         return;
       }
-      
+
       if (!isPresetMode) {
-        // 🔹 Validação Geral
         if (!descricao || !cliente || !produto || !contrato || !atividade) {
-          alert("Preenche todos os campos obrigatórios.");
+          await Swal.fire({
+            icon: "warning",
+            title: "Campos obrigatórios",
+            text: "Preenche todos os campos obrigatórios.",
+            confirmButtonColor: "#237c9b",
+          });
           return;
         }
       }
 
-      // 🔹 Validação para duplicação
-      if (isDuplicate) {
-        if (datasDuplicadas.length === 0) {
-          alert("Seleciona pelo menos uma data.");
-          return;
-        }
-      } 
-      // 🔹 Validação para tarefa normal
-      else {
-        if (!isPresetMode) {
-          if (!data) {
-            alert("Seleciona uma data.");
-            return;
-          }
-        }
+      if (isDuplicate && datasDuplicadas.length === 0) {
+        await Swal.fire({
+          icon: "warning",
+          title: "Nenhuma data selecionada",
+          text: "Seleciona pelo menos uma data para duplicar.",
+          confirmButtonColor: "#237c9b",
+        });
+        return;
       }
 
+      if (!isDuplicate && !data && !isPresetMode) {
+        await Swal.fire({
+          icon: "warning",
+          title: "Data em falta",
+          text: "Seleciona uma data.",
+          confirmButtonColor: "#237c9b",
+        });
+        return;
+      }
 
       if (editingTask && !isDuplicate) {
         await api.put(`/tasks/${editingTask.id}`, { ...baseTaskData, data }, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        toast.success("Tarefa atualizada com sucesso!");
       } else if (isDuplicate && datasDuplicadas.length > 0) {
         const todasAsDatas = [data, ...datasDuplicadas];
         for (const d of todasAsDatas) {
@@ -379,20 +381,21 @@ const TaskModal = ({
             headers: { Authorization: `Bearer ${token}` },
           });
         }
+        toast.success("Tarefas duplicadas com sucesso!");
       } else {
         await api.post("/tasks", { ...baseTaskData, data }, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        toast.success("Tarefa criada com sucesso!");
       }
 
       onTaskAdded && onTaskAdded();
       onClose();
     } catch (error) {
       console.error("Erro ao guardar tarefa/preset:", error);
-      alert("Erro ao guardar.");
+      toast.error("Erro ao guardar tarefa/preset.");
     }
   };
-
 
   const toggleData = (date) => {
     const dataISO = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
@@ -405,7 +408,6 @@ const TaskModal = ({
     }
   };
 
-  // 🔹 Opções para Selects
   const clienteOptions = clientes.map((c) => ({ value: c.nome, label: c.nome }));
   const parceiroOptions = parceiros.map((p) => ({ value: p.parceiro, label: p.parceiro }));
   const produtoOptions = produtos.map((p) => ({ value: p.produto, label: p.produto }));
@@ -414,57 +416,29 @@ const TaskModal = ({
 
   const titulo = isPresetMode
     ? isEditingPreset
-        ? "Editar Preset"
-        : "Aplicar Preset"
+      ? "Editar Preset"
+      : "Aplicar Preset"
     : editingTask
-        ? (isDuplicate ? "Duplicar Tarefa" : "Editar Tarefa")
-        : "Nova Tarefa";
-
-
+      ? (isDuplicate ? "Duplicar Tarefa" : "Editar Tarefa")
+      : "Nova Tarefa";
 
   const textoBotao = isPresetMode
     ? isEditingPreset
-        ? "Guardar Alterações"
-        : "Criar Tarefa"
+      ? "Guardar Alterações"
+      : "Criar Tarefa"
     : editingTask
-        ? isDuplicate
-            ? "Guardar Cópias"
-            : "Guardar Alterações"
-        : "Guardar";
-
-
-
-  
-  // const handleClose = async () => {
-  //   const hasChanges =
-  //     descricao ||
-  //     cliente ||
-  //     parceiro ||
-  //     produto ||
-  //     contrato ||
-  //     atividade ||
-  //     tempoAtividade !== "00:00" ||
-  //     tempoFaturado !== "00:00" ||
-  //     distanciaViagem > 0 ||
-  //     valorEuro > 0;
-
-  //   if (hasChanges) {
-  //     const confirmExit = await window.confirm(
-  //       "Existem dados preenchidos. Tens a certeza que queres sair sem guardar?"
-  //     );
-  //     if (!confirmExit) return; // ❌ não fecha se escolher "Cancelar"
-  //   }
-
-  //   onClose(); // ✅ fecha apenas se confirmou
-  // };
-
-
-
+      ? isDuplicate
+        ? "Guardar Cópias"
+        : "Guardar Alterações"
+      : "Guardar";
 
   return (
     <div className="modal-overlay">
-      {/* <div className="modal" onClick={(e) => e.stopPropagation()}> */}
-      <div className={`modal ${isDuplicate ? "modal-large" : ""}`} onClick={(e) => e.stopPropagation()}>
+      <Toaster position="top-center" reverseOrder={false} />
+      <div
+        className={`modal ${isDuplicate ? "modal-large" : ""}`}
+        onClick={(e) => e.stopPropagation()}
+      >
         <h2>{titulo}</h2>
 
         <form id="form-task" onSubmit={handleSubmit} className="form-grid">
@@ -490,9 +464,7 @@ const TaskModal = ({
                   value={data}
                   onChange={(e) => setData(e.target.value)}
                   required={!isPresetMode && !isEditingPreset}
-
                 />
-
                 <button
                   type="button"
                   className="btn-data"
@@ -503,7 +475,6 @@ const TaskModal = ({
                 >
                   Hoje
                 </button>
-
                 <button
                   type="button"
                   className="btn-data"
@@ -518,47 +489,27 @@ const TaskModal = ({
                 </button>
               </div>
             </div>
-            ) : (
-              <div className="calendar-duplicate-container full-width">
-                <div className="calendar-box">
-                  <Calendar
-                    key={datasDuplicadas.join(",")}
-                    value={null}
-                    onClickDay={toggleData}
-                    tileClassName={({ date }) => {
-                      const dataISO = new Date(
-                        date.getTime() - date.getTimezoneOffset() * 60000
-                      ).toLocaleDateString("en-CA", {
-                        timeZone: "Europe/Lisbon",
-                      });
-                      return datasDuplicadas.includes(dataISO)
-                        ? "selected-day"
-                        : null;
-                    }}
-                  />
-                </div>
-
-                {/* <div className="selected-dates-list">
-                  <h4>Datas selecionadas</h4>
-                  {datasDuplicadas.length === 0 ? (
-                    <p className="no-dates">Nenhuma data</p>
-                  ) : (
-                    <ul>
-                      {datasDuplicadas.map((d) => (
-                        <li key={d}>
-                          {new Date(d).toLocaleDateString("pt-PT", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div> */}
+          ) : (
+            <div className="calendar-duplicate-container full-width">
+              <div className="calendar-box">
+                <Calendar
+                  key={datasDuplicadas.join(",")}
+                  value={null}
+                  onClickDay={toggleData}
+                  tileClassName={({ date }) => {
+                    const dataISO = new Date(
+                      date.getTime() - date.getTimezoneOffset() * 60000
+                    ).toLocaleDateString("en-CA", {
+                      timeZone: "Europe/Lisbon",
+                    });
+                    return datasDuplicadas.includes(dataISO)
+                      ? "selected-day"
+                      : null;
+                  }}
+                />
               </div>
-            )}
-
+            </div>
+          )}
 
           <div className="form-group full-width">
             <label>Descrição</label>
@@ -568,11 +519,9 @@ const TaskModal = ({
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
               required={!isPresetMode && !isEditingPreset}
-
             />
           </div>
 
-          {/* Select Cliente */}
           <div className="form-group">
             <label>Cliente</label>
             <Select
@@ -583,12 +532,9 @@ const TaskModal = ({
               isClearable
               isSearchable
               required={!isPresetMode && !isEditingPreset}
-
-
             />
           </div>
 
-          {/* Select Parceiro */}
           <div className="form-group">
             <label>Parceiro</label>
             <Select
@@ -601,7 +547,6 @@ const TaskModal = ({
             />
           </div>
 
-          {/* Select Produto */}
           <div className="form-group">
             <label>Produto</label>
             <Select
@@ -612,12 +557,9 @@ const TaskModal = ({
               isClearable
               isSearchable
               required={!isPresetMode && !isEditingPreset}
-
-
             />
           </div>
 
-          {/* Select Contrato */}
           <div className="form-group">
             <label>Contrato</label>
             <Select
@@ -629,12 +571,9 @@ const TaskModal = ({
               isClearable
               isSearchable
               required={!isPresetMode && !isEditingPreset}
-
-
             />
           </div>
 
-          {/* Select Atividade */}
           <div className="form-group">
             <label>Atividade</label>
             <Select
@@ -645,12 +584,9 @@ const TaskModal = ({
               isClearable
               isSearchable
               required={!isPresetMode && !isEditingPreset}
-
-
             />
           </div>
 
-          {/* Tempos */}
           <div className="form-group-time radio-btn-two">
             <div>
               <label>Tempo Atividade</label>
@@ -667,8 +603,6 @@ const TaskModal = ({
                 value={tempoFaturado}
                 onChange={(e) => setTempoFaturado(e.target.value)}
                 required={!isPresetMode && !isEditingPreset}
-
- 
               />
             </div>
             <div>
@@ -681,11 +615,7 @@ const TaskModal = ({
             </div>
           </div>
 
-          
-
-          {/* 🔹 Secção de Local / Faturável / Viagem Faturável + Distância e Valor */}
-          <div className="form-group full-width radio-btn-one"> 
-            {/* 3 linhas de toggles */}
+          <div className="form-group full-width radio-btn-one">
             <div className="form-row-toggle">
               <div className="form-group">
                 <label>Local</label>
@@ -751,7 +681,6 @@ const TaskModal = ({
               </div>
             </div>
 
-            {/* 🔹 Linha separada — Distância e Valor */}
             <div className="form-distance-value">
               <div>
                 <label>Distância (km)</label>
@@ -773,8 +702,6 @@ const TaskModal = ({
               </div>
             </div>
           </div>
- 
-          
         </form>
 
         <div className="modal-buttons-row">
@@ -784,14 +711,10 @@ const TaskModal = ({
           <button type="button" className="btn-secondary" onClick={handleClose}>
             Cancelar
           </button>
-
         </div>
       </div>
     </div>
   );
 };
-
-
-
 
 export default TaskModal;
