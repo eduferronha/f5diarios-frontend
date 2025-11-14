@@ -196,7 +196,7 @@ export default function Atividade() {
         />
 
         <div className="filtro-botoes">
-          <button onClick={aplicarFiltros}>Filtrar</button>
+          {/* <button onClick={aplicarFiltros}>Filtrar</button> */}
           <button onClick={limparFiltros}>Limpar</button>
         </div>
       </div>
