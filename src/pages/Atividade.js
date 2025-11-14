@@ -173,156 +173,154 @@ export default function Atividade() {
   const clienteOptions = listaClientes.map((c) => ({ value: c, label: c }));
 
   return (
-    <div className="atividade-main">
-      <Toaster position="top-center" toastOptions={{ duration: 4000 }} />
+  <div className="atividade-main">
+    <Toaster position="top-center" toastOptions={{ duration: 4000 }} />
+
+    {/* === FILTROS === */}
+    <div className="filtros-container">
+      <h3>Filtros</h3>
+
+      <label>Mês</label>
+      <Select
+        options={mesOptions}
+        value={mesOptions.find((opt) => opt.value === mesSelecionado) || null}
+        onChange={(selected) =>
+          setMesSelecionado(selected ? selected.value : new Date().getMonth() + 1)
+        }
+        styles={customSelectStyles}
+        placeholder="Seleciona o mês..."
+        isSearchable={false}
+        classNamePrefix="react-select"
+        menuPortalTarget={document.body}
+      />
+
+      <label>Utilizador</label>
+      <Select
+        options={[{ value: "todos", label: "Todos" }, ...userOptions]}
+        value={
+          filtroUser === "todos"
+            ? { value: "todos", label: "Todos" }
+            : userOptions.find((opt) => opt.value === filtroUser) || null
+        }
+        onChange={(selected) => setFiltroUser(selected ? selected.value : "todos")}
+        styles={customSelectStyles}
+        placeholder="Seleciona um utilizador..."
+        isClearable
+        isSearchable
+        classNamePrefix="react-select"
+        menuPortalTarget={document.body}
+      />
+
+      <label>Cliente</label>
+      <Select
+        options={[{ value: "todos", label: "Todos" }, ...clienteOptions]}
+        value={
+          filtroCliente === "todos"
+            ? { value: "todos", label: "Todos" }
+            : clienteOptions.find((opt) => opt.value === filtroCliente) || null
+        }
+        onChange={(selected) => setFiltroCliente(selected ? selected.value : "todos")}
+        styles={customSelectStyles}
+        placeholder="Seleciona um cliente..."
+        isClearable
+        isSearchable
+        classNamePrefix="react-select"
+        menuPortalTarget={document.body}
+      />
+
+      <div className="filtro-botoes">
+        <button onClick={aplicarFiltros}>Filtrar</button>
+        <button onClick={limparFiltros}>Limpar</button>
+      </div>
+    </div>
+
+    {/* === TABELA === */}
+    <div className="atividade-container">
+      <h2>Relatório de Atividade Mensal</h2>
 
       {loading ? (
-        <div className="spinner-container">
+        // 👉 spinner aparece só aqui
+        <div className="spinner-container" style={{ marginTop: "40px" }}>
           <div className="spinner"></div>
           <p>A carregar atividades...</p>
         </div>
+      ) : Object.keys(atividadesPorUser).length === 0 ? (
+        <p className="sem-dados">Sem dados para este mês</p>
       ) : (
-        <>
-          {/* === FILTROS === */}
-          <div className="filtros-container">
-            <h3>Filtros</h3>
-
-            <label>Mês</label>
-            <Select
-              options={mesOptions}
-              value={mesOptions.find((opt) => opt.value === mesSelecionado) || null}
-              onChange={(selected) =>
-                setMesSelecionado(selected ? selected.value : new Date().getMonth() + 1)
-              }
-              styles={customSelectStyles}
-              placeholder="Seleciona o mês..."
-              isSearchable={false}
-              classNamePrefix="react-select"
-              menuPortalTarget={document.body}
-            />
-
-            <label>Utilizador</label>
-            <Select
-              options={[{ value: "todos", label: "Todos" }, ...userOptions]}
-              value={
-                filtroUser === "todos"
-                  ? { value: "todos", label: "Todos" }
-                  : userOptions.find((opt) => opt.value === filtroUser) || null
-              }
-              onChange={(selected) => setFiltroUser(selected ? selected.value : "todos")}
-              styles={customSelectStyles}
-              placeholder="Seleciona um utilizador..."
-              isClearable
-              isSearchable
-              classNamePrefix="react-select"
-              menuPortalTarget={document.body}
-            />
-
-            <label>Cliente</label>
-            <Select
-              options={[{ value: "todos", label: "Todos" }, ...clienteOptions]}
-              value={
-                filtroCliente === "todos"
-                  ? { value: "todos", label: "Todos" }
-                  : clienteOptions.find((opt) => opt.value === filtroCliente) || null
-              }
-              onChange={(selected) => setFiltroCliente(selected ? selected.value : "todos")}
-              styles={customSelectStyles}
-              placeholder="Seleciona um cliente..."
-              isClearable
-              isSearchable
-              classNamePrefix="react-select"
-              menuPortalTarget={document.body}
-            />
-
-            <div className="filtro-botoes">
-              <button onClick={aplicarFiltros}>Filtrar</button>
-              <button onClick={limparFiltros}>Limpar</button>
-            </div>
-          </div>
-
-          {/* === TABELA === */}
-          <div className="atividade-container">
-            <h2>Relatório de Atividade Mensal</h2>
-
-            {Object.keys(atividadesPorUser).length === 0 ? (
-              <p className="sem-dados">Sem dados para este mês</p>
-            ) : (
-              Object.entries(atividadesPorUser).map(([user, pivotData]) => (
-                <div key={user} className="atividade-tabela-user">
-                  <table className="atividade-table">
-                    <thead>
-                      <tr>
-                        <th colSpan={diasNoMes + 2} style={{ backgroundColor: "#e9f2ff" }}>
-                          {user}
-                        </th>
-                      </tr>
-                      <tr>
-                        <th></th>
-                        {Array.from({ length: diasNoMes }, (_, i) => {
-                          const dia = i + 1;
-                          const data = new Date(2025, mesSelecionado - 1, dia);
-                          const diaSemana = data.getDay();
-                          const nomesDias = ["D", "2ª", "3ª", "4ª", "5ª", "6ª", "S"];
-                          const label = nomesDias[diaSemana];
-                          const isFimSemana = diaSemana === 0 || diaSemana === 6;
-                          return (
-                            <th key={`semana-${dia}`} className={isFimSemana ? "fim-semana" : ""}>
-                              {label}
-                            </th>
-                          );
-                        })}
-                        <th></th>
-                      </tr>
-                      <tr>
-                        <th>Cliente</th>
-                        {Array.from({ length: diasNoMes }, (_, i) => {
-                          const dia = i + 1;
-                          const data = new Date(2025, mesSelecionado - 1, dia);
-                          const diaSemana = data.getDay();
-                          const isFimSemana = diaSemana === 0 || diaSemana === 6;
-                          return (
-                            <th key={dia} className={isFimSemana ? "fim-semana" : ""}>
-                              {dia}
-                            </th>
-                          );
-                        })}
-                        <th>Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {Object.keys(pivotData).map((cliente) => {
-                        let totalCliente = 0;
+        Object.entries(atividadesPorUser).map(([user, pivotData]) => (
+          <div key={user} className="atividade-tabela-user">
+            <table className="atividade-table">
+              <thead>
+                <tr>
+                  <th colSpan={diasNoMes + 2} style={{ backgroundColor: "#e9f2ff" }}>
+                    {user}
+                  </th>
+                </tr>
+                <tr>
+                  <th></th>
+                  {Array.from({ length: diasNoMes }, (_, i) => {
+                    const dia = i + 1;
+                    const data = new Date(2025, mesSelecionado - 1, dia);
+                    const diaSemana = data.getDay();
+                    const nomesDias = ["D", "2ª", "3ª", "4ª", "5ª", "6ª", "S"];
+                    const label = nomesDias[diaSemana];
+                    const isFimSemana = diaSemana === 0 || diaSemana === 6;
+                    return (
+                      <th key={`semana-${dia}`} className={isFimSemana ? "fim-semana" : ""}>
+                        {label}
+                      </th>
+                    );
+                  })}
+                  <th></th>
+                </tr>
+                <tr>
+                  <th>Cliente</th>
+                  {Array.from({ length: diasNoMes }, (_, i) => {
+                    const dia = i + 1;
+                    const data = new Date(2025, mesSelecionado - 1, dia);
+                    const diaSemana = data.getDay();
+                    const isFimSemana = diaSemana === 0 || diaSemana === 6;
+                    return (
+                      <th key={dia} className={isFimSemana ? "fim-semana" : ""}>
+                        {dia}
+                      </th>
+                    );
+                  })}
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.keys(pivotData).map((cliente) => {
+                  let totalCliente = 0;
+                  return (
+                    <tr key={cliente}>
+                      <td>{cliente}</td>
+                      {Array.from({ length: diasNoMes }, (_, i) => {
+                        const dia = i + 1;
+                        const data = new Date(2025, mesSelecionado - 1, dia);
+                        const diaSemana = data.getDay();
+                        const isFimSemana = diaSemana === 0 || diaSemana === 6;
+                        const horas = pivotData[cliente][dia] || 0;
+                        totalCliente += horas;
                         return (
-                          <tr key={cliente}>
-                            <td>{cliente}</td>
-                            {Array.from({ length: diasNoMes }, (_, i) => {
-                              const dia = i + 1;
-                              const data = new Date(2025, mesSelecionado - 1, dia);
-                              const diaSemana = data.getDay();
-                              const isFimSemana = diaSemana === 0 || diaSemana === 6;
-                              const horas = pivotData[cliente][dia] || 0;
-                              totalCliente += horas;
-                              return (
-                                <td key={dia} className={isFimSemana ? "fim-semana" : ""}>
-                                  {horas > 0 ? horas.toFixed(1) : ""}
-                                </td>
-                              );
-                            })}
-                            <td className="total-coluna">
-                              <strong>{totalCliente > 0 ? totalCliente.toFixed(1) : ""}</strong>
-                            </td>
-                          </tr>
+                          <td key={dia} className={isFimSemana ? "fim-semana" : ""}>
+                            {horas > 0 ? horas.toFixed(1) : ""}
+                          </td>
                         );
                       })}
-                    </tbody>
-                  </table>
-                </div>
-              ))
-            )}
+                      <td className="total-coluna">
+                        <strong>{totalCliente > 0 ? totalCliente.toFixed(1) : ""}</strong>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
-        </>
+        ))
       )}
     </div>
-  );
+  </div>
+);
+
 }
