@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import "./Agenda.css";
 import api from "../services/api";
 import { ArrowUp } from "lucide-react";
+import Swal from "sweetalert2";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function Agenda() {
   const [users, setUsers] = useState([]);
@@ -60,6 +62,7 @@ export default function Agenda() {
         setEvents(agendaRes.data || []);
       } catch (err) {
         console.error("Erro ao carregar dados:", err);
+        toast.error("Erro ao carregar dados da agenda.");
       } finally {
         setLoading(false);
       }
@@ -171,10 +174,17 @@ export default function Agenda() {
         e.data === targetDate
     );
     if (existsAtTarget) {
-      const ok = window.confirm(
-        "Já existe uma marcação nesse dia/utilizador. Queres criar MAIS UMA marcação no mesmo destino?"
-      );
-      if (!ok) return;
+      const result = await Swal.fire({
+        title: "Já existe marcação",
+        text: "Queres criar mais uma marcação no mesmo dia/utilizador?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#237c9b",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Sim, criar",
+        cancelButtonText: "Cancelar",
+      });
+      if (!result.isConfirmed) return;
     }
 
     // Criar novo no destino com os mesmos dados (duplicar)
@@ -194,16 +204,22 @@ export default function Agenda() {
         headers: { Authorization: `Bearer ${token}` },
       });
       setEvents(res.data || []);
+      toast.success("Marcação duplicada com sucesso!");
     } catch (err) {
       console.error("Erro ao duplicar marcação por drag & drop:", err);
-      alert("Erro ao duplicar marcação.");
+      toast.error("Erro ao duplicar marcação.");
     }
   };
   // ====== fim DnD ======
 
   const handleSave = useCallback(async () => {
     if (!selectedUser || !selectedDate || !descricao) {
-      alert("Preencha todos os campos obrigatórios.");
+      await Swal.fire({
+        icon: "warning",
+        title: "Campos obrigatórios",
+        text: "Preenche todos os campos obrigatórios antes de guardar.",
+        confirmButtonColor: "#237c9b",
+      });
       return;
     }
 
@@ -211,80 +227,79 @@ export default function Agenda() {
     const end = endDate ? new Date(endDate) : start;
 
     if (end < start) {
-      alert("A data de fim não pode ser anterior à data de início.");
+      await Swal.fire({
+        icon: "error",
+        title: "Datas inválidas",
+        text: "A data de fim não pode ser anterior à data de início.",
+        confirmButtonColor: "#237c9b",
+      });
       return;
     }
 
     try {
       if (editingEvent) {
-  // Intervalo de dias
-  if (end > start) {
-    // 🧹 Primeiro elimina todas as marcações antigas do utilizador nesse intervalo
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      const dataDia = d.toISOString().split("T")[0];
-      const eventoExistente = events.find(
-        (e) =>
-          e.utilizador?.toLowerCase?.() === selectedUser.toLowerCase() &&
-          e.data === dataDia
-      );
-      if (eventoExistente) {
-        await api.delete(`/agenda/${eventoExistente.id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-      }
-    }
+        // Intervalo de dias
+        if (end > start) {
+          // 🧹 Primeiro elimina antigas e cria novas
+          for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+            const dataDia = d.toISOString().split("T")[0];
+            const eventoExistente = events.find(
+              (e) =>
+                e.utilizador?.toLowerCase?.() === selectedUser.toLowerCase() &&
+                e.data === dataDia
+            );
+            if (eventoExistente) {
+              await api.delete(`/agenda/${eventoExistente.id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+              });
+            }
+            await api.post(
+              "/agenda/",
+              {
+                utilizador: selectedUser,
+                data: dataDia,
+                hora_inicio: inicio,
+                hora_fim: fim,
+                descricao,
+              },
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
+          }
+        } else {
+          // Um único dia → atualiza ou cria
+          const eventoExistente = events.find(
+            (e) =>
+              e.utilizador?.toLowerCase?.() === selectedUser.toLowerCase() &&
+              e.data === selectedDate
+          );
 
-    // ✏️ Depois cria as novas marcações no intervalo
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      const dataDia = d.toISOString().split("T")[0];
-      await api.post(
-        "/agenda/",
-        {
-          utilizador: selectedUser,
-          data: dataDia,
-          hora_inicio: inicio,
-          hora_fim: fim,
-          descricao,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-    }
-  } else {
-    // Um único dia → atualiza ou cria
-    const eventoExistente = events.find(
-      (e) =>
-        e.utilizador?.toLowerCase?.() === selectedUser.toLowerCase() &&
-        e.data === selectedDate
-    );
-
-    if (eventoExistente) {
-      await api.patch(
-        `/agenda/${eventoExistente.id}`,
-        {
-          utilizador: selectedUser,
-          data: selectedDate,
-          hora_inicio: inicio,
-          hora_fim: fim,
-          descricao,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-    } else {
-      await api.post(
-        "/agenda/",
-        {
-          utilizador: selectedUser,
-          data: selectedDate,
-          hora_inicio: inicio,
-          hora_fim: fim,
-          descricao,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-    }
-  }
-}
-else {
+          if (eventoExistente) {
+            await api.patch(
+              `/agenda/${eventoExistente.id}`,
+              {
+                utilizador: selectedUser,
+                data: selectedDate,
+                hora_inicio: inicio,
+                hora_fim: fim,
+                descricao,
+              },
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
+          } else {
+            await api.post(
+              "/agenda/",
+              {
+                utilizador: selectedUser,
+                data: selectedDate,
+                hora_inicio: inicio,
+                hora_fim: fim,
+                descricao,
+              },
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
+          }
+        }
+      } else {
         // Criar nova marcação (pode ser intervalo)
         const endEff = endDate ? new Date(endDate) : start;
         for (let d = new Date(start); d <= endEff; d.setDate(d.getDate() + 1)) {
@@ -308,9 +323,10 @@ else {
       });
       setEvents(res.data || []);
       setShowModal(false);
+      toast.success("Marcação guardada com sucesso!");
     } catch (err) {
       console.error("Erro ao guardar marcação:", err);
-      alert("Erro ao guardar marcação.");
+      toast.error("Erro ao guardar marcação.");
     }
   }, [
     descricao,
@@ -327,8 +343,17 @@ else {
   const handleDelete = useCallback(async () => {
     if (!editingEvent) return;
 
-    if (!window.confirm("Tens a certeza que queres eliminar esta(s) marcação(ões)?"))
-      return;
+    const result = await Swal.fire({
+      title: "Eliminar marcação?",
+      text: "Esta ação não pode ser revertida.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#237c9b",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sim, eliminar",
+      cancelButtonText: "Cancelar",
+    });
+    if (!result.isConfirmed) return;
 
     try {
       const start = new Date(selectedDate);
@@ -359,14 +384,15 @@ else {
       });
       setEvents(res.data || []);
       setShowModal(false);
+      toast.success("Marcação eliminada com sucesso!");
     } catch (err) {
       console.error("Erro ao eliminar marcação:", err);
-      alert("Erro ao eliminar marcação.");
+      toast.error("Erro ao eliminar marcação.");
     }
   }, [editingEvent, selectedDate, endDate, events, selectedUser, token]);
 
   // ✅ Fechar modal com confirmação (igual TaskModal)
-  const handleCloseAgenda = useCallback(() => {
+  const handleCloseAgenda = useCallback(async () => {
     const hasChanges =
       (descricao && descricao.trim() !== "") ||
       (inicio && inicio !== "09:00") ||
@@ -382,10 +408,17 @@ else {
         ));
 
     if (hasChanges) {
-      const confirmExit = window.confirm(
-        "Existem dados preenchidos. Tens a certeza que queres sair sem guardar?"
-      );
-      if (!confirmExit) return;
+      const result = await Swal.fire({
+        title: "Sair sem guardar?",
+        text: "Existem alterações por guardar. Tens a certeza que queres sair?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#237c9b",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Sim, sair",
+        cancelButtonText: "Cancelar",
+      });
+      if (!result.isConfirmed) return;
     }
 
     setShowModal(false);
@@ -444,6 +477,8 @@ else {
 
   return (
     <div className="agenda-container-agenda">
+      <Toaster position="top-center" reverseOrder={false} />
+
       <div className="agenda-controls-agenda">
         <label>Nº Dias:</label>
         <select value={dias} onChange={(e) => setDias(Number(e.target.value))}>
