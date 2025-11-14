@@ -23,7 +23,7 @@ function App() {
         //   duration: 4000,
         // }}
         containerStyle={{
-          top: "90px", // distância abaixo do navbar
+          top: "75px", // distância abaixo do navbar
         }}
       />
     <Router>
