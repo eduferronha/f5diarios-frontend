@@ -5,7 +5,8 @@ import CalendarDashboard from "../components/CalendarDashboard";
 import PresetsModal from "../components/PresetsModal";
 import "./DashboardTable.css";
 import { Edit3, Copy, Trash2 } from "lucide-react";
-
+import Swal from "sweetalert2";
+import toast, { Toaster } from "react-hot-toast";
 
 function Dashboard() {
   const [tasks, setTasks] = useState([]);
@@ -23,13 +24,14 @@ function Dashboard() {
   const [presetToApply, setPresetToApply] = useState(null);
 
   const token = localStorage.getItem("token");
-  const [presetsAtivos, setPresetsAtivos] = useState([]); // 🔹 novo estado
+  const [presetsAtivos, setPresetsAtivos] = useState([]);
 
   const [preselectedDate, setPreselectedDate] = useState(null);
+
   const handleAddTaskFromCalendar = (date) => {
-    setPreselectedDate(date); // 👈 guarda o dia selecionado
-    setEditingTask(null); // nova tarefa
-    setShowModal(true); // abre o modal
+    setPreselectedDate(date);
+    setEditingTask(null);
+    setShowModal(true);
   };
 
   const fetchTasks = async () => {
@@ -41,14 +43,16 @@ function Dashboard() {
       setTasks(response.data);
     } catch (error) {
       console.error("Erro ao carregar tarefas:", error);
-      if (error.response?.status === 401)
-        alert("Sessão expirada. Faça login novamente.");
+      if (error.response?.status === 401) {
+        toast.error("Sessão expirada. Faça login novamente.");
+      } else {
+        toast.error("Erro ao carregar tarefas.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔹 Buscar presets ativos
   const fetchPresetsAtivos = async () => {
     try {
       const res = await api.get("/presets/", {
@@ -58,21 +62,19 @@ function Dashboard() {
       setPresetsAtivos(ativos);
     } catch (err) {
       console.error("Erro ao carregar presets ativos:", err);
+      toast.error("Erro ao carregar presets ativos.");
     }
   };
 
-  // 🔹 Recarregar tarefas e presets
   useEffect(() => {
     fetchTasks();
     fetchPresetsAtivos();
   }, []);
 
-  // 🔹 Atualiza presets quando fecha o modal de presets
   useEffect(() => {
     if (!showPresets) fetchPresetsAtivos();
   }, [showPresets]);
 
-  // 🔹 Atualizar lista filtrada por mês/ano
   useEffect(() => {
     const filtradas = tasks.filter((task) => {
       if (!task.data) return false;
@@ -87,20 +89,34 @@ function Dashboard() {
   }, [tasks, selectedYear, selectedMonth]);
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Tens a certeza que queres eliminar esta tarefa?")) return;
+    const result = await Swal.fire({
+      title: "Tens a certeza?",
+      text: "Esta tarefa será eliminada permanentemente.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#237c9b",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sim, eliminar",
+      cancelButtonText: "Cancelar",
+      backdrop: true,
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
       await api.delete(`/tasks/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      toast.success("Tarefa eliminada com sucesso!");
       fetchTasks();
     } catch (error) {
       console.error("Erro ao eliminar tarefa:", error);
-      alert("Erro ao eliminar tarefa.");
+      toast.error("Erro ao eliminar tarefa.");
     }
   };
 
   const handleEdit = (task) => {
-    setPresetToApply(null);   // ← limpar preset
+    setPresetToApply(null);
     setEditingTask(task);
     setIsDuplicate(false);
     setShowModal(true);
@@ -111,32 +127,30 @@ function Dashboard() {
     delete duplicatedTask.id;
     delete duplicatedTask._id;
 
-    setPresetToApply(null); 
+    setPresetToApply(null);
     setEditingTask(duplicatedTask);
     setIsDuplicate(true);
     setShowModal(true);
   };
 
-
   const handleCloseModal = () => {
     setEditingTask(null);
-    setPresetToApply(null);  // ← limpar sempre
+    setPresetToApply(null);
     setShowModal(false);
     setIsDuplicate(false);
   };
 
-
-  // 🔹 Aplicar preset ativo (abre o modal já preenchido)
   const handleApplyPreset = (preset) => {
     setPresetToApply(preset);
-    setEditingTask(null);   // ← MUITO IMPORTANTE
+    setEditingTask(null);
     setIsDuplicate(false);
     setShowModal(true);
   };
 
-
   return (
     <div className="dashboard-layout">
+      <Toaster position="top-center" reverseOrder={false} />
+
       <div className="dashboard-calendar">
         <CalendarDashboard tasks={tasks} onAddTask={handleAddTaskFromCalendar} />
       </div>
@@ -201,7 +215,6 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* 🔹 Botões dos presets ativos */}
         {presetsAtivos.length > 0 && (
           <div className="presets-ativos-bar">
             {presetsAtivos.map((preset) => (
@@ -274,7 +287,6 @@ function Dashboard() {
                         <Trash2 size={18} color="#237c9b" />
                       </button>
                     </td>
-
                   </tr>
                 ))}
               </tbody>
@@ -282,16 +294,8 @@ function Dashboard() {
           </div>
         )}
 
-        {/* <TaskModal
-          show={showModal}
-          onClose={() => setShowModal(false)}
-          onTaskAdded={() => {}}
-          editingTask={editingTask}
-          isDuplicate={false}
-          preselectedDate={preselectedDate} 
-        /> */}
         <TaskModal
-          key={isDuplicate ? `duplicate-${editingTask?.id || "new"}` : "normal"} // 👈 força recriação no modo duplicação
+          key={isDuplicate ? `duplicate-${editingTask?.id || "new"}` : "normal"}
           show={showModal}
           onClose={handleCloseModal}
           onTaskAdded={fetchTasks}
@@ -302,8 +306,6 @@ function Dashboard() {
           preselectedDate={preselectedDate}
         />
 
-
-
         <PresetsModal
           show={showPresets}
           onClose={() => setShowPresets(false)}
@@ -313,7 +315,6 @@ function Dashboard() {
             setShowModal(true);
           }}
         />
-
       </div>
     </div>
   );
