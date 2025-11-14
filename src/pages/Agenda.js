@@ -477,7 +477,7 @@ export default function Agenda() {
 
   return (
     <div className="agenda-container-agenda">
-      <Toaster position="top-center" reverseOrder={false} />
+      {/* <Toaster position="top-center" reverseOrder={false} /> */}
 
       <div className="agenda-controls-agenda">
         <label>Nº Dias:</label>

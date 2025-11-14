@@ -434,7 +434,7 @@ const TaskModal = ({
 
   return (
     <div className="modal-overlay">
-      <Toaster position="top-center" reverseOrder={false} />
+      {/* <Toaster position="top-center" reverseOrder={false} /> */}
       <div
         className={`modal ${isDuplicate ? "modal-large" : ""}`}
         onClick={(e) => e.stopPropagation()}

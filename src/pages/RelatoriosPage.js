@@ -450,7 +450,7 @@ const exportarPDF = () => {
 
   return (
     <div className="relatorios-container">
-      <Toaster position="top-center" toastOptions={{ duration: 4000 }} />
+      {/* <Toaster position="top-center" toastOptions={{ duration: 4000 }} /> */}
 
       {/* === BOTÕES NO TOPO (como tinhas antes) === */}
       <div className="relatorios-actions">
