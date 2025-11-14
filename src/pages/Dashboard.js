@@ -149,7 +149,7 @@ function Dashboard() {
 
   return (
     <div className="dashboard-layout">
-      <Toaster position="top-center" reverseOrder={false} />
+      {/* <Toaster position="top-center" reverseOrder={false} /> */}
 
       <div className="dashboard-calendar">
         <CalendarDashboard tasks={tasks} onAddTask={handleAddTaskFromCalendar} />
