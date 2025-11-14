@@ -425,7 +425,7 @@ const TaskModal = ({
   const textoBotao = isPresetMode
     ? isEditingPreset
       ? "Guardar Alterações"
-      : "Criar Tarefa"
+      : "Criar Preset"
     : editingTask
       ? isDuplicate
         ? "Guardar Cópias"
@@ -442,7 +442,7 @@ const TaskModal = ({
         <h2>{titulo}</h2>
 
         <form id="form-task" onSubmit={handleSubmit} className="form-grid">
-          {isPresetMode && (
+          {isPresetMode && (!presetData || isEditingPreset) && (
             <div className="form-group full-width">
               <label>Nome do Preset</label>
               <input
@@ -454,6 +454,7 @@ const TaskModal = ({
               />
             </div>
           )}
+
 
           {!isDuplicate ? (
             <div className="form-group full-width">
