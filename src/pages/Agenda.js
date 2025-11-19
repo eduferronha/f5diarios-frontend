@@ -19,6 +19,8 @@ export default function Agenda() {
   const [editingEvent, setEditingEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showScroll, setShowScroll] = useState(false);
+  const [isRightDrag, setIsRightDrag] = useState(false);
+
 
   // 👉 Drag & Drop visual hover
   const [dragHoverKey, setDragHoverKey] = useState(null);
@@ -139,8 +141,10 @@ export default function Agenda() {
 
     // Impede menu do browser no botão direito
     if (e.button === 2) {
+      setIsRightDrag(true);
       e.preventDefault();
     }
+
 
     const payload = JSON.stringify({
       descricao: sourceEvent.descricao || "",
@@ -187,6 +191,7 @@ export default function Agenda() {
   // =============================
   const handleDropOnCellAgenda = async (e, targetDate, targetUser) => {
     e.preventDefault();
+    setIsRightDrag(false);
     setDragHoverKey(null);
 
     let dataText = e.dataTransfer.getData("text/plain");
@@ -244,6 +249,8 @@ export default function Agenda() {
     // =====================================================
     if (dragButton === "right") {
       openCopyMoveMenu(e, src, targetDate, targetUser);
+      setIsRightDrag(false);
+
       return;
     }
   };
@@ -515,6 +522,18 @@ export default function Agenda() {
   const usersSorted = [...users].sort((a, b) =>
     (a.nome || "").localeCompare(b.nome || "", "pt", { sensitivity: "base" })
   );
+
+  useEffect(() => {
+  const blockContextMenu = (e) => {
+    if (isRightDrag) {
+      e.preventDefault();
+    }
+  };
+
+  window.addEventListener("contextmenu", blockContextMenu);
+  return () => window.removeEventListener("contextmenu", blockContextMenu);
+}, [isRightDrag]);
+
 
   return (
     <div className="agenda-container-agenda">
