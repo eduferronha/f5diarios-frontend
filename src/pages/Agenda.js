@@ -19,7 +19,7 @@ export default function Agenda() {
   const [editingEvent, setEditingEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showScroll, setShowScroll] = useState(false);
-  const [isRightDrag, setIsRightDrag] = useState(false);
+  // const [isRightDrag, setIsRightDrag] = useState(false);
 
 
   // 👉 Drag & Drop visual hover
@@ -145,6 +145,7 @@ export default function Agenda() {
     //   e.preventDefault();
     // }
 
+    setDragButton("left");
 
     const payload = JSON.stringify({
       descricao: sourceEvent.descricao || "",
@@ -191,7 +192,7 @@ export default function Agenda() {
   // =============================
   const handleDropOnCellAgenda = async (e, targetDate, targetUser) => {
     e.preventDefault();
-    setIsRightDrag(false);
+    // setIsRightDrag(false);
     setDragHoverKey(null);
 
     let dataText = e.dataTransfer.getData("text/plain");
@@ -247,12 +248,11 @@ export default function Agenda() {
     // =====================================================
     // === BOTÃO DIREITO → mostra menu contextual
     // =====================================================
-    if (dragButton === "right") {
+    if (dragButton === "menu") {
       openCopyMoveMenu(e, src, targetDate, targetUser);
-      setIsRightDrag(false);
-
       return;
     }
+
   };
 
 
@@ -523,16 +523,16 @@ export default function Agenda() {
     (a.nome || "").localeCompare(b.nome || "", "pt", { sensitivity: "base" })
   );
 
-  useEffect(() => {
-  const blockContextMenu = (e) => {
-    if (isRightDrag) {
-      e.preventDefault();
-    }
-  };
+//   useEffect(() => {
+//   const blockContextMenu = (e) => {
+//     if (isRightDrag) {
+//       e.preventDefault();
+//     }
+//   };
 
-  window.addEventListener("contextmenu", blockContextMenu);
-  return () => window.removeEventListener("contextmenu", blockContextMenu);
-}, [isRightDrag]);
+//   window.addEventListener("contextmenu", blockContextMenu);
+//   return () => window.removeEventListener("contextmenu", blockContextMenu);
+// }, [isRightDrag]);
 
 
   return (
@@ -613,13 +613,13 @@ export default function Agenda() {
 
                               // 👉 Detecta antes do drag qual botão foi usado
                               onMouseDown={(e) => {
-                                if (e.button === 2) {
-                                  setDragButton("right");
-                                  setIsRightDrag(true);
+                                if (e.ctrlKey) {
+                                  setDragButton("menu");
                                 } else {
                                   setDragButton("left");
                                 }
                               }}
+
 
                               onClick={() => handleCellClick(data, u.username)}
                               onDragOver={handleDragOverCellAgenda}
@@ -633,7 +633,7 @@ export default function Agenda() {
                               onDragStart={(e) => evento && handleDragStartAgenda(e, evento)}
 
                               // 👉 Quando acaba drag, desbloqueia menu
-                              onDragEnd={() => setIsRightDrag(false)}
+                              // onDragEnd={() => setIsRightDrag(false)}
 
                               title={
                                 evento
