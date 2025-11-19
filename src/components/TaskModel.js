@@ -236,7 +236,37 @@ const TaskModal = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (isPresetMode && !presetData) {
+    // 🟦 Editar preset existente
+    if (isPresetMode && isEditingPreset) {
+      const presetPayload = {
+        descricao,
+        cliente,
+        parceiro,
+        produto,
+        contrato,
+        atividade,
+        tempo_atividade: tempoAtividade,
+        tempo_faturado: tempoFaturado,
+        tempo_viagem: tempoViagem,
+        distancia_viagem: distanciaViagem,
+        valor_euro: valorEuro,
+        nome: nomePreset.trim(),
+      };
+
+      try {
+        await onPresetSaved(presetPayload);
+        onClose();
+      } catch (err) {
+        console.error(err);
+        toast.error("Erro ao guardar preset.");
+      }
+      return;
+    }
+
+
+// 🟩 Criar novo preset
+    if (isPresetMode && !isEditingPreset) {
+
       if (!nomePreset.trim()) {
         await Swal.fire({
           icon: "warning",
@@ -267,7 +297,7 @@ const TaskModal = ({
       const presetPayload = { ...baseTaskData, nome: nomePreset.trim() };
       try {
         await onPresetSaved(presetPayload);
-        toast.success("Preset guardado com sucesso!");
+        // toast.success("Preset guardado com sucesso!");
         onClose();
       } catch (error) {
         console.error("Task - Erro ao guardar preset:", error);
