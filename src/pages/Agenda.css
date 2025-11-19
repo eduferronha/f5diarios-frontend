@@ -208,7 +208,7 @@
   padding-right: 0;
 }
 
-/* Botões (baseado em .btn-add) com classes únicas */
+/* Botões */
 .btn-agenda {
   background-color: #237c9b;
   color: #fff;
@@ -228,7 +228,6 @@
   box-shadow: 0 3px 8px rgba(0, 120, 215, 0.3);
 }
 
-/* Variantes */
 .btn-primary-agenda { background-color: #237c9b; }
 .btn-primary-agenda:hover { background-color: #1b6b81; }
 
@@ -250,7 +249,7 @@
   box-shadow: 0 3px 8px rgba(185, 28, 28, 0.35);
 }
 
-/* Layout dos botões na modal */
+/* Layout dos botões */
 .modal-buttons-agenda {
   display: flex;
   gap: 0.5rem;
@@ -259,13 +258,13 @@
   margin-top: 1rem;
 }
 
-/* Estado de drop target durante o arrasto */
+/* Drop target (arrastar por cima) */
 .drop-target-agenda {
   outline: 2px dashed #237c9b;
   outline-offset: -4px;
 }
 
-/* Sugestão: cursor de "move/copy" ao passar por cima do evento arrastável */
+/* Cursor arrastável */
 .agenda-cell-agenda[draggable="true"] {
   cursor: grab;
 }
@@ -273,4 +272,32 @@
   cursor: grabbing;
 }
 
+/* ===================================================== */
+/* === MENU CONTEXTUAL (COPY / MOVE) =================== */
+/* ===================================================== */
 
+.agenda-context-menu {
+  font-family: "Poppins", sans-serif;
+  user-select: none;
+  animation: fadeInMenu 0.12s ease-in-out;
+}
+
+.agenda-context-menu div {
+  font-size: 0.85rem;
+  transition: 0.15s ease;
+}
+
+.agenda-context-menu div:hover {
+  background: #eef6fb;
+}
+
+@keyframes fadeInMenu {
+  0% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
