@@ -20,13 +20,19 @@ export default function Agenda() {
   const [loading, setLoading] = useState(true);
   const [showScroll, setShowScroll] = useState(false);
 
-  // 👉 estado visual do DnD
-  const [dragHoverKey, setDragHoverKey] = useState(null); // `${date}__${user}`
+  // 👉 Drag & Drop visual hover
+  const [dragHoverKey, setDragHoverKey] = useState(null);
+
+  // 👉 Saber se arrasto foi botão esquerdo ou direito
+  const [dragButton, setDragButton] = useState("left");
+
+  // 👉 Context menu para copiar/mover
+  const [contextMenu, setContextMenu] = useState(null);
 
   const tableRef = useRef(null);
   const token = localStorage.getItem("token");
 
-  // 🧩 Obter utilizador logado (parse seguro)
+  // 🧩 Obter utilizador logado
   let storedUser = null;
   try {
     const raw = localStorage.getItem("user");
@@ -49,6 +55,13 @@ export default function Agenda() {
       tableRef.current.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
+
+      // Fecha o menu ao clicar fora
+  useEffect(() => {
+    const close = () => setContextMenu(null);
+    window.addEventListener("click", close);
+    return () => window.removeEventListener("click", close);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -90,14 +103,14 @@ export default function Agenda() {
   const getEvent = (data, user) =>
     events.find(
       (e) =>
-        e.data === data && e.utilizador?.toLowerCase?.() === user?.toLowerCase?.()
+        e.data === data &&
+        e.utilizador?.toLowerCase?.() === user?.toLowerCase?.()
     );
 
   const handleCellClick = (data, user) => {
     const existing = getEvent(data, user);
 
     if (existing) {
-      // --- Editar marcação existente ---
       setEditingEvent(existing);
       setDescricao(existing.descricao || "");
       setInicio(existing.hora_inicio || "09:00");
@@ -105,21 +118,30 @@ export default function Agenda() {
       setSelectedDate(existing.data);
       setSelectedUser(existing.utilizador || user || "");
     } else {
-      // --- Criar nova marcação ---
       setEditingEvent(null);
       setDescricao("");
       setInicio("09:00");
       setFim("18:00");
       setSelectedDate(data);
-      setSelectedUser(user || ""); // 👈 preenche automaticamente com o nome da coluna
+      setSelectedUser(user || "");
     }
 
     setShowModal(true);
   };
 
-  // ====== Drag & Drop: duplicar no destino ======
+  // =====================================================================================
+  // === DRAG & DROP TOTALMENTE REFEITO (Mover com botão esquerdo / Menu com botão direito)
+  // =====================================================================================
+
   const handleDragStartAgenda = (e, sourceEvent) => {
-    // guardamos info essencial no dataTransfer
+    // Detecta se foi botão esquerdo ou direito
+    setDragButton(e.button === 2 ? "right" : "left");
+
+    // Impede menu do browser no botão direito
+    if (e.button === 2) {
+      e.preventDefault();
+    }
+
     const payload = JSON.stringify({
       descricao: sourceEvent.descricao || "",
       hora_inicio: sourceEvent.hora_inicio || "09:00",
@@ -128,13 +150,14 @@ export default function Agenda() {
       data: sourceEvent.data || "",
       id: sourceEvent.id,
     });
+
     e.dataTransfer.setData("text/plain", payload);
-    e.dataTransfer.effectAllowed = "copy";
+    e.dataTransfer.effectAllowed = "copyMove";
   };
 
   const handleDragOverCellAgenda = (e) => {
-    e.preventDefault(); // necessário para permitir drop
-    e.dataTransfer.dropEffect = "copy";
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "copyMove";
   };
 
   const handleDragEnterCellAgenda = (date, user) => {
@@ -146,12 +169,29 @@ export default function Agenda() {
     if (dragHoverKey === key) setDragHoverKey(null);
   };
 
+  // ========================================================
+  // === FUNÇÃO QUE ABRE O MENU COPIAR/MOVER (botão direito)
+  // ========================================================
+  const openCopyMoveMenu = (e, src, targetDate, targetUser) => {
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      src,
+      targetDate,
+      targetUser,
+    });
+  };
+
+  // =============================
+  // === MOVER OU COPIAR EVENTOS
+  // =============================
   const handleDropOnCellAgenda = async (e, targetDate, targetUser) => {
     e.preventDefault();
     setDragHoverKey(null);
 
     let dataText = e.dataTransfer.getData("text/plain");
     if (!dataText) return;
+
     let src;
     try {
       src = JSON.parse(dataText);
@@ -159,57 +199,58 @@ export default function Agenda() {
       return;
     }
 
-    // Se for o mesmo destino (mesmo utilizador e mesma data), ignoramos
-    if (
+    const sameCell =
       src.utilizador?.toLowerCase?.() === targetUser?.toLowerCase?.() &&
-      src.data === targetDate
-    ) {
+      src.data === targetDate;
+
+    if (sameCell) return;
+
+    // =====================================================
+    // === SE BOTÃO ESQUERDO → MOVER (delete + create)
+    // =====================================================
+    if (dragButton === "left") {
+      try {
+        await api.delete(`/agenda/${src.id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        await api.post(
+          "/agenda/",
+          {
+            utilizador: targetUser,
+            data: targetDate,
+            hora_inicio: src.hora_inicio,
+            hora_fim: src.hora_fim,
+            descricao: src.descricao,
+          },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        const res = await api.get("/agenda/", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setEvents(res.data || []);
+        toast.success("Marcação movida!");
+      } catch (err) {
+        console.error("Erro ao mover marcação:", err);
+        toast.error("Erro ao mover.");
+      }
       return;
     }
 
-    // Se já existe evento no destino, perguntar se quer criar mais um (duplicado no mesmo dia)
-    const existsAtTarget = events.some(
-      (e) =>
-        e.utilizador?.toLowerCase?.() === targetUser?.toLowerCase?.() &&
-        e.data === targetDate
-    );
-    if (existsAtTarget) {
-      const result = await Swal.fire({
-        title: "Já existe marcação",
-        text: "Queres criar mais uma marcação no mesmo dia/utilizador?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#237c9b",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Sim, criar",
-        cancelButtonText: "Cancelar",
-      });
-      if (!result.isConfirmed) return;
-    }
-
-    // Criar novo no destino com os mesmos dados (duplicar)
-    try {
-      await api.post(
-        "/agenda/",
-        {
-          utilizador: targetUser,
-          data: targetDate,
-          hora_inicio: src.hora_inicio || "09:00",
-          hora_fim: src.hora_fim || "18:00",
-          descricao: src.descricao || "",
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      const res = await api.get("/agenda/", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setEvents(res.data || []);
-      toast.success("Marcação duplicada com sucesso!");
-    } catch (err) {
-      console.error("Erro ao duplicar marcação por drag & drop:", err);
-      toast.error("Erro ao duplicar marcação.");
+    // =====================================================
+    // === BOTÃO DIREITO → mostra menu contextual
+    // =====================================================
+    if (dragButton === "right") {
+      openCopyMoveMenu(e, src, targetDate, targetUser);
+      return;
     }
   };
+
+
+
+
   // ====== fim DnD ======
 
   const handleSave = useCallback(async () => {
@@ -681,6 +722,100 @@ export default function Agenda() {
           </div>
         </div>
       )}
+
+            {/* ========================================================= */}
+      {/* === MENU CONTEXTUAL (COPIAR / MOVER) ===================== */}
+      {/* ========================================================= */}
+      {contextMenu && (
+        <div
+          className="agenda-context-menu"
+          style={{
+            position: "fixed",
+            top: contextMenu.y,
+            left: contextMenu.x,
+            zIndex: 99999,
+            background: "white",
+            border: "1px solid #ccc",
+            borderRadius: "6px",
+            padding: "8px 0",
+            boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
+            width: "140px",
+          }}
+        >
+          <div
+            style={{
+              padding: "8px 12px",
+              cursor: "pointer",
+              borderBottom: "1px solid #eee",
+            }}
+            onClick={async () => {
+              try {
+                await api.post(
+                  "/agenda/",
+                  {
+                    utilizador: contextMenu.targetUser,
+                    data: contextMenu.targetDate,
+                    hora_inicio: contextMenu.src.hora_inicio,
+                    hora_fim: contextMenu.src.hora_fim,
+                    descricao: contextMenu.src.descricao,
+                  },
+                  { headers: { Authorization: `Bearer ${token}` } }
+                );
+
+                const res = await api.get("/agenda/", {
+                  headers: { Authorization: `Bearer ${token}` },
+                });
+                setEvents(res.data || []);
+                toast.success("Marcação copiada!");
+              } catch (err) {
+                toast.error("Erro ao copiar.");
+              }
+              setContextMenu(null);
+            }}
+          >
+            Copiar
+          </div>
+
+          <div
+            style={{
+              padding: "8px 12px",
+              cursor: "pointer",
+            }}
+            onClick={async () => {
+              try {
+                await api.delete(`/agenda/${contextMenu.src.id}`, {
+                  headers: { Authorization: `Bearer ${token}` },
+                });
+
+                await api.post(
+                  "/agenda/",
+                  {
+                    utilizador: contextMenu.targetUser,
+                    data: contextMenu.targetDate,
+                    hora_inicio: contextMenu.src.hora_inicio,
+                    hora_fim: contextMenu.src.hora_fim,
+                    descricao: contextMenu.src.descricao,
+                  },
+                  { headers: { Authorization: `Bearer ${token}` } }
+                );
+
+                const res = await api.get("/agenda/", {
+                  headers: { Authorization: `Bearer ${token}` },
+                });
+                setEvents(res.data || []);
+                toast.success("Marcação movida!");
+              } catch (err) {
+                toast.error("Erro ao mover.");
+              }
+              setContextMenu(null);
+            }}
+          >
+            Mover
+          </div>
+        </div>
+      )}
+
+      
     </div>
   );
 }

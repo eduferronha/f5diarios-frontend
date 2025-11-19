@@ -77,7 +77,7 @@ export default function Atividade() {
       setListaUsers([...new Set(dados.map((a) => a.username))]);
       setListaClientes([...new Set(dados.map((a) => a.cliente))]);
       construirPivot(dados);
-      toast.success("Atividades carregadas com sucesso!");
+      // toast.success("Atividades carregadas com sucesso!");
     } catch (err) {
       console.error("Erro ao carregar atividades:", err);
       toast.error("Erro ao carregar atividades.");
