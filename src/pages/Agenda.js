@@ -145,7 +145,7 @@ export default function Agenda() {
     //   e.preventDefault();
     // }
 
-    setDragButton("left");
+    // setDragButton("left");
 
     const payload = JSON.stringify({
       descricao: sourceEvent.descricao || "",
