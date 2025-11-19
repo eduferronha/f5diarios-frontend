@@ -147,9 +147,10 @@ const PresetsModal = ({ show, onClose }) => {
       cleanData.nome = nomeBruto.replace(/\s+/g, " ").trim();
 
       if (editingPreset) {
-        await api.put(`/presets/${editingPreset.id}`, cleanData, {
+        await api.patch(`/presets/${editingPreset.id}`, cleanData, {
           headers: { Authorization: `Bearer ${token}` },
         });
+
         toast.success("Preset atualizado com sucesso!");
       } else {
         await api.post("/presets/", cleanData, {
