@@ -137,13 +137,13 @@ export default function Agenda() {
 
   const handleDragStartAgenda = (e, sourceEvent) => {
     // Detecta se foi botão esquerdo ou direito
-    setDragButton(e.button === 2 ? "right" : "left");
+    // setDragButton(e.button === 2 ? "right" : "left");
 
-    // Impede menu do browser no botão direito
-    if (e.button === 2) {
-      setIsRightDrag(true);
-      e.preventDefault();
-    }
+    // // Impede menu do browser no botão direito
+    // if (e.button === 2) {
+    //   setIsRightDrag(true);
+    //   e.preventDefault();
+    // }
 
 
     const payload = JSON.stringify({
@@ -606,23 +606,42 @@ export default function Agenda() {
                         const isHover = dragHoverKey === cellKey;
 
                         return (
-                          <td
-                            key={u.id}
-                            className={`agenda-cell-agenda ${isHover ? "drop-target-agenda" : ""}`}
-                            style={{ backgroundColor: bgColor }}
-                            onClick={() => handleCellClick(data, u.username)}
-                            onDragOver={handleDragOverCellAgenda}
-                            onDragEnter={() => handleDragEnterCellAgenda(data, u.username)}
-                            onDragLeave={() => handleDragLeaveCellAgenda(data, u.username)}
-                            onDrop={(e) => handleDropOnCellAgenda(e, data, u.username)}
-                            draggable={!!evento}                              // 👈 célula inteira arrastável se houver evento
-                            onDragStart={(e) => evento && handleDragStartAgenda(e, evento)}  // 👈 usa o evento da célula
-                            title={
-                              evento
-                                ? `${evento.descricao} (${evento.hora_inicio} - ${evento.hora_fim})`
-                                : ""
-                            }
-                          >
+                            <td
+                              key={u.id}
+                              className={`agenda-cell-agenda ${isHover ? "drop-target-agenda" : ""}`}
+                              style={{ backgroundColor: bgColor }}
+
+                              // 👉 Detecta antes do drag qual botão foi usado
+                              onMouseDown={(e) => {
+                                if (e.button === 2) {
+                                  setDragButton("right");
+                                  setIsRightDrag(true);
+                                } else {
+                                  setDragButton("left");
+                                }
+                              }}
+
+                              onClick={() => handleCellClick(data, u.username)}
+                              onDragOver={handleDragOverCellAgenda}
+                              onDragEnter={() => handleDragEnterCellAgenda(data, u.username)}
+                              onDragLeave={() => handleDragLeaveCellAgenda(data, u.username)}
+                              onDrop={(e) => handleDropOnCellAgenda(e, data, u.username)}
+
+                              draggable={!!evento}
+
+                              // 👉 dragStart já não identifica botão
+                              onDragStart={(e) => evento && handleDragStartAgenda(e, evento)}
+
+                              // 👉 Quando acaba drag, desbloqueia menu
+                              onDragEnd={() => setIsRightDrag(false)}
+
+                              title={
+                                evento
+                                  ? `${evento.descricao} (${evento.hora_inicio} - ${evento.hora_fim})`
+                                  : ""
+                              }
+                            >
+
                             {evento && (
                               <div className="event-info-agenda">
                                 <strong>{evento.descricao}</strong>
