@@ -235,7 +235,7 @@ const handleClose = useCallback(async () => {
     }
   }, [isEditingPreset, presetData]);
 
-  useEffect(() => {
+useEffect(() => {
   if (!show) return;
 
   const snapshot = {
@@ -257,24 +257,8 @@ const handleClose = useCallback(async () => {
   };
 
   setInitialSnapshot(snapshot);
-}, [
-  show,
-  descricao,
-  cliente,
-  parceiro,
-  produto,
-  contrato,
-  atividade,
-  data,
-  distanciaViagem,
-  tempoViagem,
-  tempoAtividade,
-  tempoFaturado,
-  valorEuro,
-  local,
-  faturavel,
-  viagemFaturavel
-]);
+
+}, [show]); 
 
 
   if (!show) return null;
