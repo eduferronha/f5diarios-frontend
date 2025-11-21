@@ -306,27 +306,40 @@ const TaskModal = ({
       return;
     }
 
-    if (!isPresetMode && !isEditingPreset) {
-      if (!cliente || !produto || !contrato || !atividade || !tempoAtividade || !tempoFaturado || !faturavel) {
+if (!isPresetMode && !isEditingPreset) {
+  if (!cliente || !produto || !contrato || !atividade || !tempoAtividade || !faturavel) {
+    await Swal.fire({
+      icon: "warning",
+      title: "Campos obrigatórios em falta",
+      text: "Preenche todos os campos obrigatórios: Cliente, Produto, Contrato, Atividade, Tempo Atividade e Faturável.",
+      confirmButtonColor: "#237c9b",
+    });
+    return;
+  }
+
+  // Tempo Faturado só obrigatório se Faturável não for "No"
+      if (faturavel !== "No" && (!tempoFaturado || tempoFaturado === "00:00")) {
         await Swal.fire({
           icon: "warning",
-          title: "Campos obrigatórios em falta",
-          text: "Preenche todos os campos obrigatórios: Cliente, Produto, Contrato, Atividade, Tempo Atividade, Tempo Faturado e Faturável.",
+          title: "Tempo Faturado inválido",
+          text: "O Tempo Faturado é obrigatório porque escolheste uma opção faturável.",
           confirmButtonColor: "#237c9b",
         });
         return;
       }
 
-      if (tempoAtividade === "00:00" || tempoFaturado === "00:00") {
+      // Tempo Atividade continua obrigatório sempre
+      if (tempoAtividade === "00:00") {
         await Swal.fire({
           icon: "warning",
-          title: "Tempos inválidos",
-          text: "O Tempo de Atividade e o Tempo Faturado não podem ser 00:00.",
+          title: "Tempo Atividade inválido",
+          text: "O Tempo de Atividade não pode ser 00:00.",
           confirmButtonColor: "#237c9b",
         });
         return;
       }
     }
+
 
     const baseTaskData = {
       descricao,
@@ -633,7 +646,8 @@ const TaskModal = ({
                 type="time"
                 value={tempoFaturado}
                 onChange={(e) => setTempoFaturado(e.target.value)}
-                required={!isPresetMode && !isEditingPreset}
+                disabled={faturavel === "No"}
+                required={faturavel !== "No" && !isPresetMode && !isEditingPreset}
               />
             </div>
             <div>
