@@ -54,7 +54,9 @@ const TaskModal = ({
   const token = localStorage.getItem("token");
 
 const handleClose = useCallback(async () => {
+
   if (initialSnapshot) {
+
     const currentState = {
       descricao,
       cliente,
@@ -92,10 +94,15 @@ const handleClose = useCallback(async () => {
     }
   }
 
+  // 🟩 Limpa a data pré-selecionada para evitar mudanças tardias na próxima abertura
+  setData("");
+
   onClose();
-}, [initialSnapshot, descricao, cliente, parceiro, produto, contrato, atividade,
-    data, distanciaViagem, tempoViagem, tempoAtividade, tempoFaturado, valorEuro,
-    local, faturavel, viagemFaturavel, onClose]);
+}, [
+  initialSnapshot,    // necessário
+  onClose             // necessário
+]);
+
 
     useEffect(() => {
       if (show) {

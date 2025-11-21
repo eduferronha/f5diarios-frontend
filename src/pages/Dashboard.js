@@ -138,6 +138,8 @@ function Dashboard() {
     setPresetToApply(null);
     setShowModal(false);
     setIsDuplicate(false);
+    setPreselectedDate(null);
+
   };
 
   const handleApplyPreset = (preset) => {
