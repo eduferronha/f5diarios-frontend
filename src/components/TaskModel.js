@@ -46,51 +46,93 @@ const TaskModal = ({
   const [datasDuplicadas, setDatasDuplicadas] = useState([]);
   const [showCalendar, setShowCalendar] = useState(true);
 
+  const [initialValues, setInitialValues] = useState(null);
+
+
   const token = localStorage.getItem("token");
 
-  const handleClose = useCallback(async () => {
-    const hasChanges =
-      descricao ||
-      cliente ||
-      parceiro ||
-      produto ||
-      contrato ||
-      atividade ||
-      tempoAtividade !== "00:00" ||
-      tempoFaturado !== "00:00" ||
-      distanciaViagem > 0 ||
-      valorEuro > 0;
-
-    if (hasChanges) {
-      const result = await Swal.fire({
-        title: "Tens a certeza?",
-        text: "Existem dados preenchidos. Queres sair sem guardar?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#237c9b",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Sim, sair",
-        cancelButtonText: "Cancelar",
-        backdrop: true,
-      });
-
-      if (!result.isConfirmed) return;
-    }
-
+const handleClose = useCallback(async () => {
+  if (!initialValues) {
     onClose();
-  }, [
-    descricao,
-    cliente,
-    parceiro,
-    produto,
-    contrato,
-    atividade,
-    tempoAtividade,
-    tempoFaturado,
-    distanciaViagem,
-    valorEuro,
-    onClose,
-  ]);
+    return;
+  }
+
+  const hasChanges =
+    descricao !== initialValues.descricao ||
+    cliente !== initialValues.cliente ||
+    parceiro !== initialValues.parceiro ||
+    produto !== initialValues.produto ||
+    contrato !== initialValues.contrato ||
+    atividade !== initialValues.atividade ||
+    data !== initialValues.data ||
+    distanciaViagem !== initialValues.distanciaViagem ||
+    tempoViagem !== initialValues.tempoViagem ||
+    tempoAtividade !== initialValues.tempoAtividade ||
+    tempoFaturado !== initialValues.tempoFaturado ||
+    valorEuro !== initialValues.valorEuro ||
+    local !== initialValues.local ||
+    faturavel !== initialValues.faturavel ||
+    viagemFaturavel !== initialValues.viagemFaturavel;
+
+  if (hasChanges) {
+    const result = await Swal.fire({
+      title: "Tens a certeza?",
+      text: "Existem dados alterados. Queres sair sem guardar?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#237c9b",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sim, sair",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (!result.isConfirmed) return;
+  }
+
+  onClose();
+}, [
+  descricao,
+  cliente,
+  parceiro,
+  produto,
+  contrato,
+  atividade,
+  data,
+  distanciaViagem,
+  tempoViagem,
+  tempoAtividade,
+  tempoFaturado,
+  valorEuro,
+  local,
+  faturavel,
+  viagemFaturavel,
+  initialValues,
+  onClose,
+]);
+
+
+  useEffect(() => {
+    if (show) {
+      setInitialValues({
+        descricao: editingTask?.descricao || "",
+        cliente: editingTask?.cliente || "",
+        parceiro: editingTask?.parceiro || "",
+        produto: editingTask?.produto || "",
+        contrato: editingTask?.contrato || "",
+        atividade: editingTask?.atividade || "",
+        data: editingTask?.data ? editingTask.data.split("T")[0] : (preselectedDate || ""),
+        distanciaViagem: editingTask?.distancia_viagem || 0,
+        tempoViagem: editingTask?.tempo_viagem || "00:00",
+        tempoAtividade: editingTask?.tempo_atividade || "00:00",
+        tempoFaturado: editingTask?.tempo_faturado || "00:00",
+        valorEuro: editingTask?.valor_euro || 0,
+        local: editingTask?.local || "Employee House",
+        faturavel: editingTask?.faturavel || "Yes",
+        viagemFaturavel: editingTask?.viagem_faturavel || "No"
+      });
+    }
+  }, [show, editingTask, preselectedDate]);
+
 
   useEffect(() => {
     if (!show) return;
