@@ -49,6 +49,7 @@ const TaskModal = ({
 
   const [initialSnapshot, setInitialSnapshot] = useState(null);
   const [isFormInitialized, setIsFormInitialized] = useState(false);
+  const [isReadyForSnapshot, setIsReadyForSnapshot] = useState(false);
 
 
 
@@ -111,10 +112,12 @@ const handleClose = useCallback(async () => {
 
 useEffect(() => {
   if (show) {
-    setIsFormInitialized(false);
     setInitialSnapshot(null);
+    setIsReadyForSnapshot(false);
+    setIsFormInitialized(false);
   }
 }, [show]);
+
 
 useEffect(() => {
   if (!show) return;
@@ -263,39 +266,44 @@ useEffect(() => {
 // ESTES ERAM OS QUE ESTAVAM NO SÍTIO ERRADO — AGORA OK
 // -----------------------------------------------------
 
-// Cria snapshot assim que TODOS os valores iniciais forem carregados
 useEffect(() => {
   if (!show) return;
 
-  const ready =
-    // Todos os campos já foram preenchidos pelos useEffects acima
-    (editingTask || presetData || isPresetMode || true)
-    && cliente !== undefined
-    && produto !== undefined
-    && atividade !== undefined;
+  // Detecta nova tarefa
+  const isNewTask = !editingTask && !presetData && !isPresetMode;
 
-  if (!ready) return;
+  // Detecta edição/duplicação
+  const isEditing = !!editingTask;
 
-  // Evita criar snapshot duas vezes
-  if (!isFormInitialized) {
-    setIsFormInitialized(true);
+  // Detecta preset aplicado
+  const isPreset = isPresetMode && !!presetData;
+
+  // Condição de readiness real:
+  const allLoaded =
+    descricao !== "" ||
+    cliente !== "" ||
+    produto !== "" ||
+    atividade !== "" ||
+    isNewTask; // nova tarefa tem inputs vazios por definição
+
+  if (allLoaded) {
+    setIsReadyForSnapshot(true);
   }
 
 }, [
   show,
   editingTask,
   presetData,
+  isPresetMode,
+  descricao,
   cliente,
-  parceiro,
   produto,
-  contrato,
-  atividade,
-  data,
+  atividade
 ]);
 
-// Criar snapshot FINAL apenas quando isFormInitialized === true
+
 useEffect(() => {
-  if (!show || !isFormInitialized) return;
+  if (!show || !isReadyForSnapshot) return;
 
   const snapshot = {
     descricao,
@@ -317,7 +325,8 @@ useEffect(() => {
 
   setInitialSnapshot(snapshot);
 
-}, [isFormInitialized, show]);
+}, [show, isReadyForSnapshot]);
+
 
 
   if (!show) return null;
