@@ -235,6 +235,48 @@ const handleClose = useCallback(async () => {
     }
   }, [isEditingPreset, presetData]);
 
+  useEffect(() => {
+  if (!show) return;
+
+  const snapshot = {
+    descricao,
+    cliente,
+    parceiro,
+    produto,
+    contrato,
+    atividade,
+    data,
+    distanciaViagem,
+    tempoViagem,
+    tempoAtividade,
+    tempoFaturado,
+    valorEuro,
+    local,
+    faturavel,
+    viagemFaturavel,
+  };
+
+  setInitialSnapshot(snapshot);
+}, [
+  show,
+  descricao,
+  cliente,
+  parceiro,
+  produto,
+  contrato,
+  atividade,
+  data,
+  distanciaViagem,
+  tempoViagem,
+  tempoAtividade,
+  tempoFaturado,
+  valorEuro,
+  local,
+  faturavel,
+  viagemFaturavel
+]);
+
+
   if (!show) return null;
 
   const handleSubmit = async (e) => {
@@ -443,47 +485,6 @@ if (!isPresetMode && !isEditingPreset) {
       toast.error("Erro ao guardar tarefa/preset.");
     }
   };
-
-  useEffect(() => {
-  if (!show) return;
-
-  const snapshot = {
-    descricao,
-    cliente,
-    parceiro,
-    produto,
-    contrato,
-    atividade,
-    data,
-    distanciaViagem,
-    tempoViagem,
-    tempoAtividade,
-    tempoFaturado,
-    valorEuro,
-    local,
-    faturavel,
-    viagemFaturavel,
-  };
-
-  setInitialSnapshot(snapshot);
-}, [
-  show,
-  descricao,
-  cliente,
-  parceiro,
-  produto,
-  contrato,
-  atividade,
-  data,
-  distanciaViagem,
-  tempoViagem,
-  tempoAtividade,
-  tempoFaturado,
-  valorEuro,
-  local,
-  faturavel,
-  viagemFaturavel
-]);
 
 
   const toggleData = (date) => {
