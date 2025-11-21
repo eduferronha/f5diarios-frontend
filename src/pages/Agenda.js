@@ -448,17 +448,16 @@ export default function Agenda() {
           inicio !== (editingEvent.hora_inicio || "09:00") ||
           fim !== (editingEvent.hora_fim || "18:00") ||
           selectedDate !== (editingEvent.data || "") ||
-          (endDate || "") !== ""   // Se escolher data fim, é alteração
+          endDate !== ""
         )
       : (
           // --- MODO NOVA MARCAÇÃO ---
           descricao.trim() !== "" ||
-          selectedUser !== "" ||
-          selectedDate !== "" ||
           inicio !== "09:00" ||
           fim !== "18:00" ||
           endDate !== ""
         );
+
 
 
 
