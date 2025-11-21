@@ -263,18 +263,37 @@ useEffect(() => {
 // ESTES ERAM OS QUE ESTAVAM NO SÍTIO ERRADO — AGORA OK
 // -----------------------------------------------------
 
+// Cria snapshot assim que TODOS os valores iniciais forem carregados
 useEffect(() => {
   if (!show) return;
 
-  const isNewTask = show && !editingTask && !isPresetMode && !presetData;
-  const isEditing = show && editingTask;
-  const isPreset = show && isPresetMode && presetData;
+  const ready =
+    // Todos os campos já foram preenchidos pelos useEffects acima
+    (editingTask || presetData || isPresetMode || true)
+    && cliente !== undefined
+    && produto !== undefined
+    && atividade !== undefined;
 
-  if (isNewTask || isEditing || isPreset) {
+  if (!ready) return;
+
+  // Evita criar snapshot duas vezes
+  if (!isFormInitialized) {
     setIsFormInitialized(true);
   }
-}, [show, editingTask, presetData, isPresetMode]);
 
+}, [
+  show,
+  editingTask,
+  presetData,
+  cliente,
+  parceiro,
+  produto,
+  contrato,
+  atividade,
+  data,
+]);
+
+// Criar snapshot FINAL apenas quando isFormInitialized === true
 useEffect(() => {
   if (!show || !isFormInitialized) return;
 
@@ -297,8 +316,8 @@ useEffect(() => {
   };
 
   setInitialSnapshot(snapshot);
-}, [show, isFormInitialized]);
 
+}, [isFormInitialized, show]);
 
 
   if (!show) return null;
