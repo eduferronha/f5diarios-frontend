@@ -47,6 +47,8 @@ const TaskModal = ({
   const [showCalendar, setShowCalendar] = useState(true);
 
   const [initialSnapshot, setInitialSnapshot] = useState(null);
+  const [isReadyForSnapshot, setIsReadyForSnapshot] = useState(false);
+
 
 
   const token = localStorage.getItem("token");
@@ -94,6 +96,13 @@ const handleClose = useCallback(async () => {
 }, [initialSnapshot, descricao, cliente, parceiro, produto, contrato, atividade,
     data, distanciaViagem, tempoViagem, tempoAtividade, tempoFaturado, valorEuro,
     local, faturavel, viagemFaturavel, onClose]);
+
+    useEffect(() => {
+      if (show) {
+        setIsReadyForSnapshot(false);
+      }
+    }, [show]);
+
 
 
   useEffect(() => {
@@ -238,6 +247,30 @@ const handleClose = useCallback(async () => {
 useEffect(() => {
   if (!show) return;
 
+  // quando todos os campos estiverem carregados, activamos o snapshot
+  setIsReadyForSnapshot(true);
+}, [
+  show,
+  descricao,
+  cliente,
+  parceiro,
+  produto,
+  contrato,
+  atividade,
+  data,
+  distanciaViagem,
+  tempoViagem,
+  tempoAtividade,
+  tempoFaturado,
+  valorEuro,
+  local,
+  faturavel,
+  viagemFaturavel
+]);
+
+useEffect(() => {
+  if (!show || !isReadyForSnapshot) return;
+
   const snapshot = {
     descricao,
     cliente,
@@ -258,7 +291,7 @@ useEffect(() => {
 
   setInitialSnapshot(snapshot);
 
-}, [show]); 
+}, [show, isReadyForSnapshot]);
 
 
   if (!show) return null;
