@@ -219,7 +219,7 @@ const TaskModal = ({
       setTempoFaturado("00:00");
       setValorEuro(0);
       setLocal("Employee House");
-      setFaturavel("No");
+      setFaturavel("Yes");
       setViagemFaturavel("No");
       setDatasDuplicadas([]);
     }
