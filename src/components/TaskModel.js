@@ -46,20 +46,32 @@ const TaskModal = ({
   const [datasDuplicadas, setDatasDuplicadas] = useState([]);
   const [showCalendar, setShowCalendar] = useState(true);
 
+  const [initialSnapshot, setInitialSnapshot] = useState(null);
+
+
   const token = localStorage.getItem("token");
 
-  const handleClose = useCallback(async () => {
-    const hasChanges =
-      descricao ||
-      cliente ||
-      parceiro ||
-      produto ||
-      contrato ||
-      atividade ||
-      tempoAtividade !== "00:00" ||
-      tempoFaturado !== "00:00" ||
-      distanciaViagem > 0 ||
-      valorEuro > 0;
+const handleClose = useCallback(async () => {
+  if (initialSnapshot) {
+    const currentState = {
+      descricao,
+      cliente,
+      parceiro,
+      produto,
+      contrato,
+      atividade,
+      data,
+      distanciaViagem,
+      tempoViagem,
+      tempoAtividade,
+      tempoFaturado,
+      valorEuro,
+      local,
+      faturavel,
+      viagemFaturavel,
+    };
+
+    const hasChanges = JSON.stringify(initialSnapshot) !== JSON.stringify(currentState);
 
     if (hasChanges) {
       const result = await Swal.fire({
@@ -76,21 +88,13 @@ const TaskModal = ({
 
       if (!result.isConfirmed) return;
     }
+  }
 
-    onClose();
-  }, [
-    descricao,
-    cliente,
-    parceiro,
-    produto,
-    contrato,
-    atividade,
-    tempoAtividade,
-    tempoFaturado,
-    distanciaViagem,
-    valorEuro,
-    onClose,
-  ]);
+  onClose();
+}, [initialSnapshot, descricao, cliente, parceiro, produto, contrato, atividade,
+    data, distanciaViagem, tempoViagem, tempoAtividade, tempoFaturado, valorEuro,
+    local, faturavel, viagemFaturavel, onClose]);
+
 
   useEffect(() => {
     if (!show) return;
@@ -439,6 +443,48 @@ if (!isPresetMode && !isEditingPreset) {
       toast.error("Erro ao guardar tarefa/preset.");
     }
   };
+
+  useEffect(() => {
+  if (!show) return;
+
+  const snapshot = {
+    descricao,
+    cliente,
+    parceiro,
+    produto,
+    contrato,
+    atividade,
+    data,
+    distanciaViagem,
+    tempoViagem,
+    tempoAtividade,
+    tempoFaturado,
+    valorEuro,
+    local,
+    faturavel,
+    viagemFaturavel,
+  };
+
+  setInitialSnapshot(snapshot);
+}, [
+  show,
+  descricao,
+  cliente,
+  parceiro,
+  produto,
+  contrato,
+  atividade,
+  data,
+  distanciaViagem,
+  tempoViagem,
+  tempoAtividade,
+  tempoFaturado,
+  valorEuro,
+  local,
+  faturavel,
+  viagemFaturavel
+]);
+
 
   const toggleData = (date) => {
     const dataISO = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
