@@ -457,23 +457,27 @@ if (!isPresetMode && !isEditingPreset) {
   const contratoOptions = contratosFiltrados.map((c) => ({ value: c.contrato, label: c.contrato }));
   const atividadeOptions = atividades.map((a) => ({ value: a.atividade, label: a.atividade }));
 
-  const titulo = isPresetMode
-    ? isEditingPreset
-      ? "Editar Preset"
-      : "Aplicar Preset"
+const titulo =
+  isPresetMode
+    ? (isEditingPreset
+        ? "Editar Preset"                 // Editar preset existente
+        : "Nova Tarefa")                  // Aplicar preset → criar tarefa
     : editingTask
       ? (isDuplicate ? "Duplicar Tarefa" : "Editar Tarefa")
       : "Nova Tarefa";
 
-  const textoBotao = isPresetMode
-    ? isEditingPreset
-      ? "Guardar Alterações"
-      : "Criar Preset"
+
+const textoBotao =
+  isPresetMode
+    ? (isEditingPreset
+        ? "Guardar Alterações"           // editar preset
+        : "Criar Tarefa")                // aplicar preset → criar tarefa
     : editingTask
-      ? isDuplicate
-        ? "Guardar Cópias"
-        : "Guardar Alterações"
-      : "Guardar";
+      ? (isDuplicate
+          ? "Guardar Cópias"
+          : "Guardar Alterações")
+      : "Criar Tarefa";
+
 
   return (
     <div className="modal-overlay">
