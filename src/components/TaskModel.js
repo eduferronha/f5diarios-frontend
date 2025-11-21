@@ -54,6 +54,8 @@ const TaskModal = ({
   const token = localStorage.getItem("token");
 
 const handleClose = useCallback(async () => {
+  setData("");
+    // 🟩 Verifica se há alterações não guardadas
 
   if (initialSnapshot) {
 
@@ -95,7 +97,6 @@ const handleClose = useCallback(async () => {
   }
 
   // 🟩 Limpa a data pré-selecionada para evitar mudanças tardias na próxima abertura
-  setData("");
 
   onClose();
 }, [
