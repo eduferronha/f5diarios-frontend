@@ -441,19 +441,24 @@ export default function Agenda() {
 
   // ✅ Fechar modal com confirmação (igual TaskModal)
   const handleCloseAgenda = useCallback(async () => {
-    const hasChanges =
-      (descricao && descricao.trim() !== "") ||
-      (inicio && inicio !== "09:00") ||
-      (fim && fim !== "18:00") ||
-      (endDate && endDate !== "") ||
-      (selectedUser && selectedUser !== "") ||
-      (editingEvent &&
-        (
+    const hasChanges = editingEvent
+      ? (
           descricao !== (editingEvent.descricao || "") ||
           inicio !== (editingEvent.hora_inicio || "09:00") ||
           fim !== (editingEvent.hora_fim || "18:00") ||
-          selectedDate !== (editingEvent.data || selectedDate)
-        ));
+          selectedDate !== (editingEvent.data || "") ||
+          (endDate || "") !== ""  // Só conta como alteração se o utilizador realmente escolheu fim
+        )
+      : (
+          // Caso seja nova marcação
+          descricao !== "" ||
+          selectedUser !== "" ||
+          selectedDate !== "" ||
+          inicio !== "09:00" ||
+          fim !== "18:00" ||
+          endDate !== ""
+        );
+
 
     if (hasChanges) {
       const result = await Swal.fire({
