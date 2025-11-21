@@ -7,6 +7,7 @@ import Select from "react-select";
 import Swal from "sweetalert2";
 import toast, { Toaster } from "react-hot-toast";
 
+
 const TaskModal = ({
   show,
   onClose,
@@ -47,17 +48,16 @@ const TaskModal = ({
   const [showCalendar, setShowCalendar] = useState(true);
 
   const [initialSnapshot, setInitialSnapshot] = useState(null);
-  const [isReadyForSnapshot, setIsReadyForSnapshot] = useState(false);
+  const [isFormInitialized, setIsFormInitialized] = useState(false);
+
 
 
 
   const token = localStorage.getItem("token");
 
 const handleClose = useCallback(async () => {
-    // 🟩 Verifica se há alterações não guardadas
 
   if (initialSnapshot) {
-
     const currentState = {
       descricao,
       cliente,
@@ -76,7 +76,8 @@ const handleClose = useCallback(async () => {
       viagemFaturavel,
     };
 
-    const hasChanges = JSON.stringify(initialSnapshot) !== JSON.stringify(currentState);
+    const hasChanges =
+      JSON.stringify(initialSnapshot) !== JSON.stringify(currentState);
 
     if (hasChanges) {
       const result = await Swal.fire({
@@ -88,28 +89,28 @@ const handleClose = useCallback(async () => {
         cancelButtonColor: "#d33",
         confirmButtonText: "Sim, sair",
         cancelButtonText: "Cancelar",
-        backdrop: true,
       });
 
       if (!result.isConfirmed) return;
     }
   }
 
-  // 🟩 Limpa a data pré-selecionada para evitar mudanças tardias na próxima abertura
+  // Limpa data pré-selecionada para NÃO causar snapshot falso na próxima nova tarefa
   setData("");
+  setIsFormInitialized(false);
 
   onClose();
-}, [
-  initialSnapshot,    // necessário
-  onClose             // necessário
-]);
+
+}, [initialSnapshot, onClose]);
 
 
-    useEffect(() => {
-      if (show) {
-        setIsReadyForSnapshot(false);
-      }
-    }, [show]);
+
+  useEffect(() => {
+    if (show) {
+      setIsFormInitialized(false);
+      setInitialSnapshot(null);
+    }
+  }, [show]);
 
 
 
@@ -252,54 +253,7 @@ const handleClose = useCallback(async () => {
     }
   }, [isEditingPreset, presetData]);
 
-useEffect(() => {
-  if (!show) return;
 
-  // quando todos os campos estiverem carregados, activamos o snapshot
-  setIsReadyForSnapshot(true);
-}, [
-  show,
-  descricao,
-  cliente,
-  parceiro,
-  produto,
-  contrato,
-  atividade,
-  data,
-  distanciaViagem,
-  tempoViagem,
-  tempoAtividade,
-  tempoFaturado,
-  valorEuro,
-  local,
-  faturavel,
-  viagemFaturavel
-]);
-
-useEffect(() => {
-  if (!show || !isReadyForSnapshot) return;
-
-  const snapshot = {
-    descricao,
-    cliente,
-    parceiro,
-    produto,
-    contrato,
-    atividade,
-    data,
-    distanciaViagem,
-    tempoViagem,
-    tempoAtividade,
-    tempoFaturado,
-    valorEuro,
-    local,
-    faturavel,
-    viagemFaturavel,
-  };
-
-  setInitialSnapshot(snapshot);
-
-}, [show, isReadyForSnapshot]);
 
 
   if (!show) return null;
@@ -510,6 +464,48 @@ if (!isPresetMode && !isEditingPreset) {
       toast.error("Erro ao guardar tarefa/preset.");
     }
   };
+
+  useEffect(() => {
+  if (!show) return;
+
+  // condições que representam cada modo
+  const isNewTask = show && !editingTask && !isPresetMode && !presetData;
+  const isEditingTask = show && editingTask;
+  const isApplyingPreset = show && isPresetMode && presetData;
+
+  if (isNewTask || isEditingTask || isApplyingPreset) {
+    setIsFormInitialized(true);
+  }
+}, [
+  show,
+  editingTask,
+  presetData,
+  isPresetMode
+]);
+
+useEffect(() => {
+  if (!show || !isFormInitialized) return;
+
+  const snapshot = {
+    descricao,
+    cliente,
+    parceiro,
+    produto,
+    contrato,
+    atividade,
+    data,
+    distanciaViagem,
+    tempoViagem,
+    tempoAtividade,
+    tempoFaturado,
+    valorEuro,
+    local,
+    faturavel,
+    viagemFaturavel,
+  };
+
+  setInitialSnapshot(snapshot);
+}, [show, isFormInitialized]);
 
 
   const toggleData = (date) => {
