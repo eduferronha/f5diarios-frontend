@@ -531,7 +531,8 @@ const textoBotao =
         <h2>{titulo}</h2>
 
         <form id="form-task" onSubmit={handleSubmit} className="form-grid">
-          {isPresetMode && (!presetData || isEditingPreset) && (
+            {isPresetMode && (isEditingPreset || !presetData) && !presetData?.id && (
+
             <div className="form-group full-width">
               <label>Nome do Preset</label>
               <input
