@@ -105,154 +105,199 @@ const handleClose = useCallback(async () => {
 
 
 
-  useEffect(() => {
-    if (show) {
-      setIsFormInitialized(false);
-      setInitialSnapshot(null);
-    }
-  }, [show]);
+// ---------------------------------------------
+// HOOKS DE EFEITO — TODOS AGRUPADOS CORRETAMENTE
+// ---------------------------------------------
 
+useEffect(() => {
+  if (show) {
+    setIsFormInitialized(false);
+    setInitialSnapshot(null);
+  }
+}, [show]);
 
+useEffect(() => {
+  if (!show) return;
 
-  useEffect(() => {
-    if (!show) return;
-
-    const handleKeyDown = (e) => {
-      if (e.key === "Enter" && document.activeElement.tagName !== "TEXTAREA") {
-        e.preventDefault();
-        const form = document.getElementById("form-task");
-        if (form) {
-          form.requestSubmit();
-        }
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && document.activeElement.tagName !== "TEXTAREA") {
+      e.preventDefault();
+      const form = document.getElementById("form-task");
+      if (form) {
+        form.requestSubmit();
       }
-
-      if (e.key === "Escape") {
-        e.preventDefault();
-        handleClose();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [show, handleClose]);
-
-  useEffect(() => {
-    if (isDuplicate) setShowCalendar(true);
-  }, [isDuplicate]);
-
-  useEffect(() => {
-    if (preselectedDate) {
-      const formattedDate = new Date(preselectedDate)
-        .toISOString()
-        .split("T")[0];
-      setData(formattedDate);
     }
-  }, [preselectedDate]);
 
-  useEffect(() => {
-    if (!show) return;
-    const fetchData = async () => {
-      try {
-        const [
-          clientesRes,
-          produtosRes,
-          contratosRes,
-          atividadesRes,
-          parceirosRes,
-        ] = await Promise.all([
-          api.get("/clients/", { headers: { Authorization: `Bearer ${token}` } }),
-          api.get("/products/", { headers: { Authorization: `Bearer ${token}` } }),
-          api.get("/contracts/", { headers: { Authorization: `Bearer ${token}` } }),
-          api.get("/activities/", { headers: { Authorization: `Bearer ${token}` } }),
-          api.get("/partners/", { headers: { Authorization: `Bearer ${token}` } }),
-        ]);
-        setClientes(clientesRes.data);
-        setProdutos(produtosRes.data);
-        setContratos(contratosRes.data);
-        setAtividades(atividadesRes.data);
-        setParceiros(parceirosRes.data);
-      } catch (error) {
-        console.error("Erro ao carregar listas:", error);
-        toast.error("Erro ao carregar listas.");
-      }
-    };
-    fetchData();
-  }, [show, token]);
-
-  useEffect(() => {
-    if (!cliente) {
-      setContratosFiltrados([]);
-      return;
+    if (e.key === "Escape") {
+      e.preventDefault();
+      handleClose();
     }
-    const filtrados = contratos.filter(
-      (c) => c.empresa === cliente || c.cliente === cliente
-    );
-    setContratosFiltrados(filtrados);
-  }, [cliente, contratos]);
+  };
 
-  useEffect(() => {
-    if (isPresetMode && presetData) {
-      setDescricao(presetData.descricao || "");
-      setCliente(presetData.cliente || "");
-      setParceiro(presetData.parceiro || "");
-      setProduto(presetData.produto || "");
-      setContrato(presetData.contrato || "");
-      setAtividade(presetData.atividade || "");
-      setDistanciaViagem(presetData.distancia_viagem || 0);
-      setTempoViagem(presetData.tempo_viagem || "00:00");
-      setTempoAtividade(presetData.tempo_atividade || "00:00");
-      setTempoFaturado(presetData.tempo_faturado || "00:00");
+  window.addEventListener("keydown", handleKeyDown);
+  return () => window.removeEventListener("keydown", handleKeyDown);
+}, [show, handleClose]);
+
+useEffect(() => {
+  if (isDuplicate) setShowCalendar(true);
+}, [isDuplicate]);
+
+useEffect(() => {
+  if (preselectedDate) {
+    const formattedDate = new Date(preselectedDate)
+      .toISOString()
+      .split("T")[0];
+    setData(formattedDate);
+  }
+}, [preselectedDate]);
+
+useEffect(() => {
+  if (!show) return;
+
+  const fetchData = async () => {
+    try {
+      const [
+        clientesRes,
+        produtosRes,
+        contratosRes,
+        atividadesRes,
+        parceirosRes,
+      ] = await Promise.all([
+        api.get("/clients/", { headers: { Authorization: `Bearer ${token}` } }),
+        api.get("/products/", { headers: { Authorization: `Bearer ${token}` } }),
+        api.get("/contracts/", { headers: { Authorization: `Bearer ${token}` } }),
+        api.get("/activities/", { headers: { Authorization: `Bearer ${token}` } }),
+        api.get("/partners/", { headers: { Authorization: `Bearer ${token}` } }),
+      ]);
+      setClientes(clientesRes.data);
+      setProdutos(produtosRes.data);
+      setContratos(contratosRes.data);
+      setAtividades(atividadesRes.data);
+      setParceiros(parceirosRes.data);
+    } catch (error) {
+      console.error("Erro ao carregar listas:", error);
+      toast.error("Erro ao carregar listas.");
     }
-  }, [isPresetMode, presetData]);
+  };
 
-  useEffect(() => {
-    if (editingTask) {
-      setDescricao(editingTask.descricao || "");
-      setCliente(editingTask.cliente || "");
-      setParceiro(editingTask.parceiro || "");
-      setProduto(editingTask.produto || "");
-      setContrato(editingTask.contrato || "");
-      setAtividade(editingTask.atividade || "");
-      setData(editingTask.data ? editingTask.data.split("T")[0] : "");
-      setDistanciaViagem(editingTask.distancia_viagem || 0);
-      setTempoViagem(editingTask.tempo_viagem || "00:00");
-      setTempoAtividade(editingTask.tempo_atividade || "00:00");
-      setTempoFaturado(editingTask.tempo_faturado || "00:00");
-      setValorEuro(editingTask.valor_euro || 0);
-      setLocal(editingTask.local || "Employee House");
-      setFaturavel(editingTask.faturavel || "No");
-      setViagemFaturavel(editingTask.viagem_faturavel || "No");
-    }
-  }, [editingTask, isDuplicate]);
+  fetchData();
+}, [show, token]);
 
-  useEffect(() => {
-    if (show && !editingTask && !isPresetMode && !presetData) {
-      setNomePreset("");
-      setDescricao("");
-      setCliente("");
-      setParceiro("");
-      setProduto("");
-      setContrato("");
-      setAtividade("");
-      setData(preselectedDate ? new Date(preselectedDate).toISOString().split("T")[0] : "");
-      setDistanciaViagem(0);
-      setTempoViagem("00:00");
-      setTempoAtividade("00:00");
-      setTempoFaturado("00:00");
-      setValorEuro(0);
-      setLocal("Employee House");
-      setFaturavel("Yes");
-      setViagemFaturavel("No");
-      setDatasDuplicadas([]);
-    }
-  }, [show, editingTask, isPresetMode, presetData, preselectedDate]);
+useEffect(() => {
+  if (!cliente) {
+    setContratosFiltrados([]);
+    return;
+  }
 
-  useEffect(() => {
-    if (isEditingPreset && presetData) {
-      setNomePreset(presetData.nome || "");
-    }
-  }, [isEditingPreset, presetData]);
+  const filtrados = contratos.filter(
+    (c) => c.empresa === cliente || c.cliente === cliente
+  );
 
+  setContratosFiltrados(filtrados);
+}, [cliente, contratos]);
+
+useEffect(() => {
+  if (isPresetMode && presetData) {
+    setDescricao(presetData.descricao || "");
+    setCliente(presetData.cliente || "");
+    setParceiro(presetData.parceiro || "");
+    setProduto(presetData.produto || "");
+    setContrato(presetData.contrato || "");
+    setAtividade(presetData.atividade || "");
+    setDistanciaViagem(presetData.distancia_viagem || 0);
+    setTempoViagem(presetData.tempo_viagem || "00:00");
+    setTempoAtividade(presetData.tempo_atividade || "00:00");
+    setTempoFaturado(presetData.tempo_faturado || "00:00");
+  }
+}, [isPresetMode, presetData]);
+
+useEffect(() => {
+  if (editingTask) {
+    setDescricao(editingTask.descricao || "");
+    setCliente(editingTask.cliente || "");
+    setParceiro(editingTask.parceiro || "");
+    setProduto(editingTask.produto || "");
+    setContrato(editingTask.contrato || "");
+    setAtividade(editingTask.atividade || "");
+    setData(editingTask.data ? editingTask.data.split("T")[0] : "");
+    setDistanciaViagem(editingTask.distancia_viagem || 0);
+    setTempoViagem(editingTask.tempo_viagem || "00:00");
+    setTempoAtividade(editingTask.tempo_atividade || "00:00");
+    setTempoFaturado(editingTask.tempo_faturado || "00:00");
+    setValorEuro(editingTask.valor_euro || 0);
+    setLocal(editingTask.local || "Employee House");
+    setFaturavel(editingTask.faturavel || "No");
+    setViagemFaturavel(editingTask.viagem_faturavel || "No");
+  }
+}, [editingTask, isDuplicate]);
+
+useEffect(() => {
+  if (show && !editingTask && !isPresetMode && !presetData) {
+    setNomePreset("");
+    setDescricao("");
+    setCliente("");
+    setParceiro("");
+    setProduto("");
+    setContrato("");
+    setAtividade("");
+    setData(preselectedDate ? new Date(preselectedDate).toISOString().split("T")[0] : "");
+    setDistanciaViagem(0);
+    setTempoViagem("00:00");
+    setTempoAtividade("00:00");
+    setTempoFaturado("00:00");
+    setValorEuro(0);
+    setLocal("Employee House");
+    setFaturavel("Yes");
+    setViagemFaturavel("No");
+    setDatasDuplicadas([]);
+  }
+}, [show, editingTask, isPresetMode, presetData, preselectedDate]);
+
+useEffect(() => {
+  if (isEditingPreset && presetData) {
+    setNomePreset(presetData.nome || "");
+  }
+}, [isEditingPreset, presetData]);
+
+// -----------------------------------------------------
+// ESTES ERAM OS QUE ESTAVAM NO SÍTIO ERRADO — AGORA OK
+// -----------------------------------------------------
+
+useEffect(() => {
+  if (!show) return;
+
+  const isNewTask = show && !editingTask && !isPresetMode && !presetData;
+  const isEditing = show && editingTask;
+  const isPreset = show && isPresetMode && presetData;
+
+  if (isNewTask || isEditing || isPreset) {
+    setIsFormInitialized(true);
+  }
+}, [show, editingTask, presetData, isPresetMode]);
+
+useEffect(() => {
+  if (!show || !isFormInitialized) return;
+
+  const snapshot = {
+    descricao,
+    cliente,
+    parceiro,
+    produto,
+    contrato,
+    atividade,
+    data,
+    distanciaViagem,
+    tempoViagem,
+    tempoAtividade,
+    tempoFaturado,
+    valorEuro,
+    local,
+    faturavel,
+    viagemFaturavel,
+  };
+
+  setInitialSnapshot(snapshot);
+}, [show, isFormInitialized]);
 
 
 
@@ -465,47 +510,6 @@ if (!isPresetMode && !isEditingPreset) {
     }
   };
 
-  useEffect(() => {
-  if (!show) return;
-
-  // condições que representam cada modo
-  const isNewTask = show && !editingTask && !isPresetMode && !presetData;
-  const isEditingTask = show && editingTask;
-  const isApplyingPreset = show && isPresetMode && presetData;
-
-  if (isNewTask || isEditingTask || isApplyingPreset) {
-    setIsFormInitialized(true);
-  }
-}, [
-  show,
-  editingTask,
-  presetData,
-  isPresetMode
-]);
-
-useEffect(() => {
-  if (!show || !isFormInitialized) return;
-
-  const snapshot = {
-    descricao,
-    cliente,
-    parceiro,
-    produto,
-    contrato,
-    atividade,
-    data,
-    distanciaViagem,
-    tempoViagem,
-    tempoAtividade,
-    tempoFaturado,
-    valorEuro,
-    local,
-    faturavel,
-    viagemFaturavel,
-  };
-
-  setInitialSnapshot(snapshot);
-}, [show, isFormInitialized]);
 
 
   const toggleData = (date) => {
