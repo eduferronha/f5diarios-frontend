@@ -11,6 +11,7 @@ import Agenda from "./pages/Agenda";
 import Atividade from "./pages/Atividade";
 import ProjetosPage from "./pages/ProjetosPage";
 import ProfilePage from "./pages/ProfilePage";
+import AuthCallback from "../auth/callback/AuthCallback";
 import { Toaster } from "react-hot-toast";
 
 function App() {
