@@ -121,6 +121,9 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route path="/auth/callback" element={<AuthCallback />} />
+
       </Routes>
     </Router>
     </>

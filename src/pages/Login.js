@@ -22,6 +22,11 @@ function Login() {
   }
 };
 
+const handleMicrosoftLogin = async () => {
+  const response = await api.get("/auth/entra-login");
+  window.location.href = response.data.auth_url;
+};
+
 
   return (
     <div className="login-container">
@@ -44,6 +49,11 @@ function Login() {
             required
           />
           <button type="submit">Entrar</button>
+
+          <button type="button" onClick={handleMicrosoftLogin} className="entra-btn">
+            Entrar com Microsoft
+          </button>
+
           {error && <p className="error">{error}</p>}
         </form>
       </div>
