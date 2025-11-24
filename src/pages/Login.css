@@ -113,38 +113,35 @@
 
 
 .entra-btn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+
+  background-color: #2F2F6C !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
 
-  width: 100%;
-  padding: 10px 16px;
+  transition: background-color 0.2s ease-in-out;
+}
 
-  border: 1px solid #d1d1d1;
-  border-radius: 4px;
-
-  background-color: #ffffff;
-  cursor: pointer;
-
-  font-size: 15px;
-  font-weight: 500;
-  color: #444;
-
-  transition: background 0.2s ease, transform 0.1s ease;
+.entra-btn img.microsoft-logo {
+  width: 20px;
+  height: 20px;
 }
 
 .entra-btn:hover {
-  background-color: #f2f2f2;
+  background-color: #1E1E4F !important;
 }
 
-.entra-btn:active {
-  transform: scale(0.98);
-}
-
-/* Ícone da Microsoft dentro do botão */
-.entra-btn .ms-icon {
-  width: 20px;
-  height: 20px;
-  display: inline-block;
+.microsoft-icon {
+  display: flex;
+  align-items: center;
 }

@@ -51,8 +51,18 @@ const handleMicrosoftLogin = async () => {
           <button type="submit">Entrar</button>
 
           <button type="button" onClick={handleMicrosoftLogin} className="entra-btn">
+            <span className="microsoft-icon">
+              <svg width="20" height="20" viewBox="0 0 23 23">
+                <rect width="10" height="10" x="0" y="0" fill="#F35325" />
+                <rect width="10" height="10" x="12" y="0" fill="#81BC06" />
+                <rect width="10" height="10" x="0" y="12" fill="#05A6F0" />
+                <rect width="10" height="10" x="12" y="12" fill="#FFBA08" />
+              </svg>
+            </span>
             Entrar com Microsoft
           </button>
+
+
 
           {error && <p className="error">{error}</p>}
         </form>
