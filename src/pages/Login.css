@@ -110,3 +110,41 @@
     transform: translateY(0);
   }
 }
+
+
+.entra-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  width: 100%;
+  padding: 10px 16px;
+
+  border: 1px solid #d1d1d1;
+  border-radius: 4px;
+
+  background-color: #ffffff;
+  cursor: pointer;
+
+  font-size: 15px;
+  font-weight: 500;
+  color: #444;
+
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.entra-btn:hover {
+  background-color: #f2f2f2;
+}
+
+.entra-btn:active {
+  transform: scale(0.98);
+}
+
+/* Ícone da Microsoft dentro do botão */
+.entra-btn .ms-icon {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+}
