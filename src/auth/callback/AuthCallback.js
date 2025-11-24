@@ -10,7 +10,8 @@ function AuthCallback() {
     const code = urlParams.get("code");
 
     async function getToken() {
-      const response = await api.get(`/auth/entra-callback?code=${code}`);
+      const response = await api.get(`/auth/entra/entra-callback?code=${code}`)
+
 
       localStorage.setItem("token", response.data.access_token);
       localStorage.setItem("user", JSON.stringify(response.data.user));

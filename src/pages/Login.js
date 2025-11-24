@@ -23,7 +23,7 @@ function Login() {
 };
 
 const handleMicrosoftLogin = async () => {
-  const response = await api.get("/auth/entra-login");
+  const response = await api.get("/auth/entra/entra-login");
   window.location.href = response.data.auth_url;
 };
 
