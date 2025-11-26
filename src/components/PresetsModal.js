@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import api from "../services/api";
 import TaskModal from "./TaskModel";
+import TaskPresetModal from "./TaskModel";
 import "../components/PresetsModel.css";
 import { Trash2, Edit3 } from "lucide-react";
 import Swal from "sweetalert2";
@@ -302,17 +303,25 @@ const PresetsModal = ({ show, onClose }) => {
       </div>
 
       {showTaskModal && (
-        <TaskModal
+        // <TaskModal
+        //   show={showTaskModal}
+        //   onClose={() => {
+        //     setShowTaskModal(false);
+        //     setEditingPreset(null);
+        //   }}
+        //   presetData={editingPreset ? editingPreset : presetToApply}
+        //   isPresetMode={true}
+        //   isEditingPreset={!!editingPreset}
+        //   onPresetSaved={handleSavePreset}
+        // />
+        <TaskPresetModal
           show={showTaskModal}
-          onClose={() => {
-            setShowTaskModal(false);
-            setEditingPreset(null);
-          }}
-          presetData={editingPreset ? editingPreset : presetToApply}
-          isPresetMode={true}
+          onClose={() => setShowTaskModal(false)}
+          presetData={editingPreset ?? null}
           isEditingPreset={!!editingPreset}
           onPresetSaved={handleSavePreset}
         />
+
       )}
     </div>
   );

@@ -5,7 +5,7 @@ import "../components/TaskModel.css";
 import api from "../services/api";
 import Select from "react-select";
 import Swal from "sweetalert2";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 
 const TaskModal = ({
   show,
@@ -13,9 +13,13 @@ const TaskModal = ({
   onTaskAdded,
   editingTask,
   isDuplicate,
+  isPresetMode = false,
+  onPresetSaved,
   presetData,
   preselectedDate,
+  isEditingPreset,
 }) => {
+  const [nomePreset, setNomePreset] = useState("");
   const [descricao, setDescricao] = useState("");
   const [cliente, setCliente] = useState("");
   const [parceiro, setParceiro] = useState("");
@@ -23,13 +27,11 @@ const TaskModal = ({
   const [contrato, setContrato] = useState("");
   const [atividade, setAtividade] = useState("");
   const [data, setData] = useState("");
-
   const [distanciaViagem, setDistanciaViagem] = useState(0);
   const [tempoViagem, setTempoViagem] = useState("00:00");
   const [tempoAtividade, setTempoAtividade] = useState("00:00");
   const [tempoFaturado, setTempoFaturado] = useState("00:00");
   const [valorEuro, setValorEuro] = useState(0);
-
   const [local, setLocal] = useState("Employee House");
   const [faturavel, setFaturavel] = useState("Yes");
   const [viagemFaturavel, setViagemFaturavel] = useState("No");
@@ -42,69 +44,72 @@ const TaskModal = ({
   const [contratosFiltrados, setContratosFiltrados] = useState([]);
 
   const [datasDuplicadas, setDatasDuplicadas] = useState([]);
+  const [showCalendar, setShowCalendar] = useState(true);
 
   const [initialValues, setInitialValues] = useState(null);
 
+
   const token = localStorage.getItem("token");
 
-  const handleClose = useCallback(async () => {
-    if (!initialValues) {
-      onClose();
-      return;
-    }
-
-    const hasChanges =
-      descricao !== initialValues.descricao ||
-      cliente !== initialValues.cliente ||
-      parceiro !== initialValues.parceiro ||
-      produto !== initialValues.produto ||
-      contrato !== initialValues.contrato ||
-      atividade !== initialValues.atividade ||
-      data !== initialValues.data ||
-      distanciaViagem !== initialValues.distanciaViagem ||
-      tempoViagem !== initialValues.tempoViagem ||
-      tempoAtividade !== initialValues.tempoAtividade ||
-      tempoFaturado !== initialValues.tempoFaturado ||
-      valorEuro !== initialValues.valorEuro ||
-      local !== initialValues.local ||
-      faturavel !== initialValues.faturavel ||
-      viagemFaturavel !== initialValues.viagemFaturavel;
-
-    if (hasChanges) {
-      const result = await Swal.fire({
-        title: "Tens a certeza?",
-        text: "Existem dados alterados. Queres sair sem guardar?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#237c9b",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Sim, sair",
-        cancelButtonText: "Cancelar",
-      });
-
-      if (!result.isConfirmed) return;
-    }
-
+const handleClose = useCallback(async () => {
+  if (!initialValues) {
     onClose();
-  }, [
-    descricao,
-    cliente,
-    parceiro,
-    produto,
-    contrato,
-    atividade,
-    data,
-    distanciaViagem,
-    tempoViagem,
-    tempoAtividade,
-    tempoFaturado,
-    valorEuro,
-    local,
-    faturavel,
-    viagemFaturavel,
-    initialValues,
-    onClose,
-  ]);
+    return;
+  }
+
+  const hasChanges =
+    descricao !== initialValues.descricao ||
+    cliente !== initialValues.cliente ||
+    parceiro !== initialValues.parceiro ||
+    produto !== initialValues.produto ||
+    contrato !== initialValues.contrato ||
+    atividade !== initialValues.atividade ||
+    data !== initialValues.data ||
+    distanciaViagem !== initialValues.distanciaViagem ||
+    tempoViagem !== initialValues.tempoViagem ||
+    tempoAtividade !== initialValues.tempoAtividade ||
+    tempoFaturado !== initialValues.tempoFaturado ||
+    valorEuro !== initialValues.valorEuro ||
+    local !== initialValues.local ||
+    faturavel !== initialValues.faturavel ||
+    viagemFaturavel !== initialValues.viagemFaturavel;
+
+  if (hasChanges) {
+    const result = await Swal.fire({
+      title: "Tens a certeza?",
+      text: "Existem dados alterados. Queres sair sem guardar?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#237c9b",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sim, sair",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (!result.isConfirmed) return;
+  }
+
+  onClose();
+}, [
+  descricao,
+  cliente,
+  parceiro,
+  produto,
+  contrato,
+  atividade,
+  data,
+  distanciaViagem,
+  tempoViagem,
+  tempoAtividade,
+  tempoFaturado,
+  valorEuro,
+  local,
+  faturavel,
+  viagemFaturavel,
+  initialValues,
+  onClose,
+]);
+
 
   useEffect(() => {
     if (show) {
@@ -115,9 +120,7 @@ const TaskModal = ({
         produto: editingTask?.produto || "",
         contrato: editingTask?.contrato || "",
         atividade: editingTask?.atividade || "",
-        data: editingTask?.data
-          ? editingTask.data.split("T")[0]
-          : preselectedDate || "",
+        data: editingTask?.data ? editingTask.data.split("T")[0] : (preselectedDate || ""),
         distanciaViagem: editingTask?.distancia_viagem || 0,
         tempoViagem: editingTask?.tempo_viagem || "00:00",
         tempoAtividade: editingTask?.tempo_atividade || "00:00",
@@ -125,18 +128,22 @@ const TaskModal = ({
         valorEuro: editingTask?.valor_euro || 0,
         local: editingTask?.local || "Employee House",
         faturavel: editingTask?.faturavel || "Yes",
-        viagemFaturavel: editingTask?.viagem_faturavel || "No",
+        viagemFaturavel: editingTask?.viagem_faturavel || "No"
       });
     }
   }, [show, editingTask, preselectedDate]);
 
+
   useEffect(() => {
     if (!show) return;
 
-    const listener = (e) => {
+    const handleKeyDown = (e) => {
       if (e.key === "Enter" && document.activeElement.tagName !== "TEXTAREA") {
         e.preventDefault();
-        document.getElementById("form-task")?.requestSubmit();
+        const form = document.getElementById("form-task");
+        if (form) {
+          form.requestSubmit();
+        }
       }
 
       if (e.key === "Escape") {
@@ -145,42 +152,51 @@ const TaskModal = ({
       }
     };
 
-    window.addEventListener("keydown", listener);
-    return () => window.removeEventListener("keydown", listener);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [show, handleClose]);
 
   useEffect(() => {
+    if (isDuplicate) setShowCalendar(true);
+  }, [isDuplicate]);
+
+  useEffect(() => {
     if (preselectedDate) {
-      const formatted = new Date(preselectedDate).toISOString().split("T")[0];
-      setData(formatted);
+      const formattedDate = new Date(preselectedDate)
+        .toISOString()
+        .split("T")[0];
+      setData(formattedDate);
     }
   }, [preselectedDate]);
 
   useEffect(() => {
     if (!show) return;
-
-    const load = async () => {
+    const fetchData = async () => {
       try {
-        const [c1, c2, c3, c4, c5] = await Promise.all([
+        const [
+          clientesRes,
+          produtosRes,
+          contratosRes,
+          atividadesRes,
+          parceirosRes,
+        ] = await Promise.all([
           api.get("/clients/", { headers: { Authorization: `Bearer ${token}` } }),
           api.get("/products/", { headers: { Authorization: `Bearer ${token}` } }),
           api.get("/contracts/", { headers: { Authorization: `Bearer ${token}` } }),
           api.get("/activities/", { headers: { Authorization: `Bearer ${token}` } }),
           api.get("/partners/", { headers: { Authorization: `Bearer ${token}` } }),
         ]);
-
-        setClientes(c1.data);
-        setProdutos(c2.data);
-        setContratos(c3.data);
-        setAtividades(c4.data);
-        setParceiros(c5.data);
-      } catch (err) {
-        console.error(err);
+        setClientes(clientesRes.data);
+        setProdutos(produtosRes.data);
+        setContratos(contratosRes.data);
+        setAtividades(atividadesRes.data);
+        setParceiros(parceirosRes.data);
+      } catch (error) {
+        console.error("Erro ao carregar listas:", error);
         toast.error("Erro ao carregar listas.");
       }
     };
-
-    load();
+    fetchData();
   }, [show, token]);
 
   useEffect(() => {
@@ -188,16 +204,14 @@ const TaskModal = ({
       setContratosFiltrados([]);
       return;
     }
-
-    setContratosFiltrados(
-      contratos.filter(
-        (c) => c.empresa === cliente || c.cliente === cliente
-      )
+    const filtrados = contratos.filter(
+      (c) => c.empresa === cliente || c.cliente === cliente
     );
+    setContratosFiltrados(filtrados);
   }, [cliente, contratos]);
 
   useEffect(() => {
-    if (presetData && !editingTask) {
+    if (isPresetMode && presetData) {
       setDescricao(presetData.descricao || "");
       setCliente(presetData.cliente || "");
       setParceiro(presetData.parceiro || "");
@@ -209,7 +223,7 @@ const TaskModal = ({
       setTempoAtividade(presetData.tempo_atividade || "00:00");
       setTempoFaturado(presetData.tempo_faturado || "00:00");
     }
-  }, [presetData, editingTask]);
+  }, [isPresetMode, presetData]);
 
   useEffect(() => {
     if (editingTask) {
@@ -219,37 +233,28 @@ const TaskModal = ({
       setProduto(editingTask.produto || "");
       setContrato(editingTask.contrato || "");
       setAtividade(editingTask.atividade || "");
-
-      setData(
-        editingTask.data ? editingTask.data.split("T")[0] : ""
-      );
-
+      setData(editingTask.data ? editingTask.data.split("T")[0] : "");
       setDistanciaViagem(editingTask.distancia_viagem || 0);
       setTempoViagem(editingTask.tempo_viagem || "00:00");
       setTempoAtividade(editingTask.tempo_atividade || "00:00");
       setTempoFaturado(editingTask.tempo_faturado || "00:00");
       setValorEuro(editingTask.valor_euro || 0);
       setLocal(editingTask.local || "Employee House");
-      setFaturavel(editingTask.faturavel || "Yes");
+      setFaturavel(editingTask.faturavel || "No");
       setViagemFaturavel(editingTask.viagem_faturavel || "No");
     }
-  }, [editingTask]);
+  }, [editingTask, isDuplicate]);
 
   useEffect(() => {
-    if (show && !editingTask && !presetData) {
+    if (show && !editingTask && !isPresetMode && !presetData) {
+      setNomePreset("");
       setDescricao("");
       setCliente("");
       setParceiro("");
       setProduto("");
       setContrato("");
       setAtividade("");
-
-      setData(
-        preselectedDate
-          ? new Date(preselectedDate).toISOString().split("T")[0]
-          : ""
-      );
-
+      setData(preselectedDate ? new Date(preselectedDate).toISOString().split("T")[0] : "");
       setDistanciaViagem(0);
       setTempoViagem("00:00");
       setTempoAtividade("00:00");
@@ -260,41 +265,125 @@ const TaskModal = ({
       setViagemFaturavel("No");
       setDatasDuplicadas([]);
     }
-  }, [show, editingTask, presetData, preselectedDate]);
+  }, [show, editingTask, isPresetMode, presetData, preselectedDate]);
+
+  useEffect(() => {
+    if (isEditingPreset && presetData) {
+      setNomePreset(presetData.nome || "");
+    }
+  }, [isEditingPreset, presetData]);
 
   if (!show) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!cliente || !produto || !contrato || !atividade || !tempoAtividade) {
-      return Swal.fire({
-        icon: "warning",
-        title: "Campos obrigatórios",
-        text: "Preenche todos os campos obrigatórios.",
-        confirmButtonColor: "#237c9b",
-      });
+    // 🟦 Editar preset existente
+    if (isPresetMode && isEditingPreset) {
+      const presetPayload = {
+        descricao,
+        cliente,
+        parceiro,
+        produto,
+        contrato,
+        atividade,
+        tempo_atividade: tempoAtividade,
+        tempo_faturado: tempoFaturado,
+        tempo_viagem: tempoViagem,
+        distancia_viagem: distanciaViagem,
+        valor_euro: valorEuro,
+        nome: nomePreset.trim(),
+      };
+
+      try {
+        await onPresetSaved(presetPayload);
+        onClose();
+      } catch (err) {
+        console.error(err);
+        toast.error("Erro ao guardar preset.");
+      }
+      return;
     }
 
-    if (faturavel !== "No" && (!tempoFaturado || tempoFaturado === "00:00")) {
-      return Swal.fire({
-        icon: "warning",
-        title: "Tempo Faturado inválido",
-        text: "Tempo faturado é obrigatório quando marcaste como faturável.",
-        confirmButtonColor: "#237c9b",
-      });
+
+// 🟩 Criar novo preset
+    if (isPresetMode && !isEditingPreset) {
+
+      if (!nomePreset.trim()) {
+        await Swal.fire({
+          icon: "warning",
+          title: "Campo obrigatório",
+          text: "O campo 'Nome do Preset' é obrigatório.",
+          confirmButtonColor: "#237c9b",
+        });
+        return;
+      }
+
+      const baseTaskData = {
+        descricao,
+        cliente,
+        parceiro,
+        produto,
+        contrato,
+        atividade,
+        tempo_atividade: tempoAtividade,
+        tempo_faturado: tempoFaturado,
+        tempo_viagem: tempoViagem,
+        distancia_viagem: distanciaViagem,
+        valor_euro: valorEuro,
+        local,
+        faturavel,
+        viagem_faturavel: viagemFaturavel,
+      };
+
+      const presetPayload = { ...baseTaskData, nome: nomePreset.trim() };
+      try {
+        await onPresetSaved(presetPayload);
+        // toast.success("Preset guardado com sucesso!");
+        onClose();
+      } catch (error) {
+        console.error("Task - Erro ao guardar preset:", error);
+        toast.error("Erro ao guardar preset.");
+      }
+      return;
     }
 
-    if (!data && !isDuplicate) {
-      return Swal.fire({
-        icon: "warning",
-        title: "Data em falta",
-        text: "Seleciona uma data.",
-        confirmButtonColor: "#237c9b",
-      });
+if (!isPresetMode && !isEditingPreset) {
+  if (!cliente || !produto || !contrato || !atividade || !tempoAtividade || !faturavel) {
+    await Swal.fire({
+      icon: "warning",
+      title: "Campos obrigatórios em falta",
+      text: "Preenche todos os campos obrigatórios: Cliente, Produto, Contrato, Atividade, Tempo Atividade e Faturável.",
+      confirmButtonColor: "#237c9b",
+    });
+    return;
+  }
+
+  // Tempo Faturado só obrigatório se Faturável não for "No"
+      if (faturavel !== "No" && (!tempoFaturado || tempoFaturado === "00:00")) {
+        await Swal.fire({
+          icon: "warning",
+          title: "Tempo Faturado inválido",
+          text: "O Tempo Faturado é obrigatório porque escolheste uma opção faturável.",
+          confirmButtonColor: "#237c9b",
+        });
+        return;
+      }
+
+      // Tempo Atividade continua obrigatório sempre
+      if (tempoAtividade === "00:00") {
+        await Swal.fire({
+          icon: "warning",
+          title: "Tempo Atividade inválido",
+          text: "O Tempo de Atividade não pode ser 00:00.",
+          confirmButtonColor: "#237c9b",
+        });
+        return;
+      }
     }
 
-    const payload = {
+
+    const baseTaskData = {
       descricao,
       cliente,
       parceiro,
@@ -312,45 +401,90 @@ const TaskModal = ({
     };
 
     try {
-      if (editingTask && !isDuplicate) {
-        await api.put(`/tasks/${editingTask.id}`, { ...payload, data }, {
+      if (!isPresetMode && presetData && !editingTask) {
+        if (!data) {
+          await Swal.fire({
+            icon: "warning",
+            title: "Data em falta",
+            text: "Seleciona uma data para a nova tarefa.",
+            confirmButtonColor: "#237c9b",
+          });
+          return;
+        }
+
+        await api.post("/tasks", { ...baseTaskData, data }, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        toast.success("Tarefa atualizada com sucesso!");
+        toast.success("Tarefa criada com sucesso!");
+        onTaskAdded && onTaskAdded();
+        onClose();
+        return;
       }
 
-      else if (isDuplicate && datasDuplicadas.length > 0) {
-        const todasAsDatas = [data, ...datasDuplicadas];
+      if (!isPresetMode) {
+        if (!descricao || !cliente || !produto || !contrato || !atividade) {
+          await Swal.fire({
+            icon: "warning",
+            title: "Campos obrigatórios",
+            text: "Preenche todos os campos obrigatórios.",
+            confirmButtonColor: "#237c9b",
+          });
+          return;
+        }
+      }
 
+      if (isDuplicate && datasDuplicadas.length === 0) {
+        await Swal.fire({
+          icon: "warning",
+          title: "Nenhuma data selecionada",
+          text: "Seleciona pelo menos uma data para duplicar.",
+          confirmButtonColor: "#237c9b",
+        });
+        return;
+      }
+
+      if (!isDuplicate && !data && !isPresetMode) {
+        await Swal.fire({
+          icon: "warning",
+          title: "Data em falta",
+          text: "Seleciona uma data.",
+          confirmButtonColor: "#237c9b",
+        });
+        return;
+      }
+
+      if (editingTask && !isDuplicate) {
+        await api.put(`/tasks/${editingTask.id}`, { ...baseTaskData, data }, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        toast.success("Tarefa atualizada com sucesso!");
+      } else if (isDuplicate && datasDuplicadas.length > 0) {
+        const todasAsDatas = [data, ...datasDuplicadas];
         for (const d of todasAsDatas) {
-          await api.post("/tasks", { ...payload, data: d }, {
+          await api.post("/tasks", { ...baseTaskData, data: d }, {
             headers: { Authorization: `Bearer ${token}` },
           });
         }
-
         toast.success("Tarefas duplicadas com sucesso!");
-      }
-
-      else {
-        await api.post("/tasks", { ...payload, data }, {
+      } else {
+        await api.post("/tasks", { ...baseTaskData, data }, {
           headers: { Authorization: `Bearer ${token}` },
         });
-
         toast.success("Tarefa criada com sucesso!");
       }
 
       onTaskAdded && onTaskAdded();
       onClose();
-    } catch (err) {
-      console.error(err);
-      toast.error("Erro ao guardar tarefa.");
+    } catch (error) {
+      console.error("Erro ao guardar tarefa/preset:", error);
+      toast.error("Erro ao guardar tarefa/preset.");
     }
   };
 
   const toggleData = (date) => {
     const dataISO = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
-      .toLocaleDateString("en-CA");
+      .toLocaleDateString("en-CA", { timeZone: "Europe/Lisbon" });
 
     if (datasDuplicadas.includes(dataISO)) {
       setDatasDuplicadas(datasDuplicadas.filter((d) => d !== dataISO));
@@ -365,20 +499,31 @@ const TaskModal = ({
   const contratoOptions = contratosFiltrados.map((c) => ({ value: c.contrato, label: c.contrato }));
   const atividadeOptions = atividades.map((a) => ({ value: a.atividade, label: a.atividade }));
 
-  const titulo = editingTask
-    ? isDuplicate
-      ? "Duplicar Tarefa"
-      : "Editar Tarefa"
-    : "Nova Tarefa";
+const titulo =
+  isPresetMode
+    ? (isEditingPreset
+        ? "Editar Preset"                 // Editar preset existente
+        : "Nova Tarefa")                  // Aplicar preset → criar tarefa
+    : editingTask
+      ? (isDuplicate ? "Duplicar Tarefa" : "Editar Tarefa")
+      : "Nova Tarefa";
 
-  const textoBotao = editingTask
-    ? isDuplicate
-      ? "Guardar Cópias"
-      : "Guardar Alterações"
-    : "Criar Tarefa";
+
+const textoBotao =
+  isPresetMode
+    ? (isEditingPreset
+        ? "Guardar Alterações"           // editar preset
+        : "Criar Tarefa")                // aplicar preset → criar tarefa
+    : editingTask
+      ? (isDuplicate
+          ? "Guardar Cópias"
+          : "Guardar Alterações")
+      : "Criar Tarefa";
+
 
   return (
     <div className="modal-overlay">
+      {/* <Toaster position="top-center" reverseOrder={false} /> */}
       <div
         className={`modal ${isDuplicate ? "modal-large" : ""}`}
         onClick={(e) => e.stopPropagation()}
@@ -386,6 +531,20 @@ const TaskModal = ({
         <h2>{titulo}</h2>
 
         <form id="form-task" onSubmit={handleSubmit} className="form-grid">
+            {isPresetMode && (isEditingPreset || !presetData) && !presetData?.id && (
+
+            <div className="form-group full-width">
+              <label>Nome do Preset</label>
+              <input
+                type="text"
+                placeholder="Ex: Cliente X - Instalação"
+                value={nomePreset}
+                onChange={(e) => setNomePreset(e.target.value)}
+                required={true}
+              />
+            </div>
+          )}
+
 
           {!isDuplicate ? (
             <div className="form-group full-width">
@@ -395,7 +554,7 @@ const TaskModal = ({
                   type="date"
                   value={data}
                   onChange={(e) => setData(e.target.value)}
-                  required
+                  required={!isPresetMode && !isEditingPreset}
                 />
                 <button
                   type="button"
@@ -431,7 +590,9 @@ const TaskModal = ({
                   tileClassName={({ date }) => {
                     const dataISO = new Date(
                       date.getTime() - date.getTimezoneOffset() * 60000
-                    ).toLocaleDateString("en-CA");
+                    ).toLocaleDateString("en-CA", {
+                      timeZone: "Europe/Lisbon",
+                    });
                     return datasDuplicadas.includes(dataISO)
                       ? "selected-day"
                       : null;
@@ -448,7 +609,7 @@ const TaskModal = ({
               placeholder="Descreve a tarefa..."
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
-              required
+              required={!isPresetMode && !isEditingPreset}
             />
           </div>
 
@@ -461,7 +622,7 @@ const TaskModal = ({
               placeholder="Seleciona um cliente..."
               isClearable
               isSearchable
-              required
+              required={!isPresetMode && !isEditingPreset}
             />
           </div>
 
@@ -486,7 +647,7 @@ const TaskModal = ({
               placeholder="Seleciona um produto..."
               isClearable
               isSearchable
-              required
+              required={!isPresetMode && !isEditingPreset}
             />
           </div>
 
@@ -500,7 +661,7 @@ const TaskModal = ({
               isDisabled={!cliente}
               isClearable
               isSearchable
-              required
+              required={!isPresetMode && !isEditingPreset}
             />
           </div>
 
@@ -513,7 +674,7 @@ const TaskModal = ({
               placeholder="Seleciona uma atividade..."
               isClearable
               isSearchable
-              required
+              required={!isPresetMode && !isEditingPreset}
             />
           </div>
 
@@ -533,7 +694,7 @@ const TaskModal = ({
                 value={tempoFaturado}
                 onChange={(e) => setTempoFaturado(e.target.value)}
                 disabled={faturavel === "No"}
-                required={faturavel !== "No"}
+                required={faturavel !== "No" && !isPresetMode && !isEditingPreset}
               />
             </div>
             <div>
@@ -622,7 +783,6 @@ const TaskModal = ({
                   onChange={(e) => setDistanciaViagem(e.target.value)}
                 />
               </div>
-
               <div>
                 <label>Valor (€)</label>
                 <input
@@ -640,7 +800,6 @@ const TaskModal = ({
           <button type="submit" form="form-task" className="btn-primary">
             {textoBotao}
           </button>
-
           <button type="button" className="btn-secondary" onClick={handleClose}>
             Cancelar
           </button>
