@@ -18,15 +18,13 @@ function App() {
   return (
     <>
       <Toaster
-        position="top-center"
-        gutter={12}
-        // toastOptions={{
-        //   duration: 4000,
-        // }}
-        containerStyle={{
-          top: "75px", // distância abaixo do navbar
-        }}
-      />
+              position="top-center"
+              toastOptions={{
+                duration: 4000,
+                success: { duration: 2500 },
+                error: { duration: 5000 },
+              }}
+            />
     <Router>
       <Routes>
         {/* Página de login */}

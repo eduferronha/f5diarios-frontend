@@ -152,7 +152,7 @@ const PresetsModal = ({ show, onClose }) => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        // toast.success("Preset atualizado com sucesso!");
+        toast.success("Preset atualizado com sucesso!");
       } else {
         await api.post("/presets/", cleanData, {
           headers: { Authorization: `Bearer ${token}` },

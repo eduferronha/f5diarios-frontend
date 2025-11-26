@@ -337,7 +337,7 @@ const TaskModal = ({
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        toast.success("Tarefa criada com sucesso!");
+        // toast.success("Tarefa criada com sucesso!");
       }
 
       onTaskAdded && onTaskAdded();
