@@ -317,7 +317,7 @@ const PresetsModal = ({ show, onClose }) => {
         <TaskPresetModal
           show={showTaskModal}
           onClose={() => setShowTaskModal(false)}
-          presetData={editingPreset ?? null}
+          presetData={editingPreset ?? presetToApply}
           isEditingPreset={!!editingPreset}
           onPresetSaved={handleSavePreset}
         />
