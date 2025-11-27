@@ -523,3 +523,23 @@ textarea:focus {
 .radio-btn-two {
   margin-top: 10px;
 }
+
+.repeat-only .form-grid {
+  display: none !important;
+}
+
+.repeat-only .calendar-duplicate-container {
+  display: block !important;
+}
+
+.calendar-duplicate-container {
+  display: none;
+}
+
+.repeat-message {
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 15px;
+  color: #237c9b;
+  font-weight: 500;
+}

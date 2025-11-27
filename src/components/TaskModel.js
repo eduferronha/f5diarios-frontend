@@ -393,7 +393,9 @@ const TaskModal = ({
       >
         <h2>{titulo}</h2>
 
-        <form id="form-task" onSubmit={handleSubmit} className="form-grid">
+        <div className={`repeat-wrapper ${isRepeatMode ? "repeat-only" : ""}`}>
+          <form id="form-task" onSubmit={handleSubmit} className="form-grid">
+
 
           {!isDuplicate && !isRepeatMode ? (
             <div className="form-group full-width">
@@ -642,7 +644,9 @@ const TaskModal = ({
               </div>
             </div>
           </div>
-        </form>
+            </form>
+          </div>
+
 
         <div className="modal-buttons-row">
 
@@ -659,22 +663,16 @@ const TaskModal = ({
             </button>
           )}
 
-          <button type="submit" form="form-task" className="btn-primary">
-            {textoBotao}
-          </button>
-          
           {isRepeatMode && (
-            <button
-              type="button"
-              className="btn-secondary"
-              onClick={() => {
-                setIsRepeatMode(false);
-                setDatasDuplicadas([]);
-              }}
-            >
-              Voltar
-            </button>
+            <p className="repeat-message">
+            Seleciona os dias para onde quer copiar esta tarefa.
+          </p>
           )}
+
+          <button type="submit" form="form-task" className="btn-primary">
+            {isRepeatMode ? "Guardar Cópias" : textoBotao}
+          </button>
+
 
           <button type="button" className="btn-secondary" onClick={handleClose}>
             Cancelar
