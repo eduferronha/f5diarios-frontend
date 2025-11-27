@@ -5,11 +5,15 @@ import logo from "../f5tci_logo_small.png";
 import { Settings } from "lucide-react"; // Ícone moderno
 
 function Navbar() {
+  const token = localStorage.getItem("token");
+  if (!token) return null; // 👈 impede erro antes do redirect
+
   const location = useLocation();
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
   const [role, setRole] = useState(null);
   const [username, setUsername] = useState("");
+
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");

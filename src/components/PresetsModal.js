@@ -194,7 +194,7 @@ const PresetsModal = ({ show, onClose }) => {
           { ativo: true },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        toast.success("Preset ativado com sucesso!", { duration: 2500 });
+        // toast.success("Preset ativado com sucesso!", { duration: 2500 });
       }
       await fetchPresets();
     } catch (err) {
@@ -210,14 +210,14 @@ const PresetsModal = ({ show, onClose }) => {
 
   return (
     <div className="modal-overlay">
-      <Toaster
+      {/* <Toaster
         position="top-center"
         toastOptions={{
           duration: 4000,
           success: { duration: 2500 },
           error: { duration: 5000 },
         }}
-      />
+      /> */}
 
       <div className="modal presets-modal">
         <h2>Presets</h2>

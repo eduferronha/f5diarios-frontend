@@ -18,113 +18,105 @@ function App() {
   return (
     <>
       <Toaster
-              position="top-center"
-              toastOptions={{
-                duration: 4000,
-                success: { duration: 2500 },
-                error: { duration: 5000 },
-              }}
-            />
-    <Router>
-      <Routes>
-        {/* Página de login */}
-        <Route path="/" element={<Login />} />
+        position="top-center"
+        toastOptions={{
+          duration: 4000,
+          success: { duration: 2500 },
+          error: { duration: 5000 },
+        }}
+      />
 
-        {/* Dashboard */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <>
-                <Navbar />
-                <Dashboard />
-              </>
-            </ProtectedRoute>
-          }
-        />
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login />} />
 
-        {/* Agenda */}
-        <Route
-          path="/agenda"
-          element={
-            <ProtectedRoute>
-              <>
-                <Navbar />
-                <Agenda />
-              </>
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <>
+                  <Navbar />
+                  <Dashboard />
+                </>
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Página de relatórios */}
-        <Route
-          path="/analises/relatorios"
-          element={
-            <ProtectedRoute>
-              <>
-                <Navbar />
-                <RelatoriosPage />
-              </>
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/agenda"
+            element={
+              <ProtectedRoute>
+                <>
+                  <Navbar />
+                  <Agenda />
+                </>
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Área de administração */}
-        <Route
-          path="/admin"
-          element={
-            <AdminRoute>
-              <>
-                <Navbar />
-                <AdminPage />
-              </>
-            </AdminRoute>
-          }
-        />
+          <Route
+            path="/analises/relatorios"
+            element={
+              <ProtectedRoute>
+                <>
+                  <Navbar />
+                  <RelatoriosPage />
+                </>
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Página de atividade (Admin) */}
-        <Route
-          path="/atividade"
-          element={
-            <AdminRoute>
-              <>
-                <Navbar />
-                <Atividade />
-              </>
-            </AdminRoute>
-          }
-        />
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <>
+                  <Navbar />
+                  <AdminPage />
+                </>
+              </AdminRoute>
+            }
+          />
 
-        {/* Projetos (Admin) */}
-        <Route
-          path="/projetos"
-          element={
-            <AdminRoute>
-              <>
-                <Navbar />
-                <ProjetosPage />
-              </>
-            </AdminRoute>
-          }
-        />
+          <Route
+            path="/atividade"
+            element={
+              <AdminRoute>
+                <>
+                  <Navbar />
+                  <Atividade />
+                </>
+              </AdminRoute>
+            }
+          />
 
-        {/* Perfil de utilizador */}
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <>
-                <Navbar />
-                <ProfilePage />
-              </>
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/projetos"
+            element={
+              <AdminRoute>
+                <>
+                  <Navbar />
+                  <ProjetosPage />
+                </>
+              </AdminRoute>
+            }
+          />
 
-        <Route path="/auth/callback" element={<AuthCallback />} />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <>
+                  <Navbar />
+                  <ProfilePage />
+                </>
+              </ProtectedRoute>
+            }
+          />
 
-      </Routes>
-    </Router>
+          <Route path="/auth/callback" element={<AuthCallback />} />
+        </Routes>
+      </Router>
     </>
   );
 }
