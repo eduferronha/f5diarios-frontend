@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import api from "../services/api";
 import TaskPresetModal from "./TaskPresetModal";
+import TaskModel from "./TaskModel";
 import "../components/PresetsModel.css";
 import { Trash2, Edit3 } from "lucide-react";
 import Swal from "sweetalert2";
@@ -316,7 +317,7 @@ const PresetsModal = ({ show, onClose }) => {
             />
           ) : (
             /* 👉 APLICAR PRESET → abre TaskModal com os campos preenchidos */
-            <TaskModal
+            <TaskModel
               show={showTaskModal}
               onClose={() => {
                 setShowTaskModal(false);
