@@ -194,7 +194,7 @@ body {
   transform: rotate(25deg);
 }
 
-.logout-button {
+/* .logout-button {
   background: transparent;
   border: none;
   cursor: pointer;
@@ -203,10 +203,19 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+} */
+
+
+.logout-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #f06c6c;
+  transition: transform 0.2s ease, color 0.2s ease;
 }
 
 .logout-button:hover svg {
-  color: #ff4d4d;
-  transform: scale(1.1);
+  color: #f53737;
+  /* transform: scale(1.1); */
   transition: 0.2s;
 }

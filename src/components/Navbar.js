@@ -118,7 +118,7 @@ function Navbar() {
           title="Terminar Sessão"
           onClick={handleLogout}
         >
-          <LogOut size={18} color="red" />
+          <LogOut size={18} color="#f06c6c" />
         </button>
       </div>
     </nav>
