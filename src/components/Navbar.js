@@ -5,16 +5,16 @@ import logo from "../f5tci_logo_small.png";
 import { Settings } from "lucide-react";
 
 function Navbar() {
-  const token = localStorage.getItem("token");
-
-  // 🔥 Impede que o Navbar tente renderizar quando não há token
-  if (!token) return null;
-
+  // 🔹 Hooks sempre primeiro
   const location = useLocation();
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
   const [role, setRole] = useState(null);
   const [username, setUsername] = useState("");
+
+  // 🔹 Verificação do token (AGORA depois dos hooks)
+  const token = localStorage.getItem("token");
+  if (!token) return null;
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
