@@ -389,14 +389,7 @@ textarea:focus {
   font-size: 0.78rem;
 } */
 
-/* === Layout modo duplicar === */
-.calendar-duplicate-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
-  width: 100%; /* 🔹 usa a largura total */
-}
+
 
 .calendar-box {
   flex: 1;
@@ -524,9 +517,7 @@ textarea:focus {
   margin-top: 10px;
 }
 
-.calendar-duplicate-container {
-  display: none;
-}
+
 
 .repeat-message {
   text-align: center;
@@ -546,7 +537,11 @@ textarea:focus {
 }
 
 .calendar-duplicate-container {
+  display: flex !important;
+  flex-direction: column !important;  /* 👈 PÕE O CALENDÁRIO POR BAIXO DO TEXTO */
+  align-items: center !important;
+  justify-content: flex-start !important;
   width: 100%;
-  display: flex;
-  justify-content: center;
+  margin-top: 10px;
+  gap: 10px;
 }
