@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import api from "../services/api";
-import TaskModal from "./TaskModel";
-import TaskPresetModal from "./TaskModel";
+import TaskPresetModal from "./TaskPresetModal";
 import "../components/PresetsModel.css";
 import { Trash2, Edit3 } from "lucide-react";
 import Swal from "sweetalert2";
