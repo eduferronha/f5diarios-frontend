@@ -301,27 +301,33 @@ const PresetsModal = ({ show, onClose }) => {
         </div>
       </div>
 
-      {showTaskModal && (
-        // <TaskModal
-        //   show={showTaskModal}
-        //   onClose={() => {
-        //     setShowTaskModal(false);
-        //     setEditingPreset(null);
-        //   }}
-        //   presetData={editingPreset ? editingPreset : presetToApply}
-        //   isPresetMode={true}
-        //   isEditingPreset={!!editingPreset}
-        //   onPresetSaved={handleSavePreset}
-        // />
-        <TaskPresetModal
-          show={showTaskModal}
-          onClose={() => setShowTaskModal(false)}
-          presetData={editingPreset ?? presetToApply}
-          isEditingPreset={!!editingPreset}
-          onPresetSaved={handleSavePreset}
-        />
+        {showTaskModal && (
+          editingPreset ? (
+            /* 👉 EDITAR PRESET → abre TaskPresetModal */
+            <TaskPresetModal
+              show={showTaskModal}
+              onClose={() => {
+                setShowTaskModal(false);
+                setEditingPreset(null);
+              }}
+              presetData={editingPreset}
+              isEditingPreset={true}
+              onPresetSaved={handleSavePreset}
+            />
+          ) : (
+            /* 👉 APLICAR PRESET → abre TaskModal com os campos preenchidos */
+            <TaskModal
+              show={showTaskModal}
+              onClose={() => {
+                setShowTaskModal(false);
+                setPresetToApply(null);
+              }}
+              isPresetMode={true}
+              presetData={presetToApply}   // 👈 PREENCHE AUTOMATICAMENTE
+            />
+          )
+        )}
 
-      )}
     </div>
   );
 };
