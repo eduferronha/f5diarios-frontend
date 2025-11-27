@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import api from "../services/api";
+import Select from "react-select";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
-import Select from "react-select";
-import "../components/TaskPresetModal.css";
+
+// 🔥 Usa o mesmo CSS do TaskModal
+import "../components/TaskModel.css";
 
 const TaskPresetModal = ({
   show,
@@ -16,6 +18,7 @@ const TaskPresetModal = ({
 
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
+
   const [cliente, setCliente] = useState("");
   const [parceiro, setParceiro] = useState("");
   const [produto, setProduto] = useState("");
@@ -43,7 +46,7 @@ const TaskPresetModal = ({
   useEffect(() => {
     if (!show) return;
 
-    const loadData = async () => {
+    const loadAll = async () => {
       try {
         const [cli, prod, cont, ativ, parc] = await Promise.all([
           api.get("/clients/", { headers: { Authorization: `Bearer ${token}` } }),
@@ -60,11 +63,11 @@ const TaskPresetModal = ({
         setParceiros(parc.data);
       } catch (err) {
         console.error(err);
-        toast.error("Erro ao carregar dados.");
+        toast.error("Erro ao carregar dados do servidor.");
       }
     };
 
-    loadData();
+    loadAll();
   }, [show]);
 
   useEffect(() => {
@@ -72,6 +75,7 @@ const TaskPresetModal = ({
 
     setNome(presetData.nome || "");
     setDescricao(presetData.descricao || "");
+
     setCliente(presetData.cliente || "");
     setParceiro(presetData.parceiro || "");
     setProduto(presetData.produto || "");
@@ -95,11 +99,8 @@ const TaskPresetModal = ({
       setContratosFiltrados([]);
       return;
     }
-
     setContratosFiltrados(
-      contratos.filter(
-        (c) => c.cliente === cliente || c.empresa === cliente
-      )
+      contratos.filter(c => c.cliente === cliente || c.empresa === cliente)
     );
   }, [cliente, contratos]);
 
@@ -140,217 +141,175 @@ const TaskPresetModal = ({
   };
 
   return (
-    <div className="preset-overlay">
-      <div className="preset-modal">
-
+    <div className="modal-overlay">
+      <div className="modal modal-large">
         <h2>{isEditingPreset ? "Editar Preset" : "Novo Preset"}</h2>
 
-        <form onSubmit={handleSubmit} className="preset-grid">
-
+        <form className="form-grid" onSubmit={handleSubmit}>
           {/* Nome */}
-          <div className="preset-group preset-full">
+          <div className="form-group full-width">
             <label>Nome do Preset</label>
             <input
               type="text"
               value={nome}
               onChange={(e) => setNome(e.target.value)}
-              required
             />
           </div>
 
           {/* Descrição */}
-          <div className="preset-group preset-full">
+          <div className="form-group full-width">
             <label>Descrição</label>
             <textarea
-              rows="3"
               value={descricao}
+              rows={3}
               onChange={(e) => setDescricao(e.target.value)}
-            />
+            ></textarea>
           </div>
 
           {/* Cliente */}
-          <div className="preset-group">
+          <div className="form-group">
             <label>Cliente</label>
             <Select
-              options={clientes.map((c) => ({ value: c.nome, label: c.nome }))}
+              classNamePrefix="react-select"
+              options={clientes.map(c => ({ value: c.nome, label: c.nome }))}
               value={cliente ? { value: cliente, label: cliente } : null}
-              isClearable
               onChange={(v) => setCliente(v?.value || "")}
+              isClearable
             />
           </div>
 
           {/* Parceiro */}
-          <div className="preset-group">
+          <div className="form-group">
             <label>Parceiro</label>
             <Select
-              options={parceiros.map((p) => ({ value: p.parceiro, label: p.parceiro }))}
+              classNamePrefix="react-select"
+              options={parceiros.map(p => ({ value: p.parceiro, label: p.parceiro }))}
               value={parceiro ? { value: parceiro, label: parceiro } : null}
-              isClearable
               onChange={(v) => setParceiro(v?.value || "")}
+              isClearable
             />
           </div>
 
           {/* Produto */}
-          <div className="preset-group">
+          <div className="form-group">
             <label>Produto</label>
             <Select
-              options={produtos.map((p) => ({ value: p.produto, label: p.produto }))}
+              classNamePrefix="react-select"
+              options={produtos.map(p => ({ value: p.produto, label: p.produto }))}
               value={produto ? { value: produto, label: produto } : null}
-              isClearable
               onChange={(v) => setProduto(v?.value || "")}
+              isClearable
             />
           </div>
 
           {/* Contrato */}
-          <div className="preset-group">
+          <div className="form-group">
             <label>Contrato</label>
             <Select
-              options={contratosFiltrados.map((c) => ({ value: c.contrato, label: c.contrato }))}
+              classNamePrefix="react-select"
+              options={contratosFiltrados.map(c => ({ value: c.contrato, label: c.contrato }))}
               value={contrato ? { value: contrato, label: contrato } : null}
+              onChange={(v) => setContrato(v?.value || "")}
               isClearable
               isDisabled={!cliente}
-              onChange={(v) => setContrato(v?.value || "")}
             />
           </div>
 
           {/* Atividade */}
-          <div className="preset-group">
+          <div className="form-group">
             <label>Atividade</label>
             <Select
-              options={atividades.map((a) => ({ value: a.atividade, label: a.atividade }))}
+              classNamePrefix="react-select"
+              options={atividades.map(a => ({ value: a.atividade, label: a.atividade }))}
               value={atividade ? { value: atividade, label: atividade } : null}
-              isClearable
               onChange={(v) => setAtividade(v?.value || "")}
+              isClearable
             />
           </div>
 
           {/* Tempos */}
-          <div className="preset-group-time preset-full">
+          <div className="form-group-time full-width">
             <div>
               <label>Tempo Atividade</label>
-              <input
-                type="time"
-                value={tempoAtividade}
-                onChange={(e) => setTempoAtividade(e.target.value)}
-              />
+              <input type="time" value={tempoAtividade} onChange={(e) => setTempoAtividade(e.target.value)} />
             </div>
-
             <div>
               <label>Tempo Faturado</label>
-              <input
-                type="time"
-                value={tempoFaturado}
-                onChange={(e) => setTempoFaturado(e.target.value)}
-              />
+              <input type="time" value={tempoFaturado} onChange={(e) => setTempoFaturado(e.target.value)} />
             </div>
-
             <div>
               <label>Tempo Viagem</label>
-              <input
-                type="time"
-                value={tempoViagem}
-                onChange={(e) => setTempoViagem(e.target.value)}
-              />
+              <input type="time" value={tempoViagem} onChange={(e) => setTempoViagem(e.target.value)} />
             </div>
           </div>
 
-          {/* Radio Groups */}
-          <div className="preset-group preset-full preset-radio-row">
-
+          {/* Local / Faturável / Viagem */}
+          <div className="form-group full-width">
             <label>Local</label>
-            <div className="preset-toggle-group">
+            <div className="local-toggle-group">
               {["Customer Site", "Office", "Employee House"].map((opt) => (
-                <label
+                <div
                   key={opt}
-                  className={local === opt ? "preset-active" : ""}
+                  className={`toggle-option ${local === opt ? "active" : ""}`}
+                  onClick={() => setLocal(opt)}
                 >
-                  <input
-                    type="radio"
-                    name="preset_local"
-                    value={opt}
-                    checked={local === opt}
-                    onChange={() => setLocal(opt)}
-                  />
                   {opt}
-                </label>
-              ))}
-            </div>
-
-            <label>Faturável</label>
-            <div className="preset-toggle-group">
-              {["Yes", "No", "For analysis"].map((opt) => (
-                <label
-                  key={opt}
-                  className={faturavel === opt ? "preset-active" : ""}
-                >
-                  <input
-                    type="radio"
-                    name="preset_faturavel"
-                    value={opt}
-                    checked={faturavel === opt}
-                    onChange={() => setFaturavel(opt)}
-                  />
-                  {opt}
-                </label>
-              ))}
-            </div>
-
-            <label>Viagem Faturável</label>
-            <div className="preset-toggle-group">
-              {["Yes", "No", "For analysis"].map((opt) => (
-                <label
-                  key={opt}
-                  className={viagemFaturavel === opt ? "preset-active" : ""}
-                >
-                  <input
-                    type="radio"
-                    name="preset_viagem"
-                    value={opt}
-                    checked={viagemFaturavel === opt}
-                    onChange={() => setViagemFaturavel(opt)}
-                  />
-                  {opt}
-                </label>
+                </div>
               ))}
             </div>
           </div>
 
-          {/* Distância / Valor */}
-          <div className="preset-group preset-full preset-numbers-row">
+          <div className="form-group full-width">
+            <label>Faturável</label>
+            <div className="local-toggle-group">
+              {["Yes", "No", "For analysis"].map((opt) => (
+                <div
+                  key={opt}
+                  className={`toggle-option ${faturavel === opt ? "active" : ""}`}
+                  onClick={() => setFaturavel(opt)}
+                >
+                  {opt}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="form-group full-width">
+            <label>Viagem Faturável</label>
+            <div className="local-toggle-group">
+              {["Yes", "No", "For analysis"].map((opt) => (
+                <div
+                  key={opt}
+                  className={`toggle-option ${viagemFaturavel === opt ? "active" : ""}`}
+                  onClick={() => setViagemFaturavel(opt)}
+                >
+                  {opt}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Distância e Valor */}
+          <div className="form-group full-width form-row">
             <div>
               <label>Distância (km)</label>
-              <input
-                type="number"
-                min="0"
-                value={distancia}
-                onChange={(e) => setDistancia(e.target.value)}
-              />
+              <input type="number" min="0" value={distancia} onChange={(e) => setDistancia(e.target.value)} />
             </div>
-
             <div>
               <label>Valor (€)</label>
-              <input
-                type="number"
-                min="0"
-                value={valorEuro}
-                onChange={(e) => setValorEuro(e.target.value)}
-              />
+              <input type="number" min="0" value={valorEuro} onChange={(e) => setValorEuro(e.target.value)} />
             </div>
           </div>
-
         </form>
 
-        {/* Botões */}
-        <div className="preset-buttons-row">
-          <button className="preset-btn-primary" onClick={handleSubmit}>
+        <div className="modal-buttons-row">
+          <button className="btn-primary" onClick={handleSubmit}>
             {isEditingPreset ? "Guardar Alterações" : "Criar Preset"}
           </button>
-
-          <button className="preset-btn-secondary" onClick={onClose}>
+          <button className="btn-secondary" onClick={onClose}>
             Cancelar
           </button>
         </div>
-
       </div>
     </div>
   );
