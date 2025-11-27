@@ -44,9 +44,7 @@ const TaskModal = ({
   const [datasDuplicadas, setDatasDuplicadas] = useState([]);
   const [isRepeatMode, setIsRepeatMode] = useState(false);
 
-
   const [initialValues, setInitialValues] = useState(null);
-
   const token = localStorage.getItem("token");
 
   const handleClose = useCallback(async () => {
@@ -338,8 +336,6 @@ const TaskModal = ({
         await api.post("/tasks", { ...payload, data }, {
           headers: { Authorization: `Bearer ${token}` },
         });
-
-        // toast.success("Tarefa criada com sucesso!");
       }
 
       onTaskAdded && onTaskAdded();
@@ -351,8 +347,9 @@ const TaskModal = ({
   };
 
   const toggleData = (date) => {
-    const dataISO = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
-      .toLocaleDateString("en-CA");
+    const dataISO = new Date(
+      date.getTime() - date.getTimezoneOffset() * 60000
+    ).toLocaleDateString("en-CA");
 
     if (datasDuplicadas.includes(dataISO)) {
       setDatasDuplicadas(datasDuplicadas.filter((d) => d !== dataISO));
@@ -371,19 +368,19 @@ const TaskModal = ({
     isRepeatMode
       ? "Repetir Tarefa"
       : editingTask
-      ? isDuplicate
-        ? "Duplicar Tarefa"
-        : "Editar Tarefa"
-      : "Nova Tarefa";
+        ? isDuplicate
+          ? "Duplicar Tarefa"
+          : "Editar Tarefa"
+        : "Nova Tarefa";
 
   const textoBotao =
     isRepeatMode
       ? "Criar Cópias"
       : editingTask
-      ? isDuplicate
-        ? "Guardar Cópias"
-        : "Guardar Alterações"
-      : "Criar Tarefa";
+        ? isDuplicate
+          ? "Guardar Cópias"
+          : "Guardar Alterações"
+        : "Criar Tarefa";
 
   return (
     <div className="modal-overlay">
@@ -393,261 +390,273 @@ const TaskModal = ({
       >
         <h2>{titulo}</h2>
 
+        {/* WRAPPER QUE ESCONDE O FORM QUANDO ESTÁ EM MODO REPEAT */}
         <div className={`repeat-wrapper ${isRepeatMode ? "repeat-only" : ""}`}>
+
           <form id="form-task" onSubmit={handleSubmit} className="form-grid">
 
+            {/* FORM NORMAL (DATA) */}
+            {!isDuplicate && !isRepeatMode ? (
+              <div className="form-group full-width">
+                <label>Data</label>
+                <div className="data-inline">
+                  <input
+                    type="date"
+                    value={data}
+                    onChange={(e) => setData(e.target.value)}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="btn-data"
+                    onClick={() => {
+                      const hoje = new Date().toISOString().split("T")[0];
+                      setData(hoje);
+                    }}
+                  >
+                    Hoje
+                  </button>
 
-          {!isDuplicate && !isRepeatMode ? (
-            <div className="form-group full-width">
-              <label>Data</label>
-              <div className="data-inline">
-                <input
-                  type="date"
-                  value={data}
-                  onChange={(e) => setData(e.target.value)}
-                  required
-                />
-                <button
-                  type="button"
-                  className="btn-data"
-                  onClick={() => {
-                    const hoje = new Date().toISOString().split("T")[0];
-                    setData(hoje);
-                  }}
-                >
-                  Hoje
-                </button>
-                <button
-                  type="button"
-                  className="btn-data"
-                  onClick={() => {
-                    const ontem = new Date();
-                    ontem.setDate(ontem.getDate() - 1);
-                    const dataOntem = ontem.toISOString().split("T")[0];
-                    setData(dataOntem);
-                  }}
-                >
-                  Ontem
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="calendar-duplicate-container full-width">
-              <div className="calendar-box">
-                <Calendar
-                  key={datasDuplicadas.join(",")}
-                  value={null}
-                  onClickDay={toggleData}
-                  tileClassName={({ date }) => {
-                    const dataISO = new Date(
-                      date.getTime() - date.getTimezoneOffset() * 60000
-                    ).toLocaleDateString("en-CA");
-                    return datasDuplicadas.includes(dataISO)
-                      ? "selected-day"
-                      : null;
-                  }}
-                />
-              </div>
-            </div>
-          )}
-
-          <div className="form-group full-width">
-            <label>Descrição</label>
-            <textarea
-              rows="3"
-              placeholder="Descreve a tarefa..."
-              value={descricao}
-              onChange={(e) => setDescricao(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Cliente</label>
-            <Select
-              options={clienteOptions}
-              value={clienteOptions.find((opt) => opt.value === cliente) || null}
-              onChange={(selected) => setCliente(selected ? selected.value : "")}
-              placeholder="Seleciona um cliente..."
-              isClearable
-              isSearchable
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Parceiro</label>
-            <Select
-              options={parceiroOptions}
-              value={parceiroOptions.find((opt) => opt.value === parceiro) || null}
-              onChange={(selected) => setParceiro(selected ? selected.value : "")}
-              placeholder="Seleciona um parceiro..."
-              isClearable
-              isSearchable
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Produto</label>
-            <Select
-              options={produtoOptions}
-              value={produtoOptions.find((opt) => opt.value === produto) || null}
-              onChange={(selected) => setProduto(selected ? selected.value : "")}
-              placeholder="Seleciona um produto..."
-              isClearable
-              isSearchable
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Contrato</label>
-            <Select
-              options={contratoOptions}
-              value={contratoOptions.find((opt) => opt.value === contrato) || null}
-              onChange={(selected) => setContrato(selected ? selected.value : "")}
-              placeholder={cliente ? "Seleciona um contrato..." : "Escolhe primeiro o cliente"}
-              isDisabled={!cliente}
-              isClearable
-              isSearchable
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Atividade</label>
-            <Select
-              options={atividadeOptions}
-              value={atividadeOptions.find((opt) => opt.value === atividade) || null}
-              onChange={(selected) => setAtividade(selected ? selected.value : "")}
-              placeholder="Seleciona uma atividade..."
-              isClearable
-              isSearchable
-              required
-            />
-          </div>
-
-          <div className="form-group-time radio-btn-two">
-            <div>
-              <label>Tempo Atividade</label>
-              <input
-                type="time"
-                value={tempoAtividade}
-                onChange={(e) => setTempoAtividade(e.target.value)}
-              />
-            </div>
-            <div>
-              <label>Tempo Faturado</label>
-              <input
-                type="time"
-                value={tempoFaturado}
-                onChange={(e) => setTempoFaturado(e.target.value)}
-                disabled={faturavel === "No"}
-                required={faturavel !== "No"}
-              />
-            </div>
-            <div>
-              <label>Tempo Viagem</label>
-              <input
-                type="time"
-                value={tempoViagem}
-                onChange={(e) => setTempoViagem(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="form-group full-width radio-btn-one">
-            <div className="form-row-toggle">
-              <div className="form-group">
-                <label>Local</label>
-                <div className="local-toggle-group">
-                  {["Customer Site", "Office", "Employee House"].map((option) => (
-                    <label
-                      key={option}
-                      className={`toggle-option ${local === option ? "active" : ""}`}
-                    >
-                      <input
-                        type="radio"
-                        name="local"
-                        value={option}
-                        checked={local === option}
-                        onChange={() => setLocal(option)}
-                      />
-                      {option}
-                    </label>
-                  ))}
+                  <button
+                    type="button"
+                    className="btn-data"
+                    onClick={() => {
+                      const ontem = new Date();
+                      ontem.setDate(ontem.getDate() - 1);
+                      const dataOntem = ontem.toISOString().split("T")[0];
+                      setData(dataOntem);
+                    }}
+                  >
+                    Ontem
+                  </button>
                 </div>
               </div>
+            ) : null}
 
-              <div className="form-group">
-                <label>Faturável</label>
-                <div className="local-toggle-group">
-                  {["Yes", "No", "For analysis"].map((option) => (
-                    <label
-                      key={option}
-                      className={`toggle-option ${faturavel === option ? "active" : ""}`}
-                    >
-                      <input
-                        type="radio"
-                        name="faturavel"
-                        value={option}
-                        checked={faturavel === option}
-                        onChange={() => setFaturavel(option)}
-                      />
-                      {option}
-                    </label>
-                  ))}
+            {/* FORM NORMAL (RESTO DOS CAMPOS) */}
+            {!isRepeatMode && (
+              <>
+                <div className="form-group full-width">
+                  <label>Descrição</label>
+                  <textarea
+                    rows="3"
+                    placeholder="Descreve a tarefa..."
+                    value={descricao}
+                    onChange={(e) => setDescricao(e.target.value)}
+                    required
+                  />
                 </div>
-              </div>
 
-              <div className="form-group">
-                <label>Viagem Faturável</label>
-                <div className="local-toggle-group">
-                  {["Yes", "No", "For analysis"].map((option) => (
-                    <label
-                      key={option}
-                      className={`toggle-option ${viagemFaturavel === option ? "active" : ""}`}
-                    >
-                      <input
-                        type="radio"
-                        name="viagem_faturavel"
-                        value={option}
-                        checked={viagemFaturavel === option}
-                        onChange={() => setViagemFaturavel(option)}
-                      />
-                      {option}
-                    </label>
-                  ))}
+                <div className="form-group">
+                  <label>Cliente</label>
+                  <Select
+                    options={clienteOptions}
+                    value={clienteOptions.find((opt) => opt.value === cliente) || null}
+                    onChange={(selected) => setCliente(selected ? selected.value : "")}
+                    placeholder="Seleciona um cliente..."
+                    isClearable
+                    isSearchable
+                    required
+                  />
                 </div>
-              </div>
-            </div>
 
-            <div className="form-distance-value">
-              <div>
-                <label>Distância (km)</label>
-                <input
-                  type="number"
-                  min="0"
-                  value={distanciaViagem}
-                  onChange={(e) => setDistanciaViagem(e.target.value)}
-                />
-              </div>
+                <div className="form-group">
+                  <label>Parceiro</label>
+                  <Select
+                    options={parceiroOptions}
+                    value={parceiroOptions.find((opt) => opt.value === parceiro) || null}
+                    onChange={(selected) => setParceiro(selected ? selected.value : "")}
+                    placeholder="Seleciona um parceiro..."
+                    isClearable
+                    isSearchable
+                  />
+                </div>
 
-              <div>
-                <label>Valor (€)</label>
-                <input
-                  type="number"
-                  min="0"
-                  value={valorEuro}
-                  onChange={(e) => setValorEuro(e.target.value)}
-                />
-              </div>
+                <div className="form-group">
+                  <label>Produto</label>
+                  <Select
+                    options={produtoOptions}
+                    value={produtoOptions.find((opt) => opt.value === produto) || null}
+                    onChange={(selected) => setProduto(selected ? selected.value : "")}
+                    placeholder="Seleciona um produto..."
+                    isClearable
+                    isSearchable
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Contrato</label>
+                  <Select
+                    options={contratoOptions}
+                    value={contratoOptions.find((opt) => opt.value === contrato) || null}
+                    onChange={(selected) => setContrato(selected ? selected.value : "")}
+                    placeholder={cliente ? "Seleciona um contrato..." : "Escolhe primeiro o cliente"}
+                    isDisabled={!cliente}
+                    isClearable
+                    isSearchable
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Atividade</label>
+                  <Select
+                    options={atividadeOptions}
+                    value={atividadeOptions.find((opt) => opt.value === atividade) || null}
+                    onChange={(selected) => setAtividade(selected ? selected.value : "")}
+                    placeholder="Seleciona uma atividade..."
+                    isClearable
+                    isSearchable
+                    required
+                  />
+                </div>
+
+                <div className="form-group-time radio-btn-two">
+                  <div>
+                    <label>Tempo Atividade</label>
+                    <input
+                      type="time"
+                      value={tempoAtividade}
+                      onChange={(e) => setTempoAtividade(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label>Tempo Faturado</label>
+                    <input
+                      type="time"
+                      value={tempoFaturado}
+                      onChange={(e) => setTempoFaturado(e.target.value)}
+                      disabled={faturavel === "No"}
+                      required={faturavel !== "No"}
+                    />
+                  </div>
+                  <div>
+                    <label>Tempo Viagem</label>
+                    <input
+                      type="time"
+                      value={tempoViagem}
+                      onChange={(e) => setTempoViagem(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group full-width radio-btn-one">
+                  <div className="form-row-toggle">
+                    <div className="form-group">
+                      <label>Local</label>
+                      <div className="local-toggle-group">
+                        {["Customer Site", "Office", "Employee House"].map((option) => (
+                          <label
+                            key={option}
+                            className={`toggle-option ${local === option ? "active" : ""}`}
+                          >
+                            <input
+                              type="radio"
+                              name="local"
+                              value={option}
+                              checked={local === option}
+                              onChange={() => setLocal(option)}
+                            />
+                            {option}
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="form-group">
+                      <label>Faturável</label>
+                      <div className="local-toggle-group">
+                        {["Yes", "No", "For analysis"].map((option) => (
+                          <label
+                            key={option}
+                            className={`toggle-option ${faturavel === option ? "active" : ""}`}>
+                            <input
+                              type="radio"
+                              name="faturavel"
+                              value={option}
+                              checked={faturavel === option}
+                              onChange={() => setFaturavel(option)}
+                            />
+                            {option}
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="form-group">
+                      <label>Viagem Faturável</label>
+                      <div className="local-toggle-group">
+                        {["Yes", "No", "For analysis"].map((option) => (
+                          <label
+                            key={option}
+                            className={`toggle-option ${viagemFaturavel === option ? "active" : ""}`}>
+                            <input
+                              type="radio"
+                              name="viagem_faturavel"
+                              value={option}
+                              checked={viagemFaturavel === option}
+                              onChange={() => setViagemFaturavel(option)}
+                            />
+                            {option}
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="form-distance-value">
+                    <div>
+                      <label>Distância (km)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={distanciaViagem}
+                        onChange={(e) => setDistanciaViagem(e.target.value)}
+                      />
+                    </div>
+
+                    <div>
+                      <label>Valor (€)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={valorEuro}
+                        onChange={(e) => setValorEuro(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+          </form>
+        </div>
+
+        {/* CALENDÁRIO (APENAS MODO REPEAT) */}
+        {isRepeatMode && (
+          <div className="calendar-duplicate-container full-width">
+            <p className="repeat-message">Seleciona os dias para onde quer copiar esta tarefa.</p>
+
+            <div className="calendar-box">
+              <Calendar
+                key={datasDuplicadas.join(",")}
+                value={null}
+                onClickDay={toggleData}
+                tileClassName={({ date }) => {
+                  const dataISO = new Date(
+                    date.getTime() - date.getTimezoneOffset() * 60000
+                  ).toLocaleDateString("en-CA");
+
+                  return datasDuplicadas.includes(dataISO)
+                    ? "selected-day"
+                    : null;
+                }}
+              />
             </div>
           </div>
-            </form>
-          </div>
+        )}
 
-
+        {/* BOTÕES */}
         <div className="modal-buttons-row">
 
           {!editingTask && !isRepeatMode && (
@@ -664,20 +673,27 @@ const TaskModal = ({
           )}
 
           {isRepeatMode && (
-            <p className="repeat-message">
-            Seleciona os dias para onde quer copiar esta tarefa.
-          </p>
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => {
+                setIsRepeatMode(false);
+                setDatasDuplicadas([]);
+              }}
+            >
+              Voltar
+            </button>
           )}
 
           <button type="submit" form="form-task" className="btn-primary">
             {isRepeatMode ? "Guardar Cópias" : textoBotao}
           </button>
 
-
-          <button type="button" className="btn-secondary" onClick={handleClose}>
-            Cancelar
-          </button>
-
+          {!isRepeatMode && (
+            <button type="button" className="btn-secondary" onClick={handleClose}>
+              Cancelar
+            </button>
+          )}
         </div>
       </div>
     </div>
