@@ -1,83 +1,96 @@
-/* Overlay do modal */
-.modal-overlay {
+/* === Overlay do modal específico do preset === */
+.preset-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background: rgba(20, 20, 20, 0.55);
+  backdrop-filter: blur(3px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 999;
 }
 
-/* Caixa principal do modal */
+/* === Estrutura principal === */
 .preset-modal {
   background: #ffffff;
   width: 650px;
   max-height: 90vh;
-  overflow-y: auto;
   padding: 25px 30px;
   border-radius: 12px;
+  overflow-y: auto;
   box-shadow: 0 6px 30px rgba(0, 0, 0, 0.25);
-  animation: fadeIn 0.2s ease-out;
+  animation: presetFadeIn 0.2s ease-out;
 }
 
 .preset-modal h2 {
-  margin-bottom: 20px;
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   color: #237c9b;
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
-/* Grid do formulário */
-.form-grid {
+/* === Grid === */
+.preset-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 18px;
 }
 
-.full-width {
+.preset-full {
   grid-column: 1 / 3;
 }
 
-.form-group label {
-  font-weight: 600;
-  font-size: 0.95rem;
-  margin-bottom: 6px;
+/* === Inputs === */
+.preset-group label {
   display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
   color: #2f2f2f;
+  font-size: 0.95rem;
 }
 
-.form-group input,
-.form-group textarea,
-.form-group select,
-.form-group .react-select__control {
+.preset-group input,
+.preset-group textarea {
   width: 100%;
   padding: 9px 11px;
   border-radius: 6px;
   border: 1px solid #cbd5e0;
   font-size: 0.95rem;
+  background: #fafafa;
 }
 
-/* Tempo e campos pequenos */
-.form-group-time {
+.preset-group textarea {
+  resize: vertical;
+}
+
+/* === Campos de tempo === */
+.preset-group-time {
   display: flex;
   justify-content: space-between;
   gap: 12px;
 }
 
-.form-group-time div {
+.preset-group-time div {
   flex: 1;
 }
 
-/* Toggle buttons (Local, Faturável, Viagem Faturável) */
-.toggle-group {
+/* === Toggle Groups === */
+.preset-radio-row {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.preset-toggle-group {
   display: flex;
   gap: 10px;
 }
 
-.toggle-group label {
+.preset-toggle-group label {
   padding: 7px 12px;
   background: #e6edf0;
   border-radius: 8px;
@@ -85,82 +98,69 @@
   cursor: pointer;
   font-size: 0.9rem;
   user-select: none;
+  transition: 0.2s;
 }
 
-.toggle-group label.active {
+.preset-toggle-group input {
+  display: none;
+}
+
+.preset-toggle-group label.preset-active {
   background: #237c9b;
   color: white;
   border-color: #1c5e75;
 }
 
-.toggle-group input {
-  display: none;
-}
-
-/* Grupo dos toggles organizados */
-.radio-btns {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-/* Distância & Valor */
-.numbers-row {
+/* === Distância / Valor === */
+.preset-numbers-row {
   display: flex;
   justify-content: space-between;
   gap: 12px;
 }
 
-.numbers-row div {
+.preset-numbers-row div {
   flex: 1;
 }
 
-/* Botões */
-.modal-buttons-row {
+/* === Botões === */
+.preset-buttons-row {
   margin-top: 25px;
   display: flex;
   justify-content: flex-end;
   gap: 15px;
 }
 
-.btn-primary {
-  background: #237c9b;
-  color: white;
+.preset-btn-primary,
+.preset-btn-secondary {
   padding: 10px 18px;
   border: none;
   border-radius: 8px;
-  font-size: 0.95rem;
   cursor: pointer;
+  font-size: 0.95rem;
   transition: 0.2s;
 }
 
-.btn-primary:hover {
+.preset-btn-primary {
+  background: #237c9b;
+  color: white;
+}
+
+.preset-btn-primary:hover {
   background: #1f6a85;
 }
 
-.btn-secondary {
+.preset-btn-secondary {
   background: #dddddd;
   color: #222;
-  padding: 10px 18px;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: 0.2s;
 }
 
-.btn-secondary:hover {
+.preset-btn-secondary:hover {
   background: #cfcfcf;
 }
 
-/* Scroll suave dentro do modal */
+/* === Scrollbar === */
 .preset-modal::-webkit-scrollbar {
   width: 7px;
-}
-
-.preset-modal::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
 }
 
 .preset-modal::-webkit-scrollbar-thumb {
@@ -168,14 +168,40 @@
   border-radius: 10px;
 }
 
-/* Animação de fade-in suave */
-@keyframes fadeIn {
+/* === Animação === */
+@keyframes presetFadeIn {
   from {
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateY(-6px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* === Responsivo === */
+@media (max-width: 600px) {
+  .preset-modal {
+    width: 92%;
+    padding: 20px;
+  }
+
+  .preset-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .preset-full {
+    grid-column: 1;
+  }
+
+  .preset-buttons-row {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .preset-btn-primary,
+  .preset-btn-secondary {
+    width: 100%;
   }
 }
