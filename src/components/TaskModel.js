@@ -668,18 +668,25 @@ const TaskModal = ({
         {/* BOTÕES */}
         <div className="modal-buttons-row">
 
-          {!editingTask && !isRepeatMode && (
-            <button
-              type="button"
-              className="btn-secondary"
-              onClick={() => {
-                setIsRepeatMode(true);
-                setDatasDuplicadas([]);
-              }}
-            >
-              Repetir…
-            </button>
-          )}
+        {!editingTask && !isRepeatMode && (
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={() => {
+              const originalDate =
+                data ||
+                editingTask?.data?.split("T")[0] ||
+                preselectedDate ||
+                null;
+
+              setDatasDuplicadas(originalDate ? [originalDate] : []);
+              setIsRepeatMode(true);
+            }}
+          >
+            Repetir…
+          </button>
+        )}
+
 
           {isRepeatMode && (
             <button
