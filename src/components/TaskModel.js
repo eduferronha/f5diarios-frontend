@@ -258,7 +258,7 @@ const TaskModal = ({
       setLocal("Employee House");
       setFaturavel("Yes");
       setViagemFaturavel("No");
-      setDatasDuplicadas([]);
+      // setDatasDuplicadas([]);
 
 
     }
@@ -380,23 +380,18 @@ const handleSubmit = async (e, keepOpen = false) => {
   const contratoOptions = contratosFiltrados.map((c) => ({ value: c.contrato, label: c.contrato }));
   const atividadeOptions = atividades.map((a) => ({ value: a.atividade, label: a.atividade }));
 
-  const titulo =
-    isRepeatMode
-      ? "Repetir Tarefa"
-      : editingTask
-        ? isDuplicate
-          ? "Duplicar Tarefa"
-          : "Editar Tarefa"
-        : "Nova Tarefa";
+  const titulo = editingTask
+    ? isDuplicate
+      ? "Duplicar Tarefa"
+      : "Editar Tarefa"
+    : "Nova Tarefa";
 
-  const textoBotao =
-    isRepeatMode
-      ? "Criar Cópias"
-      : editingTask
-        ? isDuplicate
-          ? "Criar Tarefas"
-          : "Guardar Alterações"
-        : "Criar Tarefa";
+  const textoBotao = editingTask
+    ? isDuplicate
+      ? "Criar Tarefas"
+      : "Guardar Alterações"
+    : "Criar Tarefa";
+
 
   return (
     <div className="modal-overlay">
@@ -407,7 +402,7 @@ const handleSubmit = async (e, keepOpen = false) => {
         <h2>{titulo}</h2>
 
         {/* WRAPPER QUE ESCONDE O FORM QUANDO ESTÁ EM MODO REPEAT */}
-        <div className={`repeat-wrapper ${isRepeatMode ? "repeat-only" : ""}`}>
+        <div className="repeat-wrapper">
 
           <form id="form-task" onSubmit={handleSubmit} className="form-grid">
 
@@ -450,7 +445,6 @@ const handleSubmit = async (e, keepOpen = false) => {
             ) : null}
 
             {/* FORM NORMAL (RESTO DOS CAMPOS) */}
-            {!isRepeatMode && (
               <>
                 <div className="form-group full-width">
                   <label>Descrição</label>
@@ -644,33 +638,9 @@ const handleSubmit = async (e, keepOpen = false) => {
                   </div>
                 </div>
               </>
-            )}
           </form>
         </div>
 
-        {/* CALENDÁRIO (APENAS MODO REPEAT) */}
-        {/* {isRepeatMode && (
-          <div className="calendar-duplicate-container full-width" style={{ marginTop: "15px" }}>
-            <p className="repeat-message">Seleciona os dias para onde quer copiar esta tarefa.</p>
-
-            <div className="calendar-box" style={{ display: "flex", justifyContent: "center" }}>
-              <Calendar
-                key={datasDuplicadas.join(",")}
-                value={null}
-                onClickDay={toggleData}
-                tileClassName={({ date }) => {
-                  const dataISO = new Date(
-                    date.getTime() - date.getTimezoneOffset() * 60000
-                  ).toLocaleDateString("en-CA");
-
-                  if (dataISO === originalRepeatDate) return "selected-day protected-day";
-
-                  return datasDuplicadas.includes(dataISO) ? "selected-day" : null;
-                }}
-              />
-            </div>
-          </div>
-        )} */}
 
 
         {/* BOTÕES */}
