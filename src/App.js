@@ -16,39 +16,50 @@ import { refreshToken } from "../src/services/authService";
 import { Toaster } from "react-hot-toast";
 
 function App() {
-    useEffect(() => {
+
+  useEffect(() => {
     let inactivityTimer;
+    let lastRefresh = Date.now();
+
+    const MIN_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutos
 
     const handleActivity = () => {
       clearTimeout(inactivityTimer);
 
-      // sempre que o user faz algo renova token
-      refreshToken();
+      const now = Date.now();
+      const elapsed = now - lastRefresh;
 
-      //se ficar 1 hora sem atividade faz logout
+      // 🔥 Só refresca se passaram pelo menos 5 minutos
+      if (elapsed >= MIN_REFRESH_INTERVAL) {
+        refreshToken();
+        lastRefresh = now;
+      }
+
+      // 🔥 Se ficar 1 hora sem atividade → logout
       inactivityTimer = setTimeout(() => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         window.location.href = "/";
-      }, 60 * 60 * 1000); // 1h
+      }, 60 * 60 * 1000); // 1 hora
     };
 
+    // Eventos de atividade
     window.addEventListener("click", handleActivity);
-    window.addEventListener("mousemove", handleActivity);
+    // window.addEventListener("mousemove", handleActivity);
     window.addEventListener("keydown", handleActivity);
-    window.addEventListener("scroll", handleActivity);
+    // window.addEventListener("scroll", handleActivity);
 
+    // Primeira chamada
     handleActivity();
 
     return () => {
       window.removeEventListener("click", handleActivity);
-      window.removeEventListener("mousemove", handleActivity);
+      // window.removeEventListener("mousemove", handleActivity);
       window.removeEventListener("keydown", handleActivity);
-      window.removeEventListener("scroll", handleActivity);
+      // window.removeEventListener("scroll", handleActivity);
       clearTimeout(inactivityTimer);
     };
   }, []);
-
 
   return (
     <>
