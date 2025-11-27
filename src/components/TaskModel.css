@@ -524,14 +524,6 @@ textarea:focus {
   margin-top: 10px;
 }
 
-.repeat-only .form-grid {
-  display: none !important;
-}
-
-.repeat-only .calendar-duplicate-container {
-  display: block !important;
-}
-
 .calendar-duplicate-container {
   display: none;
 }
@@ -542,4 +534,19 @@ textarea:focus {
   font-size: 15px;
   color: #237c9b;
   font-weight: 500;
+}
+
+
+.repeat-only {
+  height: auto !important;
+}
+
+.repeat-only .form-grid {
+  display: none !important;
+}
+
+.calendar-duplicate-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }

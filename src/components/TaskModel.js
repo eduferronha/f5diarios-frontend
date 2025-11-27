@@ -634,10 +634,10 @@ const TaskModal = ({
 
         {/* CALENDÁRIO (APENAS MODO REPEAT) */}
         {isRepeatMode && (
-          <div className="calendar-duplicate-container full-width">
+          <div className="calendar-duplicate-container full-width" style={{ marginTop: "15px" }}>
             <p className="repeat-message">Seleciona os dias para onde quer copiar esta tarefa.</p>
 
-            <div className="calendar-box">
+            <div className="calendar-box" style={{ display: "flex", justifyContent: "center" }}>
               <Calendar
                 key={datasDuplicadas.join(",")}
                 value={null}
@@ -655,6 +655,7 @@ const TaskModal = ({
             </div>
           </div>
         )}
+
 
         {/* BOTÕES */}
         <div className="modal-buttons-row">
