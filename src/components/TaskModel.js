@@ -262,6 +262,14 @@ const TaskModal = ({
     }
   }, [show, editingTask, presetData, preselectedDate]);
 
+  useEffect(() => {
+    if (show) {
+      setIsRepeatMode(false);
+      setDatasDuplicadas([]);
+    }
+  }, [show]);
+
+
   if (!show) return null;
 
   const handleSubmit = async (e) => {
