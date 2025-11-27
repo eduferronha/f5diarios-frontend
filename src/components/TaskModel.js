@@ -42,6 +42,8 @@ const TaskModal = ({
   const [contratosFiltrados, setContratosFiltrados] = useState([]);
 
   const [datasDuplicadas, setDatasDuplicadas] = useState([]);
+  const [isRepeatMode, setIsRepeatMode] = useState(false);
+
 
   const [initialValues, setInitialValues] = useState(null);
 
@@ -320,8 +322,8 @@ const TaskModal = ({
         toast.success("Tarefa atualizada com sucesso!");
       }
 
-      else if (isDuplicate && datasDuplicadas.length > 0) {
-        const todasAsDatas = [data, ...datasDuplicadas];
+      else if (isRepeatMode && datasDuplicadas.length > 0) {
+        const todasAsDatas = datasDuplicadas;
 
         for (const d of todasAsDatas) {
           await api.post("/tasks", { ...payload, data: d }, {
@@ -329,7 +331,7 @@ const TaskModal = ({
           });
         }
 
-        toast.success("Tarefas duplicadas com sucesso!");
+        toast.success("Tarefas repetidas criadas com sucesso!");
       }
 
       else {
@@ -365,17 +367,23 @@ const TaskModal = ({
   const contratoOptions = contratosFiltrados.map((c) => ({ value: c.contrato, label: c.contrato }));
   const atividadeOptions = atividades.map((a) => ({ value: a.atividade, label: a.atividade }));
 
-  const titulo = editingTask
-    ? isDuplicate
-      ? "Duplicar Tarefa"
-      : "Editar Tarefa"
-    : "Nova Tarefa";
+  const titulo =
+    isRepeatMode
+      ? "Repetir Tarefa"
+      : editingTask
+      ? isDuplicate
+        ? "Duplicar Tarefa"
+        : "Editar Tarefa"
+      : "Nova Tarefa";
 
-  const textoBotao = editingTask
-    ? isDuplicate
-      ? "Guardar Cópias"
-      : "Guardar Alterações"
-    : "Criar Tarefa";
+  const textoBotao =
+    isRepeatMode
+      ? "Criar Cópias"
+      : editingTask
+      ? isDuplicate
+        ? "Guardar Cópias"
+        : "Guardar Alterações"
+      : "Criar Tarefa";
 
   return (
     <div className="modal-overlay">
@@ -387,7 +395,7 @@ const TaskModal = ({
 
         <form id="form-task" onSubmit={handleSubmit} className="form-grid">
 
-          {!isDuplicate ? (
+          {!isDuplicate && !isRepeatMode ? (
             <div className="form-group full-width">
               <label>Data</label>
               <div className="data-inline">
@@ -637,13 +645,41 @@ const TaskModal = ({
         </form>
 
         <div className="modal-buttons-row">
+
+          {!editingTask && !isRepeatMode && (
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => {
+                setIsRepeatMode(true);
+                setDatasDuplicadas([]);
+              }}
+            >
+              Repetir…
+            </button>
+          )}
+
           <button type="submit" form="form-task" className="btn-primary">
             {textoBotao}
           </button>
+          
+          {isRepeatMode && (
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => {
+                setIsRepeatMode(false);
+                setDatasDuplicadas([]);
+              }}
+            >
+              Voltar
+            </button>
+          )}
 
           <button type="button" className="btn-secondary" onClick={handleClose}>
             Cancelar
           </button>
+
         </div>
       </div>
     </div>

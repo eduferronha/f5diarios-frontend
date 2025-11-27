@@ -217,5 +217,5 @@ body {
 .logout-button:hover svg {
   color: #f53737;
   /* transform: scale(1.1); */
-  transition: 0.2s;
+  /* transition: 0.2s; */
 }
