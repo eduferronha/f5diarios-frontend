@@ -5,17 +5,14 @@ import logo from "../f5tci_logo_small.png";
 import { Settings } from "lucide-react";
 
 function Navbar() {
-  // 🔹 Hooks sempre primeiro
+  // 🔹 Hooks SEMPRE em cima
   const location = useLocation();
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
   const [role, setRole] = useState(null);
   const [username, setUsername] = useState("");
 
-  // 🔹 Verificação do token (AGORA depois dos hooks)
-  const token = localStorage.getItem("token");
-  if (!token) return null;
-
+  // 🔹 useEffect SEMPRE antes de qualquer return
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -24,6 +21,10 @@ function Navbar() {
       setUsername(parsedUser.username || parsedUser.name || "");
     }
   }, []);
+
+  // 🔹 Só agora verificamos o token
+  const token = localStorage.getItem("token");
+  if (!token) return null;
 
   const navItems = [
     { name: "Dashboard", path: "/dashboard" },
