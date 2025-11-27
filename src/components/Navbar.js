@@ -5,14 +5,13 @@ import logo from "../f5tci_logo_small.png";
 import { Settings, LogOut } from "lucide-react";
 
 function Navbar() {
-  // 🔹 Hooks SEMPRE em cima
+  // Hooks
   const location = useLocation();
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
   const [role, setRole] = useState(null);
   const [username, setUsername] = useState("");
 
-  // 🔹 useEffect SEMPRE antes de qualquer return
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -22,20 +21,19 @@ function Navbar() {
     }
   }, []);
 
-  // 🔹 Só agora verificamos o token
   const token = localStorage.getItem("token");
   if (!token) return null;
-
-  const navItems = [
-    { name: "Dashboard", path: "/dashboard" },
-    { name: "Agenda", path: "/agenda" },
-  ];
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/");
   };
+
+  const navItems = [
+    { name: "Dashboard", path: "/dashboard" },
+    { name: "Agenda", path: "/agenda" },
+  ];
 
   return (
     <nav className="navbar">
@@ -106,12 +104,21 @@ function Navbar() {
 
       <div className="navbar-user">
         <span className="navbar-username">{username}</span>
+
         <button
           className="settings-button"
           title="Perfil"
           onClick={() => navigate("/profile")}
         >
           <Settings size={18} />
+        </button>
+
+        <button
+          className="logout-button"
+          title="Terminar Sessão"
+          onClick={handleLogout}
+        >
+          <LogOut size={18} color="red" />
         </button>
       </div>
     </nav>
