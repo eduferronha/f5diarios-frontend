@@ -43,6 +43,7 @@ const TaskModal = ({
 
   const [datasDuplicadas, setDatasDuplicadas] = useState([]);
   const [isRepeatMode, setIsRepeatMode] = useState(false);
+  const [originalRepeatDate, setOriginalRepeatDate] = useState(null);
 
   const [initialValues, setInitialValues] = useState(null);
   const token = localStorage.getItem("token");
@@ -359,12 +360,18 @@ const TaskModal = ({
       date.getTime() - date.getTimezoneOffset() * 60000
     ).toLocaleDateString("en-CA");
 
+    // ❗ IMPEDIR REMOVER A DATA ORIGINAL
+    if (dataISO === originalRepeatDate) {
+      return; // faz nada
+    }
+
     if (datasDuplicadas.includes(dataISO)) {
       setDatasDuplicadas(datasDuplicadas.filter((d) => d !== dataISO));
     } else {
       setDatasDuplicadas([...datasDuplicadas, dataISO]);
     }
   };
+
 
   const clienteOptions = clientes.map((c) => ({ value: c.nome, label: c.nome }));
   const parceiroOptions = parceiros.map((p) => ({ value: p.parceiro, label: p.parceiro }));
@@ -679,6 +686,7 @@ const TaskModal = ({
                 preselectedDate ||
                 null;
 
+              setOriginalRepeatDate(originalDate);
               setDatasDuplicadas(originalDate ? [originalDate] : []);
               setIsRepeatMode(true);
             }}
