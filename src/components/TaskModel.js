@@ -407,7 +407,7 @@ const handleSubmit = async (e, keepOpen = false) => {
           <form id="form-task" onSubmit={handleSubmit} className="form-grid">
 
             {/* FORM NORMAL (DATA) */}
-            {!isDuplicate && !isRepeatMode ? (
+            {!isDuplicate ? (
               <div className="form-group full-width">
                 <label>Data</label>
                 <div className="data-inline">
