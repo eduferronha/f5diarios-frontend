@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 import logo from "../f5tci_logo_small.png";
-import { Settings } from "lucide-react";
+import { Settings, LogOut } from "lucide-react";
 
 function Navbar() {
   // 🔹 Hooks SEMPRE em cima
@@ -30,6 +30,12 @@ function Navbar() {
     { name: "Dashboard", path: "/dashboard" },
     { name: "Agenda", path: "/agenda" },
   ];
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/");
+  };
 
   return (
     <nav className="navbar">
