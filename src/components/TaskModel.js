@@ -245,6 +245,8 @@ const TaskModal = ({
       setContrato("");
       setAtividade("");
 
+
+
       setData(
         preselectedDate
           ? new Date(preselectedDate).toISOString().split("T")[0]
@@ -260,15 +262,19 @@ const TaskModal = ({
       setFaturavel("Yes");
       setViagemFaturavel("No");
       setDatasDuplicadas([]);
+
+      setIsRepeatMode(false);
+      setDatasDuplicadas([]);
+      setOriginalRepeatDate(null);
     }
   }, [show, editingTask, presetData, preselectedDate]);
 
-  useEffect(() => {
-    if (show) {
-      setIsRepeatMode(false);
-      setDatasDuplicadas([]);
-    }
-  }, [show]);
+  // useEffect(() => {
+  //   if (show) {
+  //     setIsRepeatMode(false);
+  //     setDatasDuplicadas([]);
+  //   }
+  // }, [show]);
 
 
   if (!show) return null;
@@ -393,7 +399,7 @@ const TaskModal = ({
       ? "Criar Cópias"
       : editingTask
         ? isDuplicate
-          ? "Guardar Cópias"
+          ? "Criar Tarefas"
           : "Guardar Alterações"
         : "Criar Tarefa";
 
