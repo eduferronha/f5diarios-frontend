@@ -3,7 +3,7 @@ import api from "../services/api";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import Select from "react-select";
-import "../components/TaskPresetModel.css";
+import "../components/TaskPresetModal.css";
 
 const TaskPresetModal = ({
   show,
