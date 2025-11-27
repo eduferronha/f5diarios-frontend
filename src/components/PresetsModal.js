@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import api from "../services/api";
 import TaskPresetModal from "./TaskPresetModal";
-import "../components/PresetsModel.css";
+import "../components/PresetsModal.css";
 import { Trash2, Edit3 } from "lucide-react";
 import Swal from "sweetalert2";
 import toast, { Toaster } from "react-hot-toast";
