@@ -662,9 +662,9 @@ const TaskModal = ({
                     date.getTime() - date.getTimezoneOffset() * 60000
                   ).toLocaleDateString("en-CA");
 
-                  return datasDuplicadas.includes(dataISO)
-                    ? "selected-day"
-                    : null;
+                  if (dataISO === originalRepeatDate) return "selected-day protected-day";
+
+                  return datasDuplicadas.includes(dataISO) ? "selected-day" : null;
                 }}
               />
             </div>

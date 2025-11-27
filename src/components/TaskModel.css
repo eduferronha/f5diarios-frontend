@@ -545,3 +545,8 @@ textarea:focus {
   margin-top: 10px;
   gap: 10px;
 }
+
+.protected-day {
+  border: 2px solid #ff8a00 !important;
+}
+
