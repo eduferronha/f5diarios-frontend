@@ -2,18 +2,19 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 import logo from "../f5tci_logo_small.png";
-import { Settings } from "lucide-react"; // Ícone moderno
+import { Settings } from "lucide-react";
 
 function Navbar() {
   const token = localStorage.getItem("token");
-  if (!token) return null; // 👈 impede erro antes do redirect
+
+  // 🔥 Impede que o Navbar tente renderizar quando não há token
+  if (!token) return null;
 
   const location = useLocation();
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
   const [role, setRole] = useState(null);
   const [username, setUsername] = useState("");
-
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -49,7 +50,6 @@ function Navbar() {
           </li>
         ))}
 
-        {/* Dropdown de análises */}
         <li
           className={`nav-item dropdown ${
             location.pathname.startsWith("/analises") ? "active" : ""
@@ -67,7 +67,6 @@ function Navbar() {
           )}
         </li>
 
-        {/* Aba visível apenas para administradores */}
         {role === "admin" && (
           <>
             <li
@@ -98,7 +97,6 @@ function Navbar() {
         )}
       </ul>
 
-      {/* 🔹 Nome do utilizador + botão settings */}
       <div className="navbar-user">
         <span className="navbar-username">{username}</span>
         <button
