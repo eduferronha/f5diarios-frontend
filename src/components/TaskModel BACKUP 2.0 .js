@@ -40,7 +40,10 @@ const TaskModal = ({
   const [atividades, setAtividades] = useState([]);
   const [parceiros, setParceiros] = useState([]);
   const [contratosFiltrados, setContratosFiltrados] = useState([]);
-  const [lastCreatedValues, setLastCreatedValues] = useState(null);
+
+  const [datasDuplicadas, setDatasDuplicadas] = useState([]);
+  const [isRepeatMode, setIsRepeatMode] = useState(false);
+  const [originalRepeatDate, setOriginalRepeatDate] = useState(null);
 
   const [initialValues, setInitialValues] = useState(null);
   const token = localStorage.getItem("token");
@@ -260,7 +263,9 @@ const TaskModal = ({
       setViagemFaturavel("No");
       setDatasDuplicadas([]);
 
-
+      setIsRepeatMode(false);
+      setDatasDuplicadas([]);
+      setOriginalRepeatDate(null);
     }
   }, [show, editingTask, presetData, preselectedDate]);
 
@@ -274,104 +279,104 @@ const TaskModal = ({
 
   if (!show) return null;
 
-  const isSameTask = (a, b) => {
-    if (!a || !b) return false;
-    return JSON.stringify(a) === JSON.stringify(b);
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-
-const handleSubmit = async (e, keepOpen = false) => {
-  e.preventDefault();
-
-  if (!cliente || !produto || !contrato || !atividade) {
-    return Swal.fire({
-      icon: "warning",
-      title: "Campos obrigatórios",
-      text: "Preenche todos os campos obrigatórios.",
-      confirmButtonColor: "#237c9b",
-    });
-  }
-
-  if (!data) {
-    return Swal.fire({
-      icon: "warning",
-      title: "Data em falta",
-      text: "Seleciona uma data.",
-      confirmButtonColor: "#237c9b",
-    });
-  }
-
-  const payload = {
-    descricao,
-    cliente,
-    parceiro,
-    produto,
-    contrato,
-    atividade,
-    tempo_atividade: tempoAtividade,
-    tempo_faturado: tempoFaturado,
-    tempo_viagem: tempoViagem,
-    distancia_viagem: distanciaViagem,
-    valor_euro: valorEuro,
-    local,
-    faturavel,
-    viagem_faturavel: viagemFaturavel,
-    data,
-  };
-
-  // 🚨 Verificação se está a criar igual à anterior
-  if (keepOpen && isSameTask(payload, lastCreatedValues)) {
-    const confirm = await Swal.fire({
-      icon: "warning",
-      title: "Tarefa igual à anterior",
-      text: "Estás a criar uma tarefa 100% igual à última criada. Tens a certeza?",
-      showCancelButton: true,
-      confirmButtonColor: "#237c9b",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Sim, criar",
-      cancelButtonText: "Cancelar",
-    });
-
-    if (!confirm.isConfirmed) return;
-  }
-
-  try {
-    await api.post("/tasks", payload, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    toast.success("Tarefa criada!");
-
-    setLastCreatedValues(payload);
-
-    if (!keepOpen) {
-      onTaskAdded && onTaskAdded();
-      onClose();
+    if (!cliente || !produto || !contrato || !atividade || !tempoAtividade) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Campos obrigatórios",
+        text: "Preenche todos os campos obrigatórios.",
+        confirmButtonColor: "#237c9b",
+      });
     }
 
-  } catch (err) {
-    console.error(err);
-    toast.error("Erro ao guardar tarefa.");
-  }
-};
+    if (faturavel !== "No" && (!tempoFaturado || tempoFaturado === "00:00")) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Tempo Faturado inválido",
+        text: "Tempo faturado é obrigatório quando marcaste como faturável.",
+        confirmButtonColor: "#237c9b",
+      });
+    }
 
+    if (!data && !isDuplicate) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Data em falta",
+        text: "Seleciona uma data.",
+        confirmButtonColor: "#237c9b",
+      });
+    }
 
-  // const toggleData = (date) => {
-  //   const dataISO = new Date(
-  //     date.getTime() - date.getTimezoneOffset() * 60000
-  //   ).toLocaleDateString("en-CA");
+    const payload = {
+      descricao,
+      cliente,
+      parceiro,
+      produto,
+      contrato,
+      atividade,
+      tempo_atividade: tempoAtividade,
+      tempo_faturado: tempoFaturado,
+      tempo_viagem: tempoViagem,
+      distancia_viagem: distanciaViagem,
+      valor_euro: valorEuro,
+      local,
+      faturavel,
+      viagem_faturavel: viagemFaturavel,
+    };
 
-  //   // ❗ IMPEDIR REMOVER A DATA ORIGINAL
-  //   if (dataISO === originalRepeatDate) {
-  //     return; // faz nada
-  //   }
+    try {
+      if (editingTask && !isDuplicate) {
+        await api.put(`/tasks/${editingTask.id}`, { ...payload, data }, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-  //   if (datasDuplicadas.includes(dataISO)) {
-  //     setDatasDuplicadas(datasDuplicadas.filter((d) => d !== dataISO));
-  //   } else {
-  //     setDatasDuplicadas([...datasDuplicadas, dataISO]);
-  //   }
-  // };
+        toast.success("Tarefa atualizada com sucesso!");
+      }
+
+      else if (isRepeatMode && datasDuplicadas.length > 0) {
+        const todasAsDatas = datasDuplicadas;
+
+        for (const d of todasAsDatas) {
+          await api.post("/tasks", { ...payload, data: d }, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+        }
+
+        toast.success("Tarefas repetidas criadas com sucesso!");
+      }
+
+      else {
+        await api.post("/tasks", { ...payload, data }, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+
+      onTaskAdded && onTaskAdded();
+      onClose();
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao guardar tarefa.");
+    }
+  };
+
+  const toggleData = (date) => {
+    const dataISO = new Date(
+      date.getTime() - date.getTimezoneOffset() * 60000
+    ).toLocaleDateString("en-CA");
+
+    // ❗ IMPEDIR REMOVER A DATA ORIGINAL
+    if (dataISO === originalRepeatDate) {
+      return; // faz nada
+    }
+
+    if (datasDuplicadas.includes(dataISO)) {
+      setDatasDuplicadas(datasDuplicadas.filter((d) => d !== dataISO));
+    } else {
+      setDatasDuplicadas([...datasDuplicadas, dataISO]);
+    }
+  };
 
 
   const clienteOptions = clientes.map((c) => ({ value: c.nome, label: c.nome }));
@@ -649,7 +654,7 @@ const handleSubmit = async (e, keepOpen = false) => {
         </div>
 
         {/* CALENDÁRIO (APENAS MODO REPEAT) */}
-        {/* {isRepeatMode && (
+        {isRepeatMode && (
           <div className="calendar-duplicate-container full-width" style={{ marginTop: "15px" }}>
             <p className="repeat-message">Seleciona os dias para onde quer copiar esta tarefa.</p>
 
@@ -670,36 +675,56 @@ const handleSubmit = async (e, keepOpen = false) => {
               />
             </div>
           </div>
-        )} */}
+        )}
 
 
         {/* BOTÕES */}
         <div className="modal-buttons-row">
-          <button
-            type="submit"
-            form="form-task"
-            className="btn-primary"
-          >
-            Criar Tarefa
-          </button>
 
-          <button
-            type="button"
-            className="btn-primary"
-            onClick={(e) => handleSubmit(e, true)}
-          >
-            Criar e Continuar
-          </button>
-
+        {!editingTask && !isRepeatMode && (
           <button
             type="button"
             className="btn-secondary"
-            onClick={handleClose}
-          >
-            Cancelar
-          </button>
-        </div>
+            onClick={() => {
+              const originalDate =
+                data ||
+                editingTask?.data?.split("T")[0] ||
+                preselectedDate ||
+                null;
 
+              setOriginalRepeatDate(originalDate);
+              setDatasDuplicadas(originalDate ? [originalDate] : []);
+              setIsRepeatMode(true);
+            }}
+          >
+            Repetir…
+          </button>
+        )}
+
+
+          {isRepeatMode && (
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => {
+                setIsRepeatMode(false);
+                setDatasDuplicadas([]);
+              }}
+            >
+              Voltar
+            </button>
+          )}
+
+          <button type="submit" form="form-task" className="btn-primary">
+            {isRepeatMode ? "Guardar Cópias" : textoBotao}
+          </button>
+
+          {!isRepeatMode && (
+            <button type="button" className="btn-secondary" onClick={handleClose}>
+              Cancelar
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
