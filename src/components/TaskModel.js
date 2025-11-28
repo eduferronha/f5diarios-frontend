@@ -336,11 +336,18 @@ const handleSubmit = async (e, keepOpen = false) => {
   }
 
   try {
-    await api.post("/tasks", payload, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    if (editingTask) {
+      await api.put(`/tasks/${editingTask.id}`, payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success("Alterações guardadas!");
+    } else {
+      await api.post("/tasks", payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success("Tarefa criada!");
+    }
 
-    toast.success("Tarefa criada!");
 
     setLastCreatedValues(payload);
 
@@ -650,16 +657,20 @@ const handleSubmit = async (e, keepOpen = false) => {
             form="form-task"
             className="btn-primary"
           >
-            Criar Tarefa
+            {textoBotao}
           </button>
 
-          <button
-            type="button"
-            className="btn-primary"
-            onClick={(e) => handleSubmit(e, true)}
-          >
-            Criar e Continuar
-          </button>
+
+          {!editingTask && (
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={(e) => handleSubmit(e, true)}
+            >
+              Criar e Continuar
+            </button>
+          )}
+
 
           <button
             type="button"
