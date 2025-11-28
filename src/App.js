@@ -12,6 +12,7 @@ import Atividade from "./pages/Atividade";
 import ProjetosPage from "./pages/ProjetosPage";
 import ProfilePage from "./pages/ProfilePage";
 import AuthCallback from "../src/auth/callback/AuthCallback";
+// import EntraCallback from "../src/auth/callback/EntraCallback";
 import { refreshToken } from "../src/services/authService";
 import { Toaster } from "react-hot-toast";
 
@@ -161,6 +162,8 @@ function App() {
           />
 
           <Route path="/auth/callback" element={<AuthCallback />} />
+          {/* <Route path="/auth/entra/entra-callback" element={<EntraCallback />} /> */}
+
         </Routes>
       </Router>
     </>

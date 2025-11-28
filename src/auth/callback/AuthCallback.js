@@ -6,22 +6,32 @@ function AuthCallback() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get("code");
+    const url = new URL(window.location.href);
+    const code = url.searchParams.get("code");
 
-    async function getToken() {
-      const response = await api.get(`/auth/entra/entra-callback?code=${code}`)
-
-
-      localStorage.setItem("token", response.data.access_token);
-      localStorage.setItem("user", JSON.stringify(response.data.user));
-      navigate("/dashboard");
+    if (!code) {
+      navigate("/login");
+      return;
     }
 
-    getToken();
-  }, []);
+    async function finishLogin() {
+      try {
+        const response = await api.get(`/auth/entra/entra-callback?code=${code}`);
 
-  return <p>A autenticar...</p>;
+        localStorage.setItem("token", response.data.access_token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+
+        navigate("/dashboard");
+      } catch (err) {
+        console.error(err);
+        navigate("/login");
+      }
+    }
+
+    finishLogin();
+  }, [navigate]);
+
+  return <p>A autenticar com a Microsoft...</p>;
 }
 
 export default AuthCallback;
