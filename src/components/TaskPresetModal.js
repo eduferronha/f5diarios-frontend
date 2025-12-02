@@ -40,6 +40,9 @@ const TaskPresetModal = ({
   const [parceiros, setParceiros] = useState([]);
   const [contratosFiltrados, setContratosFiltrados] = useState([]);
 
+  const [initialData, setInitialData] = useState(null);
+
+
   useEffect(() => {
     if (!show) return;
 
@@ -70,25 +73,47 @@ const TaskPresetModal = ({
   useEffect(() => {
     if (!presetData) return;
 
-    setNome(presetData.nome || "");
-    setDescricao(presetData.descricao || "");
-    setCliente(presetData.cliente || "");
-    setParceiro(presetData.parceiro || "");
-    setProduto(presetData.produto || "");
-    setContrato(presetData.contrato || "");
-    setAtividade(presetData.atividade || "");
+    const original = {
+      nome: presetData.nome || "",
+      descricao: presetData.descricao || "",
+      cliente: presetData.cliente || "",
+      parceiro: presetData.parceiro || "",
+      produto: presetData.produto || "",
+      contrato: presetData.contrato || "",
+      atividade: presetData.atividade || "",
+      tempo_atividade: presetData.tempo_atividade || "00:00",
+      tempo_faturado: presetData.tempo_faturado || "00:00",
+      tempo_viagem: presetData.tempo_viagem || "00:00",
+      distancia_viagem: presetData.distancia_viagem || 0,
+      valor_euro: presetData.valor_euro || 0,
+      local: presetData.local || "Employee House",
+      faturavel: presetData.faturavel || "Yes",
+      viagem_faturavel: presetData.viagem_faturavel || "No",
+    };
 
-    setTempoAtividade(presetData.tempo_atividade || "00:00");
-    setTempoFaturado(presetData.tempo_faturado || "00:00");
-    setTempoViagem(presetData.tempo_viagem || "00:00");
+    setInitialData(original);
 
-    setDistancia(presetData.distancia_viagem || 0);
-    setValorEuro(presetData.valor_euro || 0);
+    // preencher os campos como já fazias
+    setNome(original.nome);
+    setDescricao(original.descricao);
+    setCliente(original.cliente);
+    setParceiro(original.parceiro);
+    setProduto(original.produto);
+    setContrato(original.contrato);
+    setAtividade(original.atividade);
 
-    setLocal(presetData.local || "Employee House");
-    setFaturavel(presetData.faturavel || "Yes");
-    setViagemFaturavel(presetData.viagem_faturavel || "No");
+    setTempoAtividade(original.tempo_atividade);
+    setTempoFaturado(original.tempo_faturado);
+    setTempoViagem(original.tempo_viagem);
+
+    setDistancia(original.distancia_viagem);
+    setValorEuro(original.valor_euro);
+
+    setLocal(original.local);
+    setFaturavel(original.faturavel);
+    setViagemFaturavel(original.viagem_faturavel);
   }, [presetData]);
+
 
   useEffect(() => {
     if (!cliente) {
@@ -138,6 +163,29 @@ const TaskPresetModal = ({
 
     await onPresetSaved(payload);
   };
+
+  const hasChanges = () => {
+    if (!initialData) return false;
+
+    return (
+      initialData.nome !== nome ||
+      initialData.descricao !== descricao ||
+      initialData.cliente !== cliente ||
+      initialData.parceiro !== parceiro ||
+      initialData.produto !== produto ||
+      initialData.contrato !== contrato ||
+      initialData.atividade !== atividade ||
+      initialData.tempo_atividade !== tempoAtividade ||
+      initialData.tempo_faturado !== tempoFaturado ||
+      initialData.tempo_viagem !== tempoViagem ||
+      Number(initialData.distancia_viagem) !== Number(distancia) ||
+      Number(initialData.valor_euro) !== Number(valorEuro) ||
+      initialData.local !== local ||
+      initialData.faturavel !== faturavel ||
+      initialData.viagem_faturavel !== viagemFaturavel
+    );
+  };
+
 
   return (
     <div className="modal-overlay">
@@ -358,9 +406,30 @@ const TaskPresetModal = ({
             {isEditingPreset ? "Guardar Alterações" : "Criar Preset"}
           </button>
 
-          <button className="btn-secondary" onClick={onClose}>
+          <button
+            className="btn-secondary"
+            onClick={() => {
+              if (hasChanges()) {
+                Swal.fire({
+                  title: "Descartar alterações?",
+                  text: "Tens alterações por guardar.",
+                  icon: "warning",
+                  showCancelButton: true,
+                  confirmButtonColor: "#237c9b",
+                  cancelButtonColor: "#d33",
+                  confirmButtonText: "Sim, sair",
+                  cancelButtonText: "Continuar a editar",
+                }).then((res) => {
+                  if (res.isConfirmed) onClose();
+                });
+              } else {
+                onClose();
+              }
+            }}
+          >
             Cancelar
           </button>
+
         </div>
       </div>
     </div>
