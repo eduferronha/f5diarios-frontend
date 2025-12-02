@@ -222,9 +222,17 @@ const PresetsModal = ({ show, onClose }) => {
       <div className="modal presets-modal">
         <h2>Presets</h2>
 
-        <button className="btn-primary" onClick={() => setShowTaskModal(true)}>
-          Novo Preset
-        </button>
+      <button
+        className="btn-primary"
+        onClick={() => {
+          setEditingPreset(null);
+          setPresetToApply(null);
+          setShowTaskModal(true);
+        }}
+      >
+        Novo Preset
+      </button>
+
 
         {/* 🟩 Presets Ativos */}
         <h3 className="section-title">Presets Ativos (máx. 4)</h3>
@@ -302,32 +310,31 @@ const PresetsModal = ({ show, onClose }) => {
         </div>
       </div>
 
-        {showTaskModal && (
-          editingPreset ? (
-            /* 👉 EDITAR PRESET → abre TaskPresetModal */
-            <TaskPresetModal
-              show={showTaskModal}
-              onClose={() => {
-                setShowTaskModal(false);
-                setEditingPreset(null);
-              }}
-              presetData={editingPreset}
-              isEditingPreset={true}
-              onPresetSaved={handleSavePreset}
-            />
-          ) : (
-            /* 👉 APLICAR PRESET → abre TaskModal com os campos preenchidos */
-            <TaskModel
-              show={showTaskModal}
-              onClose={() => {
-                setShowTaskModal(false);
-                setPresetToApply(null);
-              }}
-              isPresetMode={true}
-              presetData={presetToApply}   // 👈 PREENCHE AUTOMATICAMENTE
-            />
-          )
-        )}
+      {showTaskModal && (
+        editingPreset || (!presetToApply && !editingPreset) ? (
+          <TaskPresetModal
+            show={showTaskModal}
+            onClose={() => {
+              setShowTaskModal(false);
+              setEditingPreset(null);
+            }}
+            presetData={editingPreset}
+            isEditingPreset={!!editingPreset}
+            onPresetSaved={handleSavePreset}
+          />
+        ) : (
+          <TaskModel
+            show={showTaskModal}
+            onClose={() => {
+              setShowTaskModal(false);
+              setPresetToApply(null);
+            }}
+            isPresetMode={true}
+            presetData={presetToApply}
+          />
+        )
+      )}
+
 
     </div>
   );

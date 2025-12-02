@@ -55,25 +55,26 @@ function Navbar() {
           </li>
         ))}
 
-        <li
-          className={`nav-item dropdown ${
-            location.pathname.startsWith("/analises") ? "active" : ""
-          }`}
-          onMouseEnter={() => setShowDropdown(true)}
-          onMouseLeave={() => setShowDropdown(false)}
-        >
-          <span>Análises ▾</span>
-          {showDropdown && (
-            <ul className="dropdown-menu">
-              <li onClick={() => navigate("/analises/relatorios")}>
-                Relatórios
-              </li>
-            </ul>
-          )}
-        </li>
+        
 
         {role === "admin" && (
           <>
+            <li
+                className={`nav-item dropdown ${
+                  location.pathname.startsWith("/analises") ? "active" : ""
+                }`}
+                onMouseEnter={() => setShowDropdown(true)}
+                onMouseLeave={() => setShowDropdown(false)}
+              >
+                <span>Análises ▾</span>
+                {showDropdown && (
+                  <ul className="dropdown-menu">
+                    <li onClick={() => navigate("/analises/relatorios")}>
+                      Relatórios
+                    </li>
+                  </ul>
+                )}
+            </li>
             <li
               className={`nav-item ${
                 location.pathname === "/atividade" ? "active" : ""
