@@ -105,28 +105,78 @@ const TaskModal = ({
   ]);
 
   useEffect(() => {
-    if (show) {
+    if (!show) return;
+
+    // 1️⃣ Se VIRES de um preset → snapshot deve ser o preset
+    if (presetData && !editingTask) {
       setInitialValues({
-        descricao: editingTask?.descricao || "",
-        cliente: editingTask?.cliente || "",
-        parceiro: editingTask?.parceiro || "",
-        produto: editingTask?.produto || "",
-        contrato: editingTask?.contrato || "",
-        atividade: editingTask?.atividade || "",
-        data: editingTask?.data
-          ? editingTask.data.split("T")[0]
-          : preselectedDate || "",
-        distanciaViagem: editingTask?.distancia_viagem || 0,
-        tempoViagem: editingTask?.tempo_viagem || "00:00",
-        tempoAtividade: editingTask?.tempo_atividade || "00:00",
-        tempoFaturado: editingTask?.tempo_faturado || "00:00",
-        valorEuro: editingTask?.valor_euro || 0,
-        local: editingTask?.local || "Employee House",
-        faturavel: editingTask?.faturavel || "Yes",
-        viagemFaturavel: editingTask?.viagem_faturavel || "No",
+        descricao: presetData.descricao || "",
+        cliente: presetData.cliente || "",
+        parceiro: presetData.parceiro || "",
+        produto: presetData.produto || "",
+        contrato: presetData.contrato || "",
+        atividade: presetData.atividade || "",
+        data: preselectedDate
+          ? new Date(preselectedDate).toISOString().split("T")[0]
+          : "",
+        distanciaViagem: presetData.distancia_viagem || 0,
+        tempoViagem: presetData.tempo_viagem || "00:00",
+        tempoAtividade: presetData.tempo_atividade || "00:00",
+        tempoFaturado: presetData.tempo_faturado || "00:00",
+        valorEuro: presetData.valor_euro || 0,
+        local: presetData.local || "Employee House",
+        faturavel: presetData.faturavel || "Yes",
+        viagemFaturavel: presetData.viagem_faturavel || "No",
       });
+      return;
     }
-  }, [show, editingTask, preselectedDate]);
+
+    // 2️⃣ Se estás A EDITAR → snapshot = tarefa original
+    if (editingTask) {
+      setInitialValues({
+        descricao: editingTask.descricao || "",
+        cliente: editingTask.cliente || "",
+        parceiro: editingTask.parceiro || "",
+        produto: editingTask.produto || "",
+        contrato: editingTask.contrato || "",
+        atividade: editingTask.atividade || "",
+        data: editingTask.data
+          ? editingTask.data.split("T")[0]
+          : "",
+        distanciaViagem: editingTask.distancia_viagem || 0,
+        tempoViagem: editingTask.tempo_viagem || "00:00",
+        tempoAtividade: editingTask.tempo_atividade || "00:00",
+        tempoFaturado: editingTask.tempo_faturado || "00:00",
+        valorEuro: editingTask.valor_euro || 0,
+        local: editingTask.local || "Employee House",
+        faturavel: editingTask.faturavel || "Yes",
+        viagemFaturavel: editingTask.viagem_faturavel || "No",
+      });
+      return;
+    }
+
+    // 3️⃣ Se é NOVA tarefa → snapshot = valores vazios
+    setInitialValues({
+      descricao: "",
+      cliente: "",
+      parceiro: "",
+      produto: "",
+      contrato: "",
+      atividade: "",
+      data: preselectedDate
+        ? new Date(preselectedDate).toISOString().split("T")[0]
+        : "",
+      distanciaViagem: 0,
+      tempoViagem: "00:00",
+      tempoAtividade: "00:00",
+      tempoFaturado: "00:00",
+      valorEuro: 0,
+      local: "Employee House",
+      faturavel: "Yes",
+      viagemFaturavel: "No",
+    });
+  }, [show, editingTask, presetData, preselectedDate]);
+
 
   useEffect(() => {
     if (!show) return;
@@ -264,12 +314,6 @@ const TaskModal = ({
     }
   }, [show, editingTask, presetData, preselectedDate]);
 
-  // useEffect(() => {
-  //   if (show) {
-  //     setIsRepeatMode(false);
-  //     setDatasDuplicadas([]);
-  //   }
-  // }, [show]);
 
 
   if (!show) return null;
